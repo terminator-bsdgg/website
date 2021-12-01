@@ -7,6 +7,7 @@
     <title>LOGIN || TERMINATOR</title>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src='../js/script_authentication.js'></script>
 
@@ -30,14 +31,14 @@
                 <form id="login" tabindex="500">
                     <h3>Login</h3>
                     <div class="mail">
-                        <input type="mail" name="">
+                        <input id="mailvalue" type="mail" name="">
                         <label>Username</label>
                     </div>
                     <div class="passwd">
-                        <input type="password" name="">
+                        <input id="passwordvalue" type="password" name="">
                         <label>Passwort</label>
                     </div>
-                    <div class="submit">
+                    <div id="loginbutton" class="submit">
                         <button class="dark">Einloggen</button>
                     </div>
                 </form>
@@ -45,22 +46,22 @@
                 <form id="register" tabindex="502">
                     <h3>Registrieren</h3>
                     <div class="name">
-                        <input type="text" name="">
+                        <input id="fullnamevalue" type="text" name="">
                         <label>Voller Name</label>
                     </div>
                     <div class="mail">
-                        <input type="mail" name="">
+                        <input id="mailregvalue" type="mail" name="">
                         <label>E-Mail Adresse</label>
                     </div>
                     <div class="uid">
-                        <input type="text" name="">
+                        <input id="usernamevalue" type="text" name="">
                         <label>Username</label>
                     </div>
                     <div class="passwd">
-                        <input type="password" name="">
+                        <input id="passwordregvalue" type="password" name="">
                         <label>Passwort</label>
                     </div>
-                    <div class="submit">
+                    <div id="registerbutton" class="submit">
                         <button class="dark">Registrieren</button>
                     </div>
                 </form>
