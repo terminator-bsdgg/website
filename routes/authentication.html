@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>LOGIN || TERMINATOR</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src='../js/script_authentication.js'></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel='stylesheet' type='text/css' href='../css/style_authentication.css'>
+</head>
+
+<body>
+    <div class="body">
+        <div class="veen">
+            <div class="login-btn splits">
+                <p>Bereits Registriert?</p>
+                <button class="active">Login</button>
+            </div>
+            <div class="rgstr-btn splits">
+                <p>Account erstellen</p>
+                <button>Registrieren</button>
+            </div>
+
+            <div class="wrapper">
+                <form id="login" tabindex="500">
+                    <h3>Login</h3>
+                    <div class="mail">
+                        <input type="mail" name="">
+                        <label>Username</label>
+                    </div>
+                    <div class="passwd">
+                        <input type="password" name="">
+                        <label>Passwort</label>
+                    </div>
+                    <div class="submit">
+                        <button class="dark">Einloggen</button>
+                    </div>
+                </form>
+
+                <form id="register" tabindex="502">
+                    <h3>Registrieren</h3>
+                    <div class="name">
+                        <input type="text" name="">
+                        <label>Voller Name</label>
+                    </div>
+                    <div class="mail">
+                        <input type="mail" name="">
+                        <label>E-Mail Adresse</label>
+                    </div>
+                    <div class="uid">
+                        <input type="text" name="">
+                        <label>Username</label>
+                    </div>
+                    <div class="passwd">
+                        <input type="password" name="">
+                        <label>Passwort</label>
+                    </div>
+                    <div class="submit">
+                        <button class="dark">Registrieren</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
