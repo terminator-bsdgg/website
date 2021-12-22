@@ -1,40 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
 
     <script src="js/jquery-3.6.0.min.js"></script>
 
     <title>Terminator</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <!--Code here-->
 
     <div class="">
-        <ul class="nav nav-tabs bg-dark">
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="openTab('Benutzer')">Raumbuchung</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="openTab('Moderator')">Moderation</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="openTab('Administrator')">Administration</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="raum" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
+      <ul class="nav nav-tabs bg-dark">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="openTab('Benutzer')"
+            >Raumbuchung</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="openTab('Moderator')"
+            >Moderation</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="openTab('Administrator')"
+            >Administration</a
+          >
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="raum_dropdown_menu"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-dark"
+            aria-labelledby="navbarDarkDropdownMenuLink"
+            id="raum-dropdown"
+          >
+            <!-- <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
                                 onclick="changeRoom('Raum 1')">Raum
                                 1</a></button></li>
                     <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
@@ -42,235 +61,345 @@
                                 2</a></button></li>
                     <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
                                 onclick="changeRoom('Raum 3')">Raum
-                                3</a></button></li>
-                </ul>
-            </li>
-        </ul>
-
+                                3</a></button></li> -->
+          </ul>
+        </li>
+      </ul>
     </div>
     <div id="Benutzer" class="w3-container tab">
-        <div class="row">
-            <div class="column">
-                <div id="benutzer_table_gebuchte_termine">
-                </div>
-            </div>
-            <div class="column">
-                <div id="benutzer_table_terminanfragen">
-                </div>
-            </div>
+      <div class="row">
+        <div class="column">
+          <div id="benutzer_table_gebuchte_termine"></div>
         </div>
+        <div class="column">
+          <div id="benutzer_table_terminanfragen"></div>
+        </div>
+      </div>
     </div>
 
-    <div id="Moderator" class="w3-container tab" style="display:none">
-        <!--todo-->
-        <div class="row">
-            <div class="column">
-                <div id="moderator_table_gebuchte_termine">
-                </div>
-            </div>
-            <div class="column">
-                <div id="moderator_table_terminanfragen">
-                </div>
-            </div>
+    <div id="Moderator" class="w3-container tab" style="display: none">
+      <!--todo-->
+      <div class="row">
+        <div class="column">
+          <div id="moderator_table_gebuchte_termine"></div>
         </div>
+        <div class="column">
+          <div id="moderator_table_terminanfragen"></div>
+        </div>
+      </div>
     </div>
 
-    <div id="Administrator" class="w3-container tab" style="display:none">
-        <div class="row">
-            <div class="column">
-                <div id="administrator_moderatoren">
-                </div>
-            </div>
-            <div class="column">
-                <div id="administrator_raeume">
-                </div>
-            </div>
+    <div id="Administrator" class="w3-container tab" style="display: none">
+      <div class="row">
+        <div class="column">
+          <div id="administrator_moderatoren"></div>
         </div>
+        <div class="column">
+          <div id="administrator_raeume"></div>
+        </div>
+      </div>
     </div>
 
     <script>
+      window.onload = function () {
+        $("#raum_dropdown_menu").html(this.raeume[0]);
 
-        window.onload = function () {
-            $('#raum').html(this.raum);
+        this.initRaumDropdown();
+        //Benutzer Tab
+        this.initBenutzerGebuchteTermineTabelle();
+        this.initBenutzerTerminanfragenTabelle();
+        //Moderator Tab
+        this.initModeratorGebuchteTermineTabelle();
+        this.initModeratorTerminanfragenTabelle();
+        //Admin Tab
+        this.initRaumTabelle();
+        this.initModeratorTabelle();
+      };
 
-            this.initBenutzerTabellen();
-            this.initModeratorTabellen();
-            this.initAdministratorTabellen();
+      var raeume = ["Raum 1", "Raum 2", "Raum 3"];
+      var benutzer_gebuchteTermine = ["Termin 1", "Termin 2"];
+      var benutzer_terminanfragen = ["Termin 3"];
+      var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
+      var moderator_terminanfragen = ["Termin 3"];
+      var administrator_moderatoren = ["Ich", "Du", "Ralf"];
 
-        };
+      function changeRoom(room) {
+        // let raum = room.slice(5);
+        $("#raum_dropdown_menu").html(room);
+      }
+      ///////////////////////ROOM TABLE////////////////////////////////////////////////////////
+      function initRaumTabelle() {
+        let anzahlRaeume = raeume.length;
 
+        var table_raeume =
+          "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
+        this.raeume.forEach(
+          (element, index) =>
+            (table_raeume =
+              table_raeume +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button' onclick='removeRoom(" +
+              index +
+              ")'>-</button></td></tr>")
+        );
+        table_raeume =
+          table_raeume +
+          "<tr id='raum-zeile-" +
+          (anzahlRaeume + 1) +
+          "'><td colspan='2'><button type='button' onclick='addRoom(this)' id='addNewRoomButton'>+</button></td><td></td></tr>";
+        table_raeume = table_raeume + "</tbody></table>";
+        $("#administrator_raeume").html(table_raeume);
+      }
+      function abortNewRoom(lol) {
+        $($(lol).parent().parent()).remove();
+        $("#addNewRoomButton").removeAttr("disabled");
+      }
+      function addRoom(lol) {
+        $(lol).attr("disabled", "disabled");
+        let raumneu = $("#raum-tabelle tbody").children();
+        $($(lol).parent().parent()).before(
+          "<tr id='raum-zeile-" +
+            raumneu.length +
+            "'><td colspan='2'><input type='text' id='newRoomNameInput'></td><td><button onclick='saveNewRoom()'>OK</button><button onclick='abortNewRoom(this)'>Ne</button></tr>"
+        );
+      }
 
-
-        var raeume = ["Raum 1", "Raum 2", "Raum 3"];
-        var raum = "Raum 1";
-        var benutzer_gebuchteTermine = ["Termin 1", "Termin 2"];
-        var benutzer_terminanfragen = ["Termin 3"]
-        var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
-        var moderator_terminanfragen = ["Termin 3"];
-        var administrator_moderatoren = ["Ich", "Du", "Ralf"];
-
-        function changeRoom(room) {
-            $('#raum').html(room);
-        };
-
-        function abortNewRoom(lol) {
-            $($(lol).parent().parent()).remove();
-            $("#addNewRoomButton").removeAttr("disabled");
+      function saveNewRoom() {
+        $("#newRoomNameInput").removeClass(
+          "alert-danger border-danger border-1"
+        );
+        if (!raeume.includes("Raum " + $("#newRoomNameInput").val())) {
+          raeume.push("Raum " + $("#newRoomNameInput").val());
+          this.initRaumTabelle();
+          initRaumDropdown();
+        } else {
+          $("#newRoomNameInput").addClass(
+            "alert-danger border-danger border-1"
+          );
         }
-        function addRoom(lol) {
-            $(lol).attr("disabled", "disabled");
-            let raumneu = $("#raum-tabelle tbody").children();
-            $($(lol).parent().parent()).before("<tr id='raum-zeile-" + raumneu.length + "'><td colspan='2'><input type='text' id='newRoomNameInput'></td><td><button onclick='saveNewRoom()'>OK</button><button onclick='abortNewRoom(this)'>Ne</button></tr>");
+      }
+      function removeRoom(wtf) {
+        raeume.splice(wtf, 1);
+        initRaumTabelle();
+      }
+      ///////////////////////ROOM TABLE////////////////////////////////////////////////////////
+      ///////////////////////MODERATOR TABLE////////////////////////////////////////////////////////
+      function initModeratorTabelle() {
+        let anzahlModeratoen = administrator_moderatoren.length;
+
+        var table_moderatoren =
+          "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
+        this.administrator_moderatoren.forEach(
+          (element, index) =>
+            (table_moderatoren =
+              table_moderatoren +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button' onclick='removeModerator(" +
+              index +
+              ")'>-</button></td></tr>")
+        );
+        table_moderatoren =
+          table_moderatoren +
+          "<tr id='moderator-zeile-" +
+          (anzahlModeratoen + 1) +
+          "'><td><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td><td></td></tr>";
+        table_moderatoren = table_moderatoren + "</tbody></table>";
+        $("#administrator_moderatoren").html(table_moderatoren);
+      }
+      function removeModerator(wtf) {
+          console.log(wtf);
+        administrator_moderatoren.splice(wtf, 1);
+        this.initModeratorTabelle();
+      }
+      function abortNewModerator(wtf) {
+        $($(wtf).parent().parent()).remove();
+        $("#addNewModeratorButton").removeAttr("disabled");
+      }
+      function addNewModerator(wtf) {
+        $(wtf).attr("disabled", "disabled");
+        let moderatorneu = $("#moderatoren-tabelle tbody").children();
+        $($(wtf).parent().parent()).before(
+          "<tr id='moderator-zeile-" +
+            moderatorneu.length +
+            "'><td colspan='2'><input type='text' id='newModeratorNameInput'></td><td><button onclick='saveNewModerator()'>OK</button><button onclick='abortNewModerator(this)'>Ne</button></tr>"
+        );
+      }
+      function saveNewModerator() {
+        $("#newModeratorNameInput").removeClass(
+          "alert-danger border-danger border-1"
+        );
+        if (!administrator_moderatoren.includes($("#newModeratorNameInput").val())) {
+            administrator_moderatoren.push($("#newModeratorNameInput").val());
+          this.initModeratorTabelle();
+        } else {
+          $("#newModeratorNameInput").addClass(
+            "alert-danger border-danger border-1"
+          );
         }
+      }
+      ///////////////////////MODERATOR TABLE////////////////////////////////////////////////////////
+      ///////////////////////INIT////////////////////////////////////////////////////////
+      function initRaumDropdown() {
+        let dropdownList = "";
 
-        function saveNewRoom() {
-            $("#newRoomNameInput").removeClass("alert-danger border-danger border-1");
-            if (!raeume.includes("Raum " + $("#newRoomNameInput").val())) {
-                raeume.push("Raum " + $("#newRoomNameInput").val());
-                initAdministratorTabellen();
-            }
-            else {
-                $("#newRoomNameInput").addClass("alert-danger border-danger border-1");
-            }
+        this.raeume.forEach((item) => {
+          let changeRoom = "changeRoom(" + "'" + item + "'" + ")";
+          dropdownList +=
+            '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
+            changeRoom +
+            '">' +
+            item +
+            "</a></button></li>";
+        });
+
+        $("#raum-dropdown").html(dropdownList);
+      }
+
+      function initBenutzerGebuchteTermineTabelle() {
+        var table_gebuchte_termine =
+          "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+        this.benutzer_gebuchteTermine.forEach(
+          (element) =>
+            (table_gebuchte_termine =
+              table_gebuchte_termine +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button'>-</button><button type='button'>Edit</button></td><td></td></tr>")
+        );
+        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+
+        $("#benutzer_table_gebuchte_termine").html(table_gebuchte_termine);
+      }
+      function initBenutzerTerminanfragenTabelle() {
+        var table_terminanfragen =
+          "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+        this.benutzer_terminanfragen.forEach(
+          (element) =>
+            (table_terminanfragen =
+              table_terminanfragen +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button'>-</button></td></tr>")
+        );
+        table_terminanfragen =
+          table_terminanfragen +
+          "<tr><td><button type='button'>+</button></td></tr>";
+        table_terminanfragen = table_terminanfragen + "</tbody></table>";
+        $("#benutzer_table_terminanfragen").html(table_terminanfragen);
+      }
+
+      function initModeratorGebuchteTermineTabelle() {
+        var table_gebuchte_termine =
+          "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+        this.moderator_gebuchteTermine.forEach(
+          (element) =>
+            (table_gebuchte_termine =
+              table_gebuchte_termine +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button'>-</button></td></tr>")
+        );
+        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+        $("#moderator_table_gebuchte_termine").html(table_gebuchte_termine);
+      }
+
+      function initModeratorTerminanfragenTabelle() {
+        var table_terminanfragen =
+          "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+        this.moderator_terminanfragen.forEach(
+          (element) =>
+            (table_terminanfragen =
+              table_terminanfragen +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button'>J</button><button type='button'>N</button></td></tr>")
+        );
+        table_terminanfragen = table_terminanfragen + "</tbody></table>";
+        $("#moderator_table_terminanfragen").html(table_terminanfragen);
+      }
+      ///////////////////////INIT////////////////////////////////////////////////////////
+      ///////////////////////TAB////////////////////////////////////////////////////////
+      function openTab(tabName) {
+        var i;
+        var x = document.getElementsByClassName("tab");
+        for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";
         }
-        function removeRoom(wtf) {
-            raeume.splice(wtf, 1);
-            initAdministratorTabellen();
-        }
-        function removeModerator(wtf) {
-        }
-        function abortNewModerator(wtf) {
-            $($(wtf).parent().parent()).remove();
-            $("#addNewModeratorButton").removeAttr("disabled");
-        }
-        function addNewModerator(wtf) {
-            $(wtf).attr("disabled", "disabled");
-            let moderatorneu = $("#moderatoren-tabelle tbody").children();
-            $($(wtf).parent().parent()).before("<tr id='moderator-zeile-" + moderatorneu.length + "'><td colspan='2'><input type='text' id='newModeratorNameInput'></td><td><button onclick='saveNewModerator()'>OK</button><button onclick='abortNewModerator(this)'>Ne</button></tr>");
-        }
-        function saveNewModerator() {
-        }
-        function initAdministratorTabellen() {
-            let anzahlRaeume = raeume.length;
-            let anzahlModeratoen = administrator_moderatoren.length;
-
-            var table_moderatoren = "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
-            this.administrator_moderatoren.forEach(element => table_moderatoren = table_moderatoren + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td><button type='button'>-</button></td></tr>"
-            );
-            table_moderatoren = table_moderatoren + "<tr id='moderator-zeile-" + (anzahlModeratoen + 1) + "'><td><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td></tr>";
-            table_moderatoren = table_moderatoren + "</tbody></table>";
-            $('#administrator_moderatoren').html(table_moderatoren);
-
-            var table_raeume = "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
-            this.raeume.forEach((element, index) => table_raeume = table_raeume + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button' onclick='removeRoom(" + index + ")'>-</button></td></tr>"
-            );
-            table_raeume = table_raeume + "<tr id='raum-zeile-" + (anzahlRaeume + 1) + "'><td colspan='2'><button type='button' onclick='addRoom(this)' id='addNewRoomButton'>+</button></td><td></td></tr>";
-            table_raeume = table_raeume + "</tbody></table>";
-            $('#administrator_raeume').html(table_raeume);
-        };
-
-        function initBenutzerTabellen() {
-            var table_gebuchte_termine = "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
-            this.benutzer_gebuchteTermine.forEach(element => table_gebuchte_termine = table_gebuchte_termine + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button'>-</button><button type='button'>Edit</button></td></tr>"
-            );
-            table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
-
-            $('#benutzer_table_gebuchte_termine').html(table_gebuchte_termine);
-
-            var table_terminanfragen = "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
-            this.benutzer_terminanfragen.forEach(element => table_terminanfragen = table_terminanfragen + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button'>-</button></td></tr>"
-            );
-            table_terminanfragen = table_terminanfragen + "<tr><td><button type='button'>+</button></td></tr>";
-            table_terminanfragen = table_terminanfragen + "</tbody></table>";
-            $('#benutzer_table_terminanfragen').html(table_terminanfragen);
-        };
-
-        function initModeratorTabellen() {
-            var table_gebuchte_termine = "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
-            this.moderator_gebuchteTermine.forEach(element => table_gebuchte_termine = table_gebuchte_termine + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button'>-</button></td></tr>"
-            );
-            table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
-
-            $('#moderator_table_gebuchte_termine').html(table_gebuchte_termine);
-
-            var table_terminanfragen = "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
-            this.moderator_terminanfragen.forEach(element => table_terminanfragen = table_terminanfragen + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button'>J</button><button type='button'>N</button></td></tr>"
-            );
-            table_terminanfragen = table_terminanfragen + "</tbody></table>";
-            $('#moderator_table_terminanfragen').html(table_terminanfragen);
-        };
-
-        function openTab(tabName) {
-            var i;
-            var x = document.getElementsByClassName("tab");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
-            }
-            document.getElementById(tabName).style.display = "block";
-        }
+        document.getElementById(tabName).style.display = "block";
+      }
+      ///////////////////////TAB////////////////////////////////////////////////////////
     </script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
-        .row {
-            margin-left: -5px;
-            margin-right: -5px;
-        }
+      .row {
+        margin-left: -5px;
+        margin-right: -5px;
+      }
 
-        .column {
-            float: left;
-            width: 50%;
-            padding: 5px;
-        }
+      .column {
+        float: left;
+        width: 50%;
+        padding: 5px;
+      }
 
-        /* Clearfix (clear floats) */
-        .row::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
+      /* Clearfix (clear floats) */
+      .row::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
 
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            width: 100%;
-            border: 1px solid #ddd;
-        }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+      }
 
-        th,
-        td {
-            text-align: center;
-            padding: 16px;
-        }
+      th,
+      td {
+        text-align: center;
+        padding: 16px;
+      }
 
-        tbody tr:nth-child(odd) {
-            background-color: #f2f2f2;
-        }
+      tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
 
-        .dropdown-menu {
-            left: 50%;
-            right: auto;
-            text-align: center;
-            transform: translate(-50%, 0);
-        }
+      .dropdown-menu {
+        left: 50%;
+        right: auto;
+        text-align: center;
+        transform: translate(-50%, 0);
+      }
     </style>
 
     <!---->
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
-</body>
-
+  </body>
 </html>
