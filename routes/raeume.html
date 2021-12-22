@@ -30,16 +30,19 @@
                 <a class="nav-link" href="#" onclick="openTab('Administrator')">Administration</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="raum" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" id="raum" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="changeRoom('Raum 1')">Raum
-                        1</a></button></li>
-                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="changeRoom('Raum 2')">Raum
-                        2</a></button></li>
-                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="changeRoom('Raum 3')">Raum
-                        3</a></button></li>
+                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
+                                onclick="changeRoom('Raum 1')">Raum
+                                1</a></button></li>
+                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
+                                onclick="changeRoom('Raum 2')">Raum
+                                2</a></button></li>
+                    <li><button class="btn btn-block"><a href="#" class="dropdown-item row"
+                                onclick="changeRoom('Raum 3')">Raum
+                                3</a></button></li>
                 </ul>
             </li>
         </ul>
@@ -88,7 +91,7 @@
     <script>
 
         window.onload = function () {
-           $('#raum').html(this.raum);
+            $('#raum').html(this.raum);
 
             this.initBenutzerTabellen();
             this.initModeratorTabellen();
@@ -104,10 +107,10 @@
         var benutzer_terminanfragen = ["Termin 3"]
         var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
         var moderator_terminanfragen = ["Termin 3"];
-        var administrator_moderatoren = ["ICh", "Du", "Ralf"];
+        var administrator_moderatoren = ["Ich", "Du", "Ralf"];
 
         function changeRoom(room) {
-           $('#raum').html(room);
+            $('#raum').html(room);
         };
 
         function abortNewRoom(lol) {
@@ -131,30 +134,34 @@
             }
         }
         function removeRoom(wtf) {
-            if (raeume.includes("Raum " + wtf)) {
-                raeume.splice(raeume.indexOf(wtf), 1);
-                initAdministratorTabellen();
-            }
+            raeume.splice(wtf, 1);
+            initAdministratorTabellen();
         }
         function removeModerator(wtf) {
         }
         function abortNewModerator(wtf) {
+            $($(wtf).parent().parent()).remove();
+            $("#addNewModeratorButton").removeAttr("disabled");
         }
         function addNewModerator(wtf) {
+            $(wtf).attr("disabled", "disabled");
+            let moderatorneu = $("#moderatoren-tabelle tbody").children();
+            $($(wtf).parent().parent()).before("<tr id='moderator-zeile-" + moderatorneu.length + "'><td colspan='2'><input type='text' id='newModeratorNameInput'></td><td><button onclick='saveNewModerator()'>OK</button><button onclick='abortNewModerator(this)'>Ne</button></tr>");
         }
         function saveNewModerator() {
         }
         function initAdministratorTabellen() {
             let anzahlRaeume = raeume.length;
+            let anzahlModeratoen = administrator_moderatoren.length;
 
-            var table_moderatoren = "<table id='raum-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
+            var table_moderatoren = "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
             this.administrator_moderatoren.forEach(element => table_moderatoren = table_moderatoren + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td><button type='button'>-</button></td></tr>"
             );
-            table_moderatoren = table_moderatoren + "<tr><td><button type='button'>+</button></td></tr>";
+            table_moderatoren = table_moderatoren + "<tr id='moderator-zeile-" + (anzahlModeratoen + 1) + "'><td><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td></tr>";
             table_moderatoren = table_moderatoren + "</tbody></table>";
             $('#administrator_moderatoren').html(table_moderatoren);
 
-            var table_raeume = "<table><thead><tr><th>Räume</th></tr></thead><tbody>";
+            var table_raeume = "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
             this.raeume.forEach((element, index) => table_raeume = table_raeume + "<tr><td rowspan='1' colspan='2'>" + element + "</td><td>" + "<button type='button' onclick='removeRoom(" + index + ")'>-</button></td></tr>"
             );
             table_raeume = table_raeume + "<tr id='raum-zeile-" + (anzahlRaeume + 1) + "'><td colspan='2'><button type='button' onclick='addRoom(this)' id='addNewRoomButton'>+</button></td><td></td></tr>";
