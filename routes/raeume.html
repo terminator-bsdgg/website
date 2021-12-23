@@ -17,7 +17,11 @@
       integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
       crossorigin="anonymous"
     ></script>
-
+    <script>
+      $(function () {
+        $("#includeFullScreenModalCalendarContent").load("components/fullScreenModalCalendarContent.html");
+      });
+    </script>
     <title>Terminator</title>
   </head>
 
@@ -91,142 +95,173 @@
         </div>
       </div>
     </div>
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#fullScreenModal"
+      data-bs-whatever="@mdo"
+    >
+      Open modal for @mdo
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#fullScreenModal"
+      data-bs-whatever="@fat"
+    >
+      Open modal for @fat
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#fullScreenModal"
+      data-bs-whatever="@getbootstrap"
+    >
+      Open modal for @getbootstrap
+    </button>
+    <!--Modal-->
+    <div
+      class="modal fade"
+      id="fullScreenModal"
+      tabindex="-1"
+      aria-labelledby="fullScreenModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-fullscreen">
+        <div id="includeFullScreenModalCalendarContent"></div>
+      </div>
+    </div>
 
-    <script>
-      
-      var raeume = ["Raum 1", "Raum 2", "Raum 3"];
-      var benutzer_gebuchteTermine = ["Termin 1", "Termin 2"];
-      var benutzer_terminanfragen = ["Termin 3"];
-      var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
-      var moderator_terminanfragen = ["Termin 3"];
-      var administrator_moderatoren = ["Ich", "Du", "Ralf"];
-      
-      window.onload = function () {
-        //load nav tab functions
-        $.getScript(
-          "./../components/navTab.js",
-          function () {}
-        );
-        //name raum dropdown button
-        $("#raum_dropdown_menu").html(this.raeume[0]);
-        //load raum dropdown functions
-        $.getScript(
-          "./../components/roomDropdown.js",
-          function () {
-            //fill raum dropdown list
-            initRaumDropdown();
-          }
-        );
-        //load Benutzer gebuchte termine functions
-        $.getScript(
-          "./../components/tables/benutzerGebuchteTermineTable.js",
-          function () {
-            //load & fill benutzer gebuchte termine tabelle
-            initBenutzerGebuchteTermineTabelle();
-          }
-        );
-        //load Benutzer terminanfragen functions
-        $.getScript(
-          "./../components/tables/benutzerTerminanfragenTable.js",
-          function () {
-            //load & fill benutzer terminanfragen tabelle
-            initBenutzerTerminanfragenTabelle();
-          }
-        );
-        //load Moderator gebuchte Termine functions
-        $.getScript(
-          "./../components/tables/moderatorGebuchteTermineTable.js",
-          function () {
-            //load & fill moderator gebuchte termine table
-            initModeratorGebuchteTermineTabelle();
-          }
-        );
-        //load Moderator terminanfragen functions
-        $.getScript(
-          "./../components/tables/moderatorTerminanfrageTable.js",
-          function () {
-            //load & fill terminanfragen  table
-            initModeratorTerminanfragenTabelle();
-          }
-        );
-        //load Admin raum tablle functions
-        $.getScript("./../components/tables/adminRoomTable.js", function () {
-          //load & fill raum table
-          initRaumTabelle();
-        });
-        //load Admin moderator tablle functions
-        $.getScript(
-          "./../components/tables/adminModeratorTable.js",
-          function () {
-            //load & fill moderator table
-            initModeratorTabelle();
-          }
-        );
-      };
-    </script>
-
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      .row {
-        margin-left: -5px;
-        margin-right: -5px;
-      }
-
-      .column {
-        float: left;
-        width: 50%;
-        padding: 5px;
-      }
-
-      /* Clearfix (clear floats) */
-      .row::after {
-        content: "";
-        clear: both;
-        display: table;
-      }
-
-      table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        width: 100%;
-        border: 1px solid #ddd;
-      }
-
-      th,
-      td {
-        text-align: center;
-        padding: 16px;
-      }
-
-      tbody tr:nth-child(odd) {
-        background-color: #f2f2f2;
-      }
-
-      .dropdown-menu {
-        left: 50%;
-        right: auto;
-        text-align: center;
-        transform: translate(-50%, 0);
-      }
-    </style>
-
-    <!---->
+    <!--Modal END-->
     <!-- Optional JavaScript; choose one of the two! -->
-
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
-
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
   </body>
 </html>
+<script>
+  var fullScreenModal = document.getElementById("fullScreenModal");
+  var raeume = ["Raum 1", "Raum 2", "Raum 3"];
+  var benutzer_gebuchteTermine = ["Termin 1", "Termin 2"];
+  var benutzer_terminanfragen = ["Termin 3"];
+  var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
+  var moderator_terminanfragen = ["Termin 3"];
+  var administrator_moderatoren = ["Ich", "Du", "Ralf"];
+
+  window.onload = function () {
+    //load Modal functions
+    $.getScript("./../components/fullScreenModalCalendar.js", function () {
+      //load Modal event listener
+      loadModalEventListener(fullScreenModal);
+    });
+    //load nav tab functions
+    $.getScript("./../components/navTab.js", function () {});
+    //name raum dropdown button
+    $("#raum_dropdown_menu").html(this.raeume[0]);
+    //load raum dropdown functions
+    $.getScript("./../components/roomDropdown.js", function () {
+      //fill raum dropdown list
+      initRaumDropdown();
+    });
+    //load Benutzer gebuchte termine functions
+    $.getScript(
+      "./../components/tables/benutzerGebuchteTermineTable.js",
+      function () {
+        //load & fill benutzer gebuchte termine tabelle
+        initBenutzerGebuchteTermineTabelle();
+      }
+    );
+    //load Benutzer terminanfragen functions
+    $.getScript(
+      "./../components/tables/benutzerTerminanfragenTable.js",
+      function () {
+        //load & fill benutzer terminanfragen tabelle
+        initBenutzerTerminanfragenTabelle();
+      }
+    );
+    //load Moderator gebuchte Termine functions
+    $.getScript(
+      "./../components/tables/moderatorGebuchteTermineTable.js",
+      function () {
+        //load & fill moderator gebuchte termine table
+        initModeratorGebuchteTermineTabelle();
+      }
+    );
+    //load Moderator terminanfragen functions
+    $.getScript(
+      "./../components/tables/moderatorTerminanfrageTable.js",
+      function () {
+        //load & fill terminanfragen  table
+        initModeratorTerminanfragenTabelle();
+      }
+    );
+    //load Admin raum tablle functions
+    $.getScript("./../components/tables/adminRoomTable.js", function () {
+      //load & fill raum table
+      initRaumTabelle();
+    });
+    //load Admin moderator tablle functions
+    $.getScript("./../components/tables/adminModeratorTable.js", function () {
+      //load & fill moderator table
+      initModeratorTabelle();
+    });
+  };
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  .row {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+
+  .column {
+    float: left;
+    width: 50%;
+    padding: 5px;
+  }
+
+  /* Clearfix (clear floats) */
+  .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+  }
+
+  th,
+  td {
+    text-align: center;
+    padding: 16px;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+
+  .dropdown-menu {
+    left: 50%;
+    right: auto;
+    text-align: center;
+    transform: translate(-50%, 0);
+  }
+</style>
