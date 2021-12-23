@@ -13,7 +13,12 @@
       crossorigin="anonymous"
     />
 
-    <script src="js/jquery-3.6.0.min.js"></script>
+    <!-- <script src="../js/jquery-3.6.0.min.js"></script> -->
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
 
     <title>Terminator</title>
   </head>
@@ -124,16 +129,21 @@
       var administrator_moderatoren = ["Ich", "Du", "Ralf"];
 
       function changeRoom(room) {
-        // let raum = room.slice(5);
         $("#raum_dropdown_menu").html(room);
       }
-      ///////////////////////ROOM TABLE////////////////////////////////////////////////////////
+      ///////////////////////ADMIN ROOM TABLE////////////////////////////////////////////////////////
       function initRaumTabelle() {
         let anzahlRaeume = raeume.length;
+        let sortRaeume = this.raeume;
+        sortRaeume.sort(function (a, b) {
+          let aNumber = a.toString().slice(5);
+          let bNumber = b.toString().slice(5);
+          return parseInt(aNumber) - parseInt(bNumber);
+        });
 
-        var table_raeume =
+        let table_raeume =
           "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
-        this.raeume.forEach(
+        sortRaeume.forEach(
           (element, index) =>
             (table_raeume =
               table_raeume +
@@ -170,7 +180,10 @@
         $("#newRoomNameInput").removeClass(
           "alert-danger border-danger border-1"
         );
-        if (!raeume.includes("Raum " + $("#newRoomNameInput").val())) {
+        if (
+          !raeume.includes("Raum " + $("#newRoomNameInput").val()) &&
+          $("#newRoomNameInput").val() != ""
+        ) {
           raeume.push("Raum " + $("#newRoomNameInput").val());
           this.initRaumTabelle();
           initRaumDropdown();
@@ -184,14 +197,15 @@
         raeume.splice(wtf, 1);
         initRaumTabelle();
       }
-      ///////////////////////ROOM TABLE////////////////////////////////////////////////////////
-      ///////////////////////MODERATOR TABLE////////////////////////////////////////////////////////
+      ///////////////////////ADMIN ROOM TABLE////////////////////////////////////////////////////////
+      ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////
       function initModeratorTabelle() {
         let anzahlModeratoen = administrator_moderatoren.length;
-
-        var table_moderatoren =
+        let sortModeratoren = this.administrator_moderatoren;
+        sortModeratoren.sort();
+        let table_moderatoren =
           "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
-        this.administrator_moderatoren.forEach(
+        sortModeratoren.forEach(
           (element, index) =>
             (table_moderatoren =
               table_moderatoren +
@@ -206,12 +220,11 @@
           table_moderatoren +
           "<tr id='moderator-zeile-" +
           (anzahlModeratoen + 1) +
-          "'><td><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td><td></td></tr>";
+          "'><td colespan='2'><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td><td></td></tr>";
         table_moderatoren = table_moderatoren + "</tbody></table>";
         $("#administrator_moderatoren").html(table_moderatoren);
       }
       function removeModerator(wtf) {
-          console.log(wtf);
         administrator_moderatoren.splice(wtf, 1);
         this.initModeratorTabelle();
       }
@@ -232,8 +245,10 @@
         $("#newModeratorNameInput").removeClass(
           "alert-danger border-danger border-1"
         );
-        if (!administrator_moderatoren.includes($("#newModeratorNameInput").val())) {
-            administrator_moderatoren.push($("#newModeratorNameInput").val());
+        if (
+          !administrator_moderatoren.includes($("#newModeratorNameInput").val())
+        ) {
+          administrator_moderatoren.push($("#newModeratorNameInput").val());
           this.initModeratorTabelle();
         } else {
           $("#newModeratorNameInput").addClass(
@@ -241,7 +256,186 @@
           );
         }
       }
-      ///////////////////////MODERATOR TABLE////////////////////////////////////////////////////////
+      ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////
+      ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////
+      function initModeratorTerminanfragenTabelle() {
+        let table_terminanfragen =
+          "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+        this.moderator_terminanfragen.forEach((element) => {
+          table_terminanfragen = table_terminanfragen.concat(
+            "<tr><td rowspan='1' colspan='2'>"
+          );
+          table_terminanfragen = table_terminanfragen.concat(element);
+          table_terminanfragen = table_terminanfragen.concat("</td><td>");
+          table_terminanfragen = table_terminanfragen.concat(
+            '<button type="button" onclick="moderatorConfirmedTermin(\''
+          );
+          table_terminanfragen = table_terminanfragen.concat(element);
+          table_terminanfragen = table_terminanfragen.concat(
+            '\')">J</button><button type="button" onclick="moderatorDeclineTermin(\''
+          );
+          table_terminanfragen = table_terminanfragen.concat(element);
+          table_terminanfragen = table_terminanfragen.concat(
+            "')\">N</button></td></tr>"
+          );
+        });
+        table_terminanfragen = table_terminanfragen + "</tbody></table>";
+        $("#moderator_table_terminanfragen").html(table_terminanfragen);
+      }
+      function moderatorDeclineTermin(wtf) {
+        this.moderator_terminanfragen.splice(
+          this.moderator_terminanfragen.indexOf(wtf),
+          1
+        );
+        this.initModeratorTerminanfragenTabelle();
+      }
+      function moderatorConfirmedTermin(wtf) {
+        this.moderator_terminanfragen.splice(
+          this.moderator_terminanfragen.indexOf(wtf),
+          1
+        );
+        this.moderator_gebuchteTermine.push(wtf);
+        this.initModeratorTerminanfragenTabelle();
+        this.initModeratorGebuchteTermineTabelle();
+      }
+      ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////
+      ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
+      function initModeratorGebuchteTermineTabelle() {
+        let table_gebuchte_termine =
+          "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+        this.moderator_gebuchteTermine.forEach(
+          (element, index) =>
+            (table_gebuchte_termine =
+              table_gebuchte_termine +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button' onclick='moderatorRemoveTermin(" +
+              index +
+              ")'>-</button></td></tr>")
+        );
+        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+        $("#moderator_table_gebuchte_termine").html(table_gebuchte_termine);
+      }
+      function moderatorRemoveTermin(wtf) {
+        this.moderator_gebuchteTermine.splice(wtf, 1);
+        this.initModeratorGebuchteTermineTabelle();
+      }
+      ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
+      ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////
+      function initBenutzerTerminanfragenTabelle() {
+        let anzahlTerminanfragen = this.benutzer_terminanfragen.length;
+        let table_terminanfragen =
+          "<table id='benutzerterminanfragen-tabelle'><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+        this.benutzer_terminanfragen.forEach(
+          (element, index) =>
+            (table_terminanfragen =
+              table_terminanfragen +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button' onclick=benutzerRemoveTerminanfrage(" +
+              index +
+              ")>-</button></td></tr>")
+        );
+        table_terminanfragen =
+          table_terminanfragen +
+          "<tr id='terminanfragen-zeile-" +
+          (anzahlTerminanfragen + 1) +
+          "'><td><button type='button' onclick='benutzerAddNewTermin(this)' id='benutzerNewTerminanfrageButton'>+</button></td></tr>";
+        table_terminanfragen = table_terminanfragen + "</tbody></table>";
+        $("#benutzer_table_terminanfragen").html(table_terminanfragen);
+      }
+      function benutzerRemoveTerminanfrage(wtf) {
+        this.benutzer_terminanfragen.splice(wtf, 1);
+        this.initBenutzerTerminanfragenTabelle();
+      }
+      function benutzerAbortTerminanfrage(wtf) {
+        $($(wtf).parent().parent()).remove();
+        $("#benutzerNewTerminanfrageButton").removeAttr("disabled");
+      }
+      function benutzerAddNewTermin(wtf) {
+        $(wtf).attr("disabled", "disabled");
+        let terminneu = $("#benutzerterminanfragen-tabelle tbody").children();
+        $($(wtf).parent().parent()).before(
+          "<tr id='terminanfragen-zeile-" +
+            terminneu.length +
+            "'><td colspan='2'><input type='text' id='newTerminanfrageInput'></td><td><button onclick='benutzerSaveTerminanfrage()'>OK</button><button onclick='benutzerAbortTerminanfrage(this)'>Ne</button></tr>"
+        );
+      }
+      function benutzerSaveTerminanfrage() {
+        $("#newTerminanfrageInput").removeClass(
+          "alert-danger border-danger border-1"
+        );
+        if (
+          !benutzer_terminanfragen.includes($("#newTerminanfrageInput").val())
+        ) {
+          benutzer_terminanfragen.push($("#newTerminanfrageInput").val());
+          this.initBenutzerTerminanfragenTabelle();
+        } else {
+          $("#newTerminanfrageInput").addClass(
+            "alert-danger border-danger border-1"
+          );
+        }
+      }
+      ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////
+      ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
+      function initBenutzerGebuchteTermineTabelle() {
+        let table_gebuchte_termine =
+          "<table id='benutzergebuchtetermine-tabelle'><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+        this.benutzer_gebuchteTermine.forEach(
+          (element, index) =>
+            (table_gebuchte_termine =
+              table_gebuchte_termine +
+              "<tr><td rowspan='1' colspan='2'>" +
+              element +
+              "</td><td>" +
+              "<button type='button' onclick='benutzerRemoveGebuchtenTermin(" +
+              index +
+              ")'>-</button><button type='button' id='benutzerEditGebuchtenterminButton' onclick='benutzerEditGebuchtenTermin(this, " +
+              index +
+              ")'>Edit</button></td><td></td></tr>")
+        );
+        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+
+        $("#benutzer_table_gebuchte_termine").html(table_gebuchte_termine);
+      }
+      function benutzerEditGebuchtenTermin(wtf, lol) {
+        $(wtf).attr("disabled", "disabled");
+        let terminneu = $("#benutzergebuchtetermine-tabelle tbody").children();
+        $($(wtf).parent().parent()).before(
+          "<tr id='gebuchtetermine-zeile-" +
+            terminneu.length +
+            "'><td colspan='2'><input type='text' id='newGebuchterTerminInput'></td><td><button onclick='benutzerSaveGebuchtenTermin(" +
+            lol +
+            ")'>OK</button><button onclick='benutzerAbortGebuchtenTerminEdit(this)'>Ne</button></tr>"
+        );
+      }
+      function benutzerSaveGebuchtenTermin(lol) {
+        $("#newGebuchterTerminInput").removeClass(
+          "alert-danger border-danger border-1"
+        );
+        if (
+          true
+          //   !benutzer_gebuchteTermine.includes($("#newGebuchterTerminInput").val())
+        ) {
+          benutzer_gebuchteTermine[lol] = $("#newGebuchterTerminInput").val();
+          this.initBenutzerGebuchteTermineTabelle();
+        } else {
+          $("#newGebuchterTerminInput").addClass(
+            "alert-danger border-danger border-1"
+          );
+        }
+      }
+      function benutzerAbortGebuchtenTerminEdit(wtf) {
+        $($(wtf).parent().parent()).remove();
+        $("#benutzerEditGebuchtenterminButton").removeAttr("disabled");
+      }
+      function benutzerRemoveGebuchtenTermin(wtf) {
+        this.benutzer_gebuchteTermine.splice(wtf, 1);
+        this.initBenutzerGebuchteTermineTabelle();
+      }
+      ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
       ///////////////////////INIT////////////////////////////////////////////////////////
       function initRaumDropdown() {
         let dropdownList = "";
@@ -258,78 +452,11 @@
 
         $("#raum-dropdown").html(dropdownList);
       }
-
-      function initBenutzerGebuchteTermineTabelle() {
-        var table_gebuchte_termine =
-          "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
-        this.benutzer_gebuchteTermine.forEach(
-          (element) =>
-            (table_gebuchte_termine =
-              table_gebuchte_termine +
-              "<tr><td rowspan='1' colspan='2'>" +
-              element +
-              "</td><td>" +
-              "<button type='button'>-</button><button type='button'>Edit</button></td><td></td></tr>")
-        );
-        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
-
-        $("#benutzer_table_gebuchte_termine").html(table_gebuchte_termine);
-      }
-      function initBenutzerTerminanfragenTabelle() {
-        var table_terminanfragen =
-          "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
-        this.benutzer_terminanfragen.forEach(
-          (element) =>
-            (table_terminanfragen =
-              table_terminanfragen +
-              "<tr><td rowspan='1' colspan='2'>" +
-              element +
-              "</td><td>" +
-              "<button type='button'>-</button></td></tr>")
-        );
-        table_terminanfragen =
-          table_terminanfragen +
-          "<tr><td><button type='button'>+</button></td></tr>";
-        table_terminanfragen = table_terminanfragen + "</tbody></table>";
-        $("#benutzer_table_terminanfragen").html(table_terminanfragen);
-      }
-
-      function initModeratorGebuchteTermineTabelle() {
-        var table_gebuchte_termine =
-          "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
-        this.moderator_gebuchteTermine.forEach(
-          (element) =>
-            (table_gebuchte_termine =
-              table_gebuchte_termine +
-              "<tr><td rowspan='1' colspan='2'>" +
-              element +
-              "</td><td>" +
-              "<button type='button'>-</button></td></tr>")
-        );
-        table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
-        $("#moderator_table_gebuchte_termine").html(table_gebuchte_termine);
-      }
-
-      function initModeratorTerminanfragenTabelle() {
-        var table_terminanfragen =
-          "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
-        this.moderator_terminanfragen.forEach(
-          (element) =>
-            (table_terminanfragen =
-              table_terminanfragen +
-              "<tr><td rowspan='1' colspan='2'>" +
-              element +
-              "</td><td>" +
-              "<button type='button'>J</button><button type='button'>N</button></td></tr>")
-        );
-        table_terminanfragen = table_terminanfragen + "</tbody></table>";
-        $("#moderator_table_terminanfragen").html(table_terminanfragen);
-      }
       ///////////////////////INIT////////////////////////////////////////////////////////
       ///////////////////////TAB////////////////////////////////////////////////////////
       function openTab(tabName) {
-        var i;
-        var x = document.getElementsByClassName("tab");
+        let i;
+        let x = document.getElementsByClassName("tab");
         for (i = 0; i < x.length; i++) {
           x[i].style.display = "none";
         }
