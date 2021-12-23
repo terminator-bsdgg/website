@@ -102,50 +102,63 @@
       var administrator_moderatoren = ["Ich", "Du", "Ralf"];
       
       window.onload = function () {
-        $("#raum_dropdown_menu").html(this.raeume[0]);
+        //load nav tab functions
         $.getScript(
           "./../components/navTab.js",
           function () {}
         );
+        //name raum dropdown button
+        $("#raum_dropdown_menu").html(this.raeume[0]);
+        //load raum dropdown functions
         $.getScript(
           "./../components/roomDropdown.js",
           function () {
+            //fill raum dropdown list
             initRaumDropdown();
           }
         );
-        //Benutzer Tab
+        //load Benutzer gebuchte termine functions
         $.getScript(
           "./../components/tables/benutzerGebuchteTermineTable.js",
           function () {
+            //load & fill benutzer gebuchte termine tabelle
             initBenutzerGebuchteTermineTabelle();
           }
         );
+        //load Benutzer terminanfragen functions
         $.getScript(
           "./../components/tables/benutzerTerminanfragenTable.js",
           function () {
+            //load & fill benutzer terminanfragen tabelle
             initBenutzerTerminanfragenTabelle();
           }
         );
-        //Moderator Tab
+        //load Moderator gebuchte Termine functions
         $.getScript(
           "./../components/tables/moderatorGebuchteTermineTable.js",
           function () {
+            //load & fill moderator gebuchte termine table
             initModeratorGebuchteTermineTabelle();
           }
         );
+        //load Moderator terminanfragen functions
         $.getScript(
           "./../components/tables/moderatorTerminanfrageTable.js",
           function () {
+            //load & fill terminanfragen  table
             initModeratorTerminanfragenTabelle();
           }
         );
-        //Admin Tab
+        //load Admin raum tablle functions
         $.getScript("./../components/tables/adminRoomTable.js", function () {
+          //load & fill raum table
           initRaumTabelle();
         });
+        //load Admin moderator tablle functions
         $.getScript(
           "./../components/tables/adminModeratorTable.js",
           function () {
+            //load & fill moderator table
             initModeratorTabelle();
           }
         );
