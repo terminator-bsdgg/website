@@ -128,9 +128,7 @@
       var moderator_terminanfragen = ["Termin 3"];
       var administrator_moderatoren = ["Ich", "Du", "Ralf"];
 
-      function changeRoom(room) {
-        $("#raum_dropdown_menu").html(room);
-      }
+      
       ///////////////////////ADMIN ROOM TABLE////////////////////////////////////////////////////////
       function initRaumTabelle() {
         let anzahlRaeume = raeume.length;
@@ -297,6 +295,7 @@
         this.moderator_gebuchteTermine.push(wtf);
         this.initModeratorTerminanfragenTabelle();
         this.initModeratorGebuchteTermineTabelle();
+        // this.initBenutzerGebuchteTermineTabelle();
       }
       ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////
       ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
@@ -436,7 +435,7 @@
         this.initBenutzerGebuchteTermineTabelle();
       }
       ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
-      ///////////////////////INIT////////////////////////////////////////////////////////
+      ///////////////////////Room Dropdown////////////////////////////////////////////////////////
       function initRaumDropdown() {
         let dropdownList = "";
 
@@ -452,7 +451,10 @@
 
         $("#raum-dropdown").html(dropdownList);
       }
-      ///////////////////////INIT////////////////////////////////////////////////////////
+      function changeRoom(room) {
+        $("#raum_dropdown_menu").html(room);
+      }
+      ///////////////////////Room Dropdown////////////////////////////////////////////////////////
       ///////////////////////TAB////////////////////////////////////////////////////////
       function openTab(tabName) {
         let i;
