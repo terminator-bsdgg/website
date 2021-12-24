@@ -16,5 +16,11 @@ function initRaumDropdown() {
   }
   function changeRoom(room) {
     $("#raum_dropdown_menu").html(room);
+    initModeratorTabelle();
+    initRaumTabelle();
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
   }
   ///////////////////////Room Dropdown////////////////////////////////////////////////////////

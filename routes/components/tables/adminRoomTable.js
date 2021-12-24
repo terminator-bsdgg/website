@@ -46,7 +46,11 @@ function addRoom(lol) {
       '"' +
       raumneu.length +
       '"' +
-      '"><td colspan="2"><label>Raum</label></button></button><input type="text" id="newRoomNameInput"></td><td><button onclick="saveNewRoom()">OK</button><button onclick="abortNewRoom(this)">Ne</button></tr>'
+      '"><td colspan="2"><div class="d-flex flex-wrap bd-highlight mb-3"> \
+      <div class="p-2 bd-highlight"></label><label>Raum</label><input type="text" id="newRoomNameInput" /></div> \
+      <div class="p-2 bd-highlight"><label>IP</label><input type="text" id="newRoomIpInput" /></div> \
+      <div class="p-2 bd-highlight"><label>Device Id</label><input type="text" id="newRoomDeviceIdInput" /></div></div> \
+      </td><td><button onclick="saveNewRoom()">OK</button><button onclick="abortNewRoom(this)">Ne</button></tr>'
   );
 }
 
@@ -60,8 +64,8 @@ function saveNewRoom() {
   ) {
     data.roomTable.push({
       roomId: "Raum " + $("#newRoomNameInput").val(),
-      ipAdress: "",
-      deviceId: $("#newRoomNameInput").val(),
+      ipAdress: $("#newRoomIpInput").val(),
+      deviceId: $("#newRoomDeviceIdInput").val(),
       lastRead: "",
     });
     initRaumTabelle();

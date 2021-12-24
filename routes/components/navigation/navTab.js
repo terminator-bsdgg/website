@@ -6,5 +6,11 @@ function openTab(tabName) {
     x[i].style.display = "none";
   }
   document.getElementById(tabName).style.display = "block";
+  initModeratorTabelle();
+  initRaumTabelle();
+  initBenutzerGebuchteTermineTabelle();
+  initBenutzerTerminanfragenTabelle();
+  initModeratorGebuchteTermineTabelle();
+  initModeratorTerminanfragenTabelle();
 }
 ///////////////////////TAB////////////////////////////////////////////////////////
