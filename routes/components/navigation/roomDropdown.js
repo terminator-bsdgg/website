@@ -2,13 +2,13 @@
 function initRaumDropdown() {
     let dropdownList = "";
 
-    raeume.forEach((item) => {
-      let changeRoom = "changeRoom(" + "'" + item + "'" + ")";
+    data.roomTable.forEach((item) => {
+      let changeRoom = "changeRoom(" + "'" + item.roomId + "'" + ")";
       dropdownList +=
         '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
         changeRoom +
         '">' +
-        item +
+        item.roomId +
         "</a></button></li>";
     });
 

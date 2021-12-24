@@ -17,9 +17,12 @@
       integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
       crossorigin="anonymous"
     ></script>
+    <!-- include fullscreec calendar modal content-->
     <script>
       $(function () {
-        $("#includeFullScreenModalCalendarContent").load("components/fullScreenModalCalendarContent.html");
+        $("#includeFullScreenModalCalendarContent").load(
+          "components/calendar/fullScreenModalCalendarContent.html"
+        );
       });
     </script>
     <title>Terminator</title>
@@ -123,19 +126,18 @@
     >
       Open modal for @getbootstrap
     </button>
-    <!--Modal-->
+    <!--Modal Calendar-->
     <div
       class="modal fade"
       id="fullScreenModal"
       tabindex="-1"
-      aria-labelledby="fullScreenModalLabel"
+      aria-labelledby="fullScreenModalCalendarLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog modal-fullscreen">
         <div id="includeFullScreenModalCalendarContent"></div>
       </div>
     </div>
-
     <!--Modal END-->
     <!-- Optional JavaScript; choose one of the two! -->
     <!-- Option 1: Bootstrap Bundle with Popper -->
@@ -151,68 +153,144 @@
   </body>
 </html>
 <script>
+  const relTableDir = "components/tables/";
+  const relCalendarDir = "components/calendar/";
+  const relNavDir = "components/navigation/";
+  const permissionUser = 0;
+  const permissionModerator = 1;
+  const permissionAdministrator = 2;
+  const openTermin = "OPEN";
+  const reservedTermin ="RESERVED"
   var fullScreenModal = document.getElementById("fullScreenModal");
+  var data = {
+    //angemeldeter Benutzer
+    userId: "Administrator", //SQL varchar(50) Not Null
+    userPermission: permissionAdministrator, //SQL int Not Null default 0
+    calendarTable: [
+      //Termine
+      {
+        userId: "1", //Not Null
+        roomId: "Raum 1", //Not Null
+        timePeriodFrom: "", //SQL TIME Format Mot Mull
+        timePeriodTo: "", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "2", //Not Null
+        roomId: "Raum 2", //Not Null
+        timePeriodFrom: "", //SQL TIME Format Mot Mull
+        timePeriodTo: "", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "3", //Not Null
+        roomId: "Raum 3", //Not Null
+        timePeriodFrom: "", //SQL TIME Format Mot Mull
+        timePeriodTo: "", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+    ],
+    //Räume
+    roomTable: [
+    {
+      roomId: "Raum 1", //SQL varchar(20) Not Null
+      ipAdress: "", //SQL varchar(20) Not Null
+      deviceId: "1", //SQL varchar(20) Not Null
+      lastRead: "", //SQL TIME Not Null
+    },
+    {
+      roomId: "Raum 2", //SQL varchar(20) Not Null
+      ipAdress: "", //SQL varchar(20) Not Null
+      deviceId: "2", //SQL varchar(20) Not Null
+      lastRead: "", //SQL TIME Not Null
+    },
+    {
+      roomId: "Raum 3", //SQL varchar(20) Not Null
+      ipAdress: "", //SQL varchar(20) Not Null
+      deviceId: "3", //SQL varchar(20) Not Null
+      lastRead: "", //SQL TIME Not Null
+    },
+   ],
+   //Administration
+   administrationTable: [
+     {
+      userId: "Administrator", //SQL varchar(50) Not Null
+      userPermission: permissionAdministrator, //SQL int Not Null default 0
+     },
+     {
+      userId: "zweiterModerator", //SQL varchar(50) Not Null
+      userPermission: permissionModerator , //SQL int Not Null default 0 
+     },
+     {
+      userId: "einModerator", //SQL varchar(50) Not Null
+      userPermission: permissionModerator , //SQL int Not Null default 0
+     },
+     
+     {
+      userId: "einBenutzer", //SQL varchar(50) Not Null
+      userPermission: permissionUser, //SQL int Not Null default 0
+     },
+     {
+      userId: "zweiterBenutzer", //SQL varchar(50) Not Null
+      userPermission: permissionUser, //SQL int Not Null default 0
+     },
+   ],
+  };
   var raeume = ["Raum 1", "Raum 2", "Raum 3"];
   var benutzer_gebuchteTermine = ["Termin 1", "Termin 2"];
   var benutzer_terminanfragen = ["Termin 3"];
   var moderator_gebuchteTermine = ["Termin 1", "Termin 2"];
   var moderator_terminanfragen = ["Termin 3"];
-  var administrator_moderatoren = ["Ich", "Du", "Ralf"];
+  // var administrator_moderatoren = ["Ich", "Du", "Ralf"];
 
   window.onload = function () {
     //load Modal functions
-    $.getScript("./../components/fullScreenModalCalendar.js", function () {
+    $.getScript(relCalendarDir + "fullScreenModalCalendar.js", function () {
       //load Modal event listener
       loadModalEventListener(fullScreenModal);
     });
     //load nav tab functions
-    $.getScript("./../components/navTab.js", function () {});
+    $.getScript(relNavDir + "navTab.js", function () {});
     //name raum dropdown button
     $("#raum_dropdown_menu").html(this.raeume[0]);
     //load raum dropdown functions
-    $.getScript("./../components/roomDropdown.js", function () {
+    $.getScript(relNavDir + "roomDropdown.js", function () {
       //fill raum dropdown list
       initRaumDropdown();
     });
     //load Benutzer gebuchte termine functions
-    $.getScript(
-      "./../components/tables/benutzerGebuchteTermineTable.js",
-      function () {
-        //load & fill benutzer gebuchte termine tabelle
-        initBenutzerGebuchteTermineTabelle();
-      }
-    );
+    $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+      //load & fill benutzer gebuchte termine tabelle
+      initBenutzerGebuchteTermineTabelle();
+    });
     //load Benutzer terminanfragen functions
-    $.getScript(
-      "./../components/tables/benutzerTerminanfragenTable.js",
-      function () {
-        //load & fill benutzer terminanfragen tabelle
-        initBenutzerTerminanfragenTabelle();
-      }
-    );
+    $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
+      //load & fill benutzer terminanfragen tabelle
+      initBenutzerTerminanfragenTabelle();
+    });
     //load Moderator gebuchte Termine functions
-    $.getScript(
-      "./../components/tables/moderatorGebuchteTermineTable.js",
-      function () {
-        //load & fill moderator gebuchte termine table
-        initModeratorGebuchteTermineTabelle();
-      }
-    );
+    $.getScript(relTableDir + "moderatorGebuchteTermineTable.js", function () {
+      //load & fill moderator gebuchte termine table
+      initModeratorGebuchteTermineTabelle();
+    });
     //load Moderator terminanfragen functions
-    $.getScript(
-      "./../components/tables/moderatorTerminanfrageTable.js",
-      function () {
-        //load & fill terminanfragen  table
-        initModeratorTerminanfragenTabelle();
-      }
-    );
+    $.getScript(relTableDir + "moderatorTerminanfrageTable.js", function () {
+      //load & fill terminanfragen  table
+      initModeratorTerminanfragenTabelle();
+    });
     //load Admin raum tablle functions
-    $.getScript("./../components/tables/adminRoomTable.js", function () {
+    $.getScript(relTableDir + "adminRoomTable.js", function () {
       //load & fill raum table
       initRaumTabelle();
     });
     //load Admin moderator tablle functions
-    $.getScript("./../components/tables/adminModeratorTable.js", function () {
+    $.getScript(relTableDir + "adminModeratorTable.js", function () {
       //load & fill moderator table
       initModeratorTabelle();
     });
@@ -222,18 +300,15 @@
   * {
     box-sizing: border-box;
   }
-
   .row {
     margin-left: -5px;
     margin-right: -5px;
   }
-
   .column {
     float: left;
     width: 50%;
     padding: 5px;
   }
-
   /* Clearfix (clear floats) */
   .row::after {
     content: "";
@@ -247,13 +322,11 @@
     width: 100%;
     border: 1px solid #ddd;
   }
-
   th,
   td {
     text-align: center;
     padding: 16px;
   }
-
   tbody tr:nth-child(odd) {
     background-color: #f2f2f2;
   }
