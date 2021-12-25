@@ -60,7 +60,7 @@ function moderatorDeclineTermin(person, timeFrom, timeTo) {
     ),
     1
   );
-  initModeratorTerminanfragenTabelle();
+  initTables();
 }
 function moderatorConfirmedTermin(person, timeFrom, timeTo) {
   data.calendarTable[
@@ -73,8 +73,6 @@ function moderatorConfirmedTermin(person, timeFrom, timeTo) {
       )
     )
   ].terminStatus = reservedTermin;
-  initModeratorTerminanfragenTabelle();
-  initModeratorGebuchteTermineTabelle();
-  initBenutzerGebuchteTermineTabelle();
+  initTables();
 }
 ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////

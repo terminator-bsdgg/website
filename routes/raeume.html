@@ -99,7 +99,7 @@
       </div>
     </div>
     <!-- Button trigger modal -->
-    <button
+    <!-- <button
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
@@ -107,8 +107,8 @@
       data-bs-whatever="@mdo"
     >
       Open modal for @mdo
-    </button>
-    <button
+    </button> -->
+    <!-- <button
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
@@ -125,7 +125,7 @@
       data-bs-whatever="@getbootstrap"
     >
       Open modal for @getbootstrap
-    </button>
+    </button> -->
     <!--Modal Calendar-->
     <div
       class="modal fade"
@@ -157,6 +157,7 @@
   const relCalendarDir = "components/calendar/";
   const relNavDir = "components/navigation/";
   const relDataDir = "data/";
+  var modalSelector = "";
   //load Data
   var data = $.getScript(relDataDir + "data.js", function () {
     return data;
@@ -207,7 +208,13 @@
       initModeratorTabelle();
     });
   };
+  function initTables() {
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
+  }
 </script>
 <style>
-  @import "css/raeume.css"
+  @import "css/raeume.css";
 </style>

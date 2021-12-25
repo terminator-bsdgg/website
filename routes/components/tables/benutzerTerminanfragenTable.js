@@ -2,7 +2,9 @@
 function initBenutzerTerminanfragenTabelle() {
   let foundTerminanfragen = data.calendarTable.filter(
     (element) =>
-      (element.userId == data.userId) & (element.terminStatus == openTermin) & (element.roomId === $("#raum_dropdown_menu").text())
+      (element.userId == data.userId) &
+      (element.terminStatus == openTermin) &
+      (element.roomId === $("#raum_dropdown_menu").text())
   );
   let table_terminanfragen =
     "<table id='benutzerterminanfragen-tabelle'><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
@@ -30,7 +32,17 @@ function initBenutzerTerminanfragenTabelle() {
     table_terminanfragen +
     "<tr id='terminanfragen-zeile-" +
     (foundTerminanfragen.length + 1) +
-    "'><td><button type='button' onclick='benutzerAddNewTermin(this)' id='benutzerNewTerminanfrageButton'>+</button></td></tr>";
+    "'><td> \
+    <button type='button' class='btn btn-primary' data-bs-toggle='modal' \
+    data-bs-target='#fullScreenModal' id='benutzerNewTerminanfrageButton'" +
+    // + "data-bs-whatever='" + data + "'"
+    " onclick='benutzerAddNewTermin(), modalSelector=" +
+    '"anfrage"' +
+    "'> \
+    Neuer Termin \
+  </button>" +
+    // + "<button type='button'  id='benutzerNewTerminanfrageButton'>+</button>"
+    "</td></tr>";
   table_terminanfragen = table_terminanfragen + "</tbody></table>";
   $("#benutzer_table_terminanfragen").html(table_terminanfragen);
 }
@@ -48,25 +60,27 @@ function benutzerRemoveTerminanfrage(timeFrom, timeTo) {
   initBenutzerTerminanfragenTabelle();
 }
 function benutzerAbortTerminanfrage(wtf) {
-  $($(wtf).parent().parent()).remove();
+  $($("modal-content-div").next()).remove();
   $("#benutzerNewTerminanfrageButton").removeAttr("disabled");
 }
-function benutzerAddNewTermin(wtf) {
-  $(wtf).attr("disabled", "disabled");
+function benutzerAddNewTermin() {
+  $("benutzerNewTerminanfrageButton").attr("disabled", "disabled");
   let terminneu = $("#benutzerterminanfragen-tabelle tbody").children();
-  $($(wtf).parent().parent()).before(
+  $("#modal-content-div").html(
     "<tr id='terminanfragen-zeile-" +
       terminneu.length +
       "'><td colspan='2'>" +
       '<div class="d-flex flex-wrap bd-highlight mb-3"> \
       <div class="p-2 bd-highlight"><label>Von:</label><input type="text" id="newTerminanfrageInputFrom"></div> \
       <div class="p-2 bd-highlight"><label>Bis:</label><input type="text" id="newTerminanfrageInputTo"></div>' +
-      "</td><td><button onclick='benutzerSaveTerminanfrage()'>OK</button><button onclick='benutzerAbortTerminanfrage(this)'>Ne</button></tr>"
+      "</td><td></tr>"
   );
 }
 function benutzerSaveTerminanfrage() {
-  console.log("Hallo");
-  $("#newTerminanfrageInput").removeClass(
+  $("#newTerminanfrageInputFrom").removeClass(
+    "alert-danger border-danger border-1"
+  );
+  $("#newTerminanfrageInputTo").removeClass(
     "alert-danger border-danger border-1"
   );
   let roomTermins = data.calendarTable.filter(
@@ -74,46 +88,15 @@ function benutzerSaveTerminanfrage() {
       (element.roomId == $("#raum_dropdown_menu").text()) &
       (element.userId == data.userId)
   );
-  console.log(roomTermins);
-  if (Array.isArray(roomTermins)) {
-    console.log("isArray");
-    roomTermins.forEach((element) => {
-      // if (
-      //   (element.timePeriodFrom < $("#newTerminanfrageInputTo").val()) |
-      //   (element.timePeriodTo > $("#newTerminanfrageInputFrom").val())
-      // ) {
-      //   console.log("error1");
-      //   $("#newTerminanfrageInputFrom").addClass(
-      //     "alert-danger border-danger border-1"
-      //   );
-      //   $("#newTerminanfrageInputTo").addClass(
-      //     "alert-danger border-danger border-1"
-      //   );
-      // } else if (
-      //   (element.timePeriodFrom == $("#newTerminanfrageInputFrom").val()) |
-      //   (element.timePeriodTo == $("#newTerminanfrageInputTo").val())
-      // ) {
-      //   console.log("error2");
-      //   $("#newTerminanfrageInputFrom").addClass(
-      //     "alert-danger border-danger border-1"
-      //   );
-      //   $("#newTerminanfrageInputTo").addClass(
-      //     "alert-danger border-danger border-1"
-      //   );
-      // } else {
-      console.log("push");
-      data.calendarTable.push({
-        userId: data.userId,
-        roomId: $("#raum_dropdown_menu").text(),
-        timePeriodFrom: $("#newTerminanfrageInputTo").val(),
-        timePeriodTo: $("#newTerminanfrageInputFrom").val(),
-        reference: "",
-        contactMail: "",
-        terminStatus: openTermin,
-      });
-      // }
-    });
-  }
-  initBenutzerTerminanfragenTabelle();
+  data.calendarTable.push({
+    userId: data.userId,
+    roomId: $("#raum_dropdown_menu").text(),
+    timePeriodFrom: $("#newTerminanfrageInputFrom").val(),
+    timePeriodTo: $("#newTerminanfrageInputTo").val(),
+    reference: "",
+    contactMail: "",
+    terminStatus: openTermin,
+  });
+  initTables();
 }
 ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////

@@ -41,6 +41,6 @@ function moderatorRemoveTermin(timeFrom, timeTo) {
     ),
     1
   );
-  initModeratorGebuchteTermineTabelle();
+  initTables();
 }
 ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
