@@ -1,105 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-      crossorigin="anonymous"
-    />
-    <!-- <script src="../js/jquery-3.6.0.min.js"></script> -->
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.js"
-      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-      crossorigin="anonymous"
-    ></script>
-    <!-- include fullscreec calendar modal content-->
-    <script>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+  <!-- <script src="../js/jquery-3.6.0.min.js"></script> -->
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+  <!-- include fullscreec calendar modal content-->
+  <!-- <script>
       $(function () {
         $("#includeFullScreenModalCalendarContent").load(
           "components/calendar/fullScreenModalCalendarContent.html"
         );
       });
-    </script>
-    <title>Terminator</title>
-  </head>
+    </script> -->
 
-  <body>
-    <!--Code here-->
-    <div class="">
-      <ul class="nav nav-tabs bg-dark">
-        <li class="nav-item">
-          <a class="nav-link" href="#" onclick="openTab('Benutzer')"
-            >Raumbuchung</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" onclick="openTab('Moderator')"
-            >Moderation</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" onclick="openTab('Administrator')"
-            >Administration</a
-          >
-        </li>
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="raum_dropdown_menu"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-          </a>
-          <ul
-            class="dropdown-menu dropdown-menu-dark"
-            aria-labelledby="navbarDarkDropdownMenuLink"
-            id="raum-dropdown"
-          ></ul>
-        </li>
-      </ul>
-    </div>
-    <div id="Benutzer" class="w3-container tab">
-      <div class="row">
-        <div class="column">
-          <div id="benutzer_table_gebuchte_termine"></div>
-        </div>
-        <div class="column">
-          <div id="benutzer_table_terminanfragen"></div>
-        </div>
+  <!-- <script src="components/tables/data.js>"></script>
+  <script src="components/calendar/data.js"></script>
+  <script src="components/navigation/data.js"></script> -->
+  <!--const relDataDir = dir + "/data/";-->
+  <title>Terminator</title>
+</head>
+
+<body>
+  <!--Code here-->
+  <div class="">
+    <ul class="nav nav-tabs bg-dark">
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="openTab('Benutzer')">Raumbuchung</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="openTab('Moderator')">Moderation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="openTab('Administrator')">Administration</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="raum_dropdown_menu" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink" id="raum-dropdown">
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div id="Benutzer" class="w3-container tab">
+    <div class="row">
+      <div class="column">
+        <div id="benutzer_table_gebuchte_termine"></div>
+      </div>
+      <div class="column">
+        <div id="benutzer_table_terminanfragen"></div>
       </div>
     </div>
+  </div>
 
-    <div id="Moderator" class="w3-container tab" style="display: none">
-      <!--todo-->
-      <div class="row">
-        <div class="column">
-          <div id="moderator_table_gebuchte_termine"></div>
-        </div>
-        <div class="column">
-          <div id="moderator_table_terminanfragen"></div>
-        </div>
+  <div id="Moderator" class="w3-container tab" style="display: none">
+    <!--todo-->
+    <div class="row">
+      <div class="column">
+        <div id="moderator_table_gebuchte_termine"></div>
+      </div>
+      <div class="column">
+        <div id="moderator_table_terminanfragen"></div>
       </div>
     </div>
+  </div>
 
-    <div id="Administrator" class="w3-container tab" style="display: none">
-      <div class="row">
-        <div class="column">
-          <div id="administrator_moderatoren"></div>
-        </div>
-        <div class="column">
-          <div id="administrator_raeume"></div>
-        </div>
+  <div id="Administrator" class="w3-container tab" style="display: none">
+    <div class="row">
+      <div class="column">
+        <div id="administrator_moderatoren"></div>
+      </div>
+      <div class="column">
+        <div id="administrator_raeume"></div>
       </div>
     </div>
-    <!-- Button trigger modal -->
-    <!-- <button
+  </div>
+  <!-- Button trigger modal -->
+  <!-- <button
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
@@ -108,7 +92,7 @@
     >
       Open modal for @mdo
     </button> -->
-    <!-- <button
+  <!-- <button
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
@@ -126,88 +110,874 @@
     >
       Open modal for @getbootstrap
     </button> -->
-    <!--Modal Calendar-->
-    <div
-      class="modal fade"
-      id="fullScreenModal"
-      tabindex="-1"
-      aria-labelledby="fullScreenModalCalendarLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-fullscreen">
-        <div id="includeFullScreenModalCalendarContent"></div>
-      </div>
+  <!--Modal Calendar-->
+  <div class="modal fade" id="fullScreenModal" tabindex="-1" aria-labelledby="fullScreenModalCalendarLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div id="includeFullScreenModalCalendarContent"></div>
     </div>
-    <!--Modal END-->
-    <!-- Optional JavaScript; choose one of the two! -->
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
+  </div>
+  <!--Modal END-->
+  <!-- Optional JavaScript; choose one of the two! -->
+  <!-- Option 1: Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+  <!-- Option 2: Separate Popper and Bootstrap JS -->
+  <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     -->
-  </body>
+
+
+  <!--------------------------------------------------------fullScreenModalContent----------------------------------------------------------->
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="fullScreenModalCalendarLabel"></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="abort()"></button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-content-div"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="abort()">
+        Abbrechen
+      </button>
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="save()">
+        Speichern
+      </button>
+    </div>
+  </div>
+  <!--------------------------------------------------------fullScreenModalContent----------------------------------------------------------->
+</body>
+
 </html>
 <script>
-  const relTableDir = "components/tables/";
-  const relCalendarDir = "components/calendar/";
-  const relNavDir = "components/navigation/";
-  const relDataDir = "data/";
+  /////////////////////////////DATA//////////////////////////////////DATA/////////////////////////////////DATA/////////////////////////////////
+  const permissionUser = 0;
+  const permissionModerator = 1;
+  const permissionAdministrator = 2;
+  const openTermin = "OPEN";
+  const reservedTermin = "RESERVED"
+  var fullScreenModal = document.getElementById("fullScreenModal");
+  var data = {
+    //angemeldeter Benutzer
+    userId: "Administrator", //SQL varchar(50) Not Null
+    userPermission: permissionAdministrator, //SQL int Not Null default 0
+    calendarTable: [
+      //Termine
+      {
+        userId: "Administrator", //Not Null
+        roomId: "Raum 1", //Not Null
+        timePeriodFrom: "11.11.21 08:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 09:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: reservedTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "Administrator", //Not Null
+        roomId: "Raum 1", //Not Null
+        timePeriodFrom: "11.11.21 10:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 11:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "einModerator", //Not Null
+        roomId: "Raum 1", //Not Null
+        timePeriodFrom: "11.11.21 06:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 07:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "einModerator", //Not Null
+        roomId: "Raum 2", //Not Null
+        timePeriodFrom: "11.11.21 06:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 07:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: reservedTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "einModerator", //Not Null
+        roomId: "Raum 2", //Not Null
+        timePeriodFrom: "11.11.21 08:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 09:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "einBenutzer", //Not Null
+        roomId: "Raum 3", //Not Null
+        timePeriodFrom: "11.11.21 08:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 09:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: openTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+      {
+        userId: "einBenutzer", //Not Null
+        roomId: "Raum 1", //Not Null
+        timePeriodFrom: "11.11.21 08:30", //SQL TIME Format Mot Mull
+        timePeriodTo: "11.11.21 09:30", //SQL TIME Format Not Null
+        reference: "", //SQL TEXT Not Null
+        contactMail: "", //SQL varchar(50)
+        terminStatus: reservedTermin, //SQL varchar(20) Not Null default: 'OPEN'
+      },
+    ],
+    //Räume
+    roomTable: [
+      {
+        roomId: "Raum 1", //SQL varchar(20) Not Null
+        ipAdress: "", //SQL varchar(20) Not Null
+        deviceId: "1", //SQL varchar(20) Not Null
+        lastRead: "", //SQL TIME Not Null
+      },
+      {
+        roomId: "Raum 2", //SQL varchar(20) Not Null
+        ipAdress: "", //SQL varchar(20) Not Null
+        deviceId: "2", //SQL varchar(20) Not Null
+        lastRead: "", //SQL TIME Not Null
+      },
+      {
+        roomId: "Raum 3", //SQL varchar(20) Not Null
+        ipAdress: "", //SQL varchar(20) Not Null
+        deviceId: "3", //SQL varchar(20) Not Null
+        lastRead: "", //SQL TIME Not Null
+      },
+    ],
+    //Administration
+    administrationTable: [
+      {
+        userId: "Administrator", //SQL varchar(50) Not Null
+        userPermission: permissionAdministrator, //SQL int Not Null default 0
+      },
+      {
+        userId: "zweiterModerator", //SQL varchar(50) Not Null
+        userPermission: permissionModerator, //SQL int Not Null default 0 
+      },
+      {
+        userId: "einModerator", //SQL varchar(50) Not Null
+        userPermission: permissionModerator, //SQL int Not Null default 0
+      },
+
+      {
+        userId: "einBenutzer", //SQL varchar(50) Not Null
+        userPermission: permissionUser, //SQL int Not Null default 0
+      },
+      {
+        userId: "zweiterBenutzer", //SQL varchar(50) Not Null
+        userPermission: permissionUser, //SQL int Not Null default 0
+      },
+    ],
+  };
+  /////////////////////////////DATA//////////////////////////////////DATA/////////////////////////////////DATA/////////////////////////////////
+
+  var loc = window.location.href;
+  var dir = loc.substring(0, loc.lastIndexOf('/'));
+
+  // console.log(dir);
+
+  const relTableDir = dir + "/components/tables/";
+  const relCalendarDir = dir + "/components/calendar/";
+  const relNavDir = dir + "/components/navigation/";
+  const relDataDir = dir + "/data/";
   var modalSelector = "";
   //load Data
-  var data = $.getScript(relDataDir + "data.js", function () {
-    return data;
-  });
+  // console.log(relDataDir + "data.js");
+
+
   window.onload = function () {
-    //load Modal functions
-    $.getScript(relCalendarDir + "fullScreenModalCalendar.js", function () {
-      //load Modal event listener
-      loadModalEventListener(fullScreenModal);
-    });
-    //load nav tab functions
-    $.getScript(relNavDir + "navTab.js", function () {});
+    // $.get(relDataDir + "data.js", function (data, textStatus, jqxhr) {
+    //   return data;
+    // });
+
     //name raum dropdown button
     $("#raum_dropdown_menu").html(data.roomTable[0].roomId);
+
+    //load Modal functions
+    // $.get(relCalendarDir + "fullScreenModalCalendar.js", function () {
+    //   //load Modal event listener
+    loadModalEventListener(fullScreenModal);
+    // });
+
+    //load nav tab functions
+    // $.get(relNavDir + "navTab.js", function (data, textStatus, jqxhr) { });
+
     //load raum dropdown functions
-    $.getScript(relNavDir + "roomDropdown.js", function () {
-      //fill raum dropdown list
-      initRaumDropdown();
-    });
+    // $.get(relNavDir + "roomDropdown.js", function () {
+    //fill raum dropdown list
+    initRaumDropdown();
+    // });
     //load Benutzer gebuchte termine functions
-    $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
-      //load & fill benutzer gebuchte termine tabelle
-      initBenutzerGebuchteTermineTabelle();
-    });
+    // $.get(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+    //load & fill benutzer gebuchte termine tabelle
+    initBenutzerGebuchteTermineTabelle();
+    // });
     //load Benutzer terminanfragen functions
-    $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
-      //load & fill benutzer terminanfragen tabelle
-      initBenutzerTerminanfragenTabelle();
-    });
+    // $.get(relTableDir + "benutzerTerminanfragenTable.js", function () {
+    //load & fill benutzer terminanfragen tabelle
+    initBenutzerTerminanfragenTabelle();
+    // });
     //load Moderator gebuchte Termine functions
-    $.getScript(relTableDir + "moderatorGebuchteTermineTable.js", function () {
-      //load & fill moderator gebuchte termine table
-      initModeratorGebuchteTermineTabelle();
-    });
+    // $.get(relTableDir + "moderatorGebuchteTermineTable.js", function () {
+    //load & fill moderator gebuchte termine table
+    initModeratorGebuchteTermineTabelle();
+    // });
     //load Moderator terminanfragen functions
-    $.getScript(relTableDir + "moderatorTerminanfrageTable.js", function () {
-      //load & fill terminanfragen  table
-      initModeratorTerminanfragenTabelle();
-    });
+    // $.get(relTableDir + "moderatorTerminanfrageTable.js", function () {
+    //load & fill terminanfragen  table
+    initModeratorTerminanfragenTabelle();
+    // });
     //load Admin raum tablle functions
-    $.getScript(relTableDir + "adminRoomTable.js", function () {
-      //load & fill raum table
-      initRaumTabelle();
-    });
+    // $.get(relTableDir + "adminRoomTable.js", function () {
+    //load & fill raum table
+    initRaumTabelle();
+    // });
     //load Admin moderator tablle functions
-    $.getScript(relTableDir + "adminModeratorTable.js", function () {
-      //load & fill moderator table
-      initModeratorTabelle();
-    });
+    // $.get(relTableDir + "adminModeratorTable.js", function () {
+    //load & fill moderator table
+    initModeratorTabelle();
+    // });
   };
+
+  ////////////////////////////////////////////////////////fullScreenModalContent////////////////////////////////////////////////////////
+  function abort() {
+    if (modalSelector === "gebuchte") {
+      abortGebuchtenTermin();
+    }
+    if (modalSelector === "anfrage") {
+      abortTerminabfrage();
+    }
+  }
+  function save() {
+    if (modalSelector === "gebuchte") {
+      saveGebuchtenTermin();
+    }
+    if (modalSelector === "anfrage") {
+      saveTerminAnfrage();
+    }
+  }
+  function abortGebuchtenTermin() {
+    // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+    benutzerAbortGebuchtenTerminEdit();
+    // });
+  }
+  function saveGebuchtenTermin() {
+    // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+    benutzerSaveGebuchtenTermin();
+    // });
+  }
+  function abortTerminabfrage() {
+    // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
+    benutzerAbortTerminanfrage();
+    // });
+  }
+  function saveTerminAnfrage() {
+    // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
+    benutzerSaveTerminanfrage();
+    // });
+  }
+  ////////////////////////////////////////////////////////fullScreenModalContent////////////////////////////////////////////////////////
+  ////////////////////////////////////////////fullScreenModalCalendar///////////////////////////////////////////
+  function loadModalEventListener(modal) {
+    modal.addEventListener("show.bs.modal", function (event) {
+      // Button that triggered the modal
+      var button = event.relatedTarget;
+      // Extract info from data-bs-* attributes
+
+      // var recipient = button.getAttribute("data-bs-whatever");
+
+      // If necessary, you could initiate an AJAX request here
+      // and then do the updating in a callback.
+      //
+      // Update the modal's content.
+      var modalTitle = modal.querySelector(".modal-title");
+      // var modalBodyInput = modal.querySelector(".modal-body input");
+
+      modalTitle.textContent = $("#raum_dropdown_menu").text() + ": Termin für " + data.userId + ".";//recipient;
+      // modalBodyInput.value = recipient;
+    });
+  }
+  ////////////////////////////////////////////fullScreenModalCalendar///////////////////////////////////////////
+  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
+  function initRaumDropdown() {
+    let dropdownList = "";
+
+    data.roomTable.forEach((item) => {
+      let changeRoom = "changeRoom(" + "'" + item.roomId + "'" + ")";
+      dropdownList +=
+        '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
+        changeRoom +
+        '">' +
+        item.roomId +
+        "</a></button></li>";
+    });
+
+    $("#raum-dropdown").html(dropdownList);
+  }
+  function changeRoom(room) {
+    $("#raum_dropdown_menu").html(room);
+    initModeratorTabelle();
+    initRaumTabelle();
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
+  }
+  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
+  ///////////////////////TAB////////////////////////////////////////////////////////
+  function openTab(tabName) {
+    let i;
+    let x = document.getElementsByClassName("tab");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    document.getElementById(tabName).style.display = "block";
+    initModeratorTabelle();
+    initRaumTabelle();
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
+  }
+  ///////////////////////TAB////////////////////////////////////////////////////////
+  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
+  function initRaumDropdown() {
+    let dropdownList = "";
+
+    data.roomTable.forEach((item) => {
+      let changeRoom = "changeRoom(" + "'" + item.roomId + "'" + ")";
+      dropdownList +=
+        '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
+        changeRoom +
+        '">' +
+        item.roomId +
+        "</a></button></li>";
+    });
+
+    $("#raum-dropdown").html(dropdownList);
+  }
+  function changeRoom(room) {
+    $("#raum_dropdown_menu").html(room);
+    initModeratorTabelle();
+    initRaumTabelle();
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
+  }
+  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
+  ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
+  function initBenutzerGebuchteTermineTabelle() {
+    let table_gebuchte_termine =
+      "<table id='benutzergebuchtetermine-tabelle'><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+    data.calendarTable.forEach((element) => {
+      if (
+        (element.terminStatus === reservedTermin) &
+        (element.roomId === $("#raum_dropdown_menu").text()) &
+        (element.userId === data.userId)
+      ) {
+        table_gebuchte_termine =
+          table_gebuchte_termine +
+          "<tr><td rowspan='1' colspan='2'>" +
+          "Von: " +
+          element.timePeriodFrom +
+          ", Bis: " +
+          element.timePeriodTo +
+          "</td><td>" +
+          '<button type="button" onclick="benutzerRemoveGebuchtenTermin(' +
+          "'" +
+          element.roomId +
+          "'" +
+          ')">-</button> \
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" \
+        data-bs-target="#fullScreenModal" id="benutzerNewTerminanfrageButton"' +
+          // + "data-bs-whatever='" + data + "'"
+          ' id="benutzerEditGebuchtenterminButton" onclick="benutzerEditGebuchtenTermin(' +
+          "'" +
+          element.timePeriodFrom +
+          "','" +
+          element.timePeriodTo +
+          "'" +
+          "), modalSelector=" +
+          "'gebuchte'" +
+          '">Bearbeiten</button>' +
+          "</td><td></td></tr>";
+      }
+    });
+    table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+    $("#benutzer_table_gebuchte_termine").html(table_gebuchte_termine);
+  }
+  function benutzerEditGebuchtenTermin(timeFrom, timeTo) {
+    $("benutzerEditGebuchtenterminButton").attr("disabled", "disabled");
+    let terminneu = $("#benutzergebuchtetermine-tabelle tbody").children();
+    $("#modal-content-div").html(
+      "<tr id='gebuchtetermine-zeile-" +
+      terminneu.length +
+      "'><td colspan='2'>" +
+      '<div class="d-flex flex-wrap bd-highlight mb-3"> \
+      <div class="p-2 bd-highlight"><label>Von:</label><input type="text" id="newGebuchterTerminInputFrom" value="' +
+      timeFrom +
+      '">' +
+      '</div> \
+      <div class="p-2 bd-highlight"><label>Bis:</label><input type="text" id="newGebuchterTerminInputTo" value="' +
+      timeTo +
+      '">' +
+      "</div>" +
+      "</td><td></tr>"
+    );
+  }
+  function benutzerSaveGebuchtenTermin() {
+    let found = data.calendarTable.find((element) => element.roomId == $("#raum_dropdown_menu").text());
+    if (
+      data.calendarTable[data.calendarTable.indexOf(found)].timePeriodFrom ===
+      $("#newGebuchterTerminInputFrom").val() &&
+      data.calendarTable[data.calendarTable.indexOf(found)].timePeriodTo ===
+      $("#newGebuchterTerminInputTo").val()
+    ) {
+      console.log("if");
+      $("#newGebuchterTerminInputFrom").addClass(
+        "alert-danger border-danger border-1"
+      );
+      $("#newGebuchterTerminInputTo").addClass(
+        "alert-danger border-danger border-1"
+      );
+    } else {
+      console.log("else");
+      $("#newGebuchterTerminInputFrom").removeClass(
+        "alert-danger border-danger border-1"
+      );
+      $("#newGebuchterTerminInputTo").removeClass(
+        "alert-danger border-danger border-1"
+      );
+      data.calendarTable[data.calendarTable.indexOf(found)].timePeriodFrom = $(
+        "#newGebuchterTerminInputFrom"
+      ).val();
+      data.calendarTable[data.calendarTable.indexOf(found)].timePeriodTo = $(
+        "#newGebuchterTerminInputTo"
+      ).val();
+      data.calendarTable[data.calendarTable.indexOf(found)].terminStatus =
+        openTermin;
+      initTables();
+    }
+  }
+  function benutzerAbortGebuchtenTerminEdit() {
+    $($("modal-content-div").next()).remove();
+    $("#benutzerEditGebuchtenterminButton").removeAttr("disabled");
+  }
+  function benutzerRemoveGebuchtenTermin(wtf) {
+    let found = data.calendarTable.find((element) => element.roomId == wtf);
+    data.calendarTable.splice(data.calendarTable.indexOf(found), 1);
+    initBenutzerGebuchteTermineTabelle();
+  }
+  ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
+  ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////
+  function initBenutzerTerminanfragenTabelle() {
+    let foundTerminanfragen = data.calendarTable.filter(
+      (element) =>
+        (element.userId == data.userId) &
+        (element.terminStatus == openTermin) &
+        (element.roomId === $("#raum_dropdown_menu").text())
+    );
+    let table_terminanfragen =
+      "<table id='benutzerterminanfragen-tabelle'><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+    if (Array.isArray(foundTerminanfragen)) {
+      foundTerminanfragen.forEach(
+        (element, index) =>
+          (table_terminanfragen =
+            table_terminanfragen +
+            "<tr><td rowspan='1' colspan='2'>" +
+            "Von: " +
+            element.timePeriodFrom +
+            " Bis: " +
+            element.timePeriodTo +
+            "</td><td>" +
+            '<button type="button" onclick="benutzerRemoveTerminanfrage(' +
+            "'" +
+            element.timePeriodFrom +
+            "','" +
+            element.timePeriodTo +
+            "'" +
+            ')">-</button></td></tr>')
+      );
+    }
+    table_terminanfragen =
+      table_terminanfragen +
+      "<tr id='terminanfragen-zeile-" +
+      (foundTerminanfragen.length + 1) +
+      "'><td> \
+    <button type='button' class='btn btn-primary' data-bs-toggle='modal' \
+    data-bs-target='#fullScreenModal' id='benutzerNewTerminanfrageButton'" +
+      // + "data-bs-whatever='" + data + "'"
+      " onclick='benutzerAddNewTermin(), modalSelector=" +
+      '"anfrage"' +
+      "'> \
+    Neuer Termin \
+  </button>" +
+      // + "<button type='button'  id='benutzerNewTerminanfrageButton'>+</button>"
+      "</td></tr>";
+    table_terminanfragen = table_terminanfragen + "</tbody></table>";
+    $("#benutzer_table_terminanfragen").html(table_terminanfragen);
+  }
+  function benutzerRemoveTerminanfrage(timeFrom, timeTo) {
+    data.calendarTable.splice(
+      data.calendarTable.indexOf(
+        data.calendarTable.find(
+          (element) =>
+            (element.timePeriodFrom == timeFrom) &
+            (element.timePeriodTo == timeTo)
+        )
+      ),
+      1
+    );
+    initBenutzerTerminanfragenTabelle();
+  }
+  function benutzerAbortTerminanfrage(wtf) {
+    $($("modal-content-div").next()).remove();
+    $("#benutzerNewTerminanfrageButton").removeAttr("disabled");
+  }
+  function benutzerAddNewTermin() {
+    $("benutzerNewTerminanfrageButton").attr("disabled", "disabled");
+    let terminneu = $("#benutzerterminanfragen-tabelle tbody").children();
+    $("#modal-content-div").html(
+      "<tr id='terminanfragen-zeile-" +
+      terminneu.length +
+      "'><td colspan='2'>" +
+      '<div class="d-flex flex-wrap bd-highlight mb-3"> \
+      <div class="p-2 bd-highlight"><label>Von:</label><input type="text" id="newTerminanfrageInputFrom"></div> \
+      <div class="p-2 bd-highlight"><label>Bis:</label><input type="text" id="newTerminanfrageInputTo"></div>' +
+      "</td><td></tr>"
+    );
+  }
+  function benutzerSaveTerminanfrage() {
+    $("#newTerminanfrageInputFrom").removeClass(
+      "alert-danger border-danger border-1"
+    );
+    $("#newTerminanfrageInputTo").removeClass(
+      "alert-danger border-danger border-1"
+    );
+    let roomTermins = data.calendarTable.filter(
+      (element) =>
+        (element.roomId == $("#raum_dropdown_menu").text()) &
+        (element.userId == data.userId)
+    );
+    data.calendarTable.push({
+      userId: data.userId,
+      roomId: $("#raum_dropdown_menu").text(),
+      timePeriodFrom: $("#newTerminanfrageInputFrom").val(),
+      timePeriodTo: $("#newTerminanfrageInputTo").val(),
+      reference: "",
+      contactMail: "",
+      terminStatus: openTermin,
+    });
+    initTables();
+  }
+  ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////
+  ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
+  function initModeratorGebuchteTermineTabelle() {
+    let table_gebuchte_termine =
+      "<table><thead><tr><th>Gebuchte Termine</th></tr></thead><tbody>";
+    data.calendarTable.forEach(element => {
+      if (
+        (element.terminStatus === reservedTermin) &
+        (element.roomId === $("#raum_dropdown_menu").text())
+      ) {
+        table_gebuchte_termine =
+          table_gebuchte_termine +
+          "<tr><td rowspan='1' colspan='2'>" +
+          "Person: " +
+          element.userId +
+          ", Von: " +
+          element.timePeriodFrom +
+          ", Bis: " +
+          element.timePeriodTo +
+          "</td><td>" +
+          '<button type="button" onclick="moderatorRemoveTermin(' +
+          "'" +
+          element.timePeriodFrom +
+          "', '" +
+          element.timePeriodTo +
+          "'" +
+          ')">-</button></td></tr>';
+      }
+    });
+    table_gebuchte_termine = table_gebuchte_termine + "</tbody></table>";
+    $("#moderator_table_gebuchte_termine").html(table_gebuchte_termine);
+  }
+  function moderatorRemoveTermin(timeFrom, timeTo) {
+    console.log("Hallo");
+    data.calendarTable.splice(
+      data.calendarTable.indexOf(
+        data.calendarTable.find(
+          (element) =>
+            (element.timePeriodFrom === timeFrom) &
+            (element.timePeriodTo === timeTo)
+        )
+      ),
+      1
+    );
+    initTables();
+  }
+  ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
+  ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////
+  function initModeratorTerminanfragenTabelle() {
+    let table_terminanfragen =
+      "<table><thead><tr><th>Terminanfragen</th></tr></thead><tbody>";
+    data.calendarTable.forEach((element) => {
+      if (
+        element.terminStatus === openTermin &&
+        element.roomId === $("#raum_dropdown_menu").text()
+      ) {
+        table_terminanfragen = table_terminanfragen.concat(
+          "<tr><td rowspan='1' colspan='2'>"
+        );
+
+        table_terminanfragen = table_terminanfragen.concat(
+          "Person: " +
+          element.userId +
+          ", Von: " +
+          element.timePeriodFrom +
+          ", Bis: " +
+          element.timePeriodTo
+        );
+        table_terminanfragen = table_terminanfragen.concat("</td><td>");
+        table_terminanfragen = table_terminanfragen.concat(
+          '<button type="button" onclick="moderatorConfirmedTermin(\''
+        );
+        table_terminanfragen = table_terminanfragen.concat(element.userId);
+        table_terminanfragen = table_terminanfragen.concat("', '");
+        table_terminanfragen = table_terminanfragen.concat(
+          element.timePeriodFrom
+        );
+        table_terminanfragen = table_terminanfragen.concat("', '");
+        table_terminanfragen = table_terminanfragen.concat(element.timePeriodTo);
+        table_terminanfragen = table_terminanfragen.concat(
+          '\')">J</button><button type="button" onclick="moderatorDeclineTermin(\''
+        );
+        table_terminanfragen = table_terminanfragen.concat(element.userId);
+        table_terminanfragen = table_terminanfragen.concat("', '");
+        table_terminanfragen = table_terminanfragen.concat(
+          element.timePeriodFrom
+        );
+        table_terminanfragen = table_terminanfragen.concat("', '");
+        table_terminanfragen = table_terminanfragen.concat(element.timePeriodTo);
+        table_terminanfragen = table_terminanfragen.concat(
+          "')\">N</button></td></tr>"
+        );
+      }
+    });
+    table_terminanfragen = table_terminanfragen + "</tbody></table>";
+    $("#moderator_table_terminanfragen").html(table_terminanfragen);
+  }
+  function moderatorDeclineTermin(person, timeFrom, timeTo) {
+    data.calendarTable.splice(
+      data.calendarTable.indexOf(
+        data.calendarTable.find(
+          (element) =>
+            (element.userId === person) &
+            (element.timePeriodFrom === timeFrom) &
+            (element.timePeriodTo === timeTo)
+        )
+      ),
+      1
+    );
+    initTables();
+  }
+  function moderatorConfirmedTermin(person, timeFrom, timeTo) {
+    data.calendarTable[
+      data.calendarTable.indexOf(
+        data.calendarTable.find(
+          (element) =>
+            element.userId === person &&
+            element.timePeriodFrom === timeFrom &&
+            element.timePeriodTo === timeTo
+        )
+      )
+    ].terminStatus = reservedTermin;
+    initTables();
+  }
+  ///////////////////////Moderator Termin Anfragen Table////////////////////////////////////////////////////////
+  ///////////////////////ADMIN ROOM TABLE////////////////////////////////////////////////////////
+  function initRaumTabelle() {
+    let sortRaeume = data.roomTable;
+    sortRaeume.sort(function (a, b) {
+      if (a.roomId < b.roomId) {
+        return -1;
+      }
+      if (a.roomId > b.roomId) {
+        return 1;
+      }
+      return 0;
+    });
+
+    let table_raeume =
+      "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
+    sortRaeume.forEach(
+      (element) =>
+        (table_raeume =
+          table_raeume +
+          "<tr><td rowspan='1' colspan='2'>" +
+          element.roomId +
+          "</td><td>" +
+          '<button type="button" onclick="removeRoom(' +
+          "'" +
+          element.roomId +
+          "'" +
+          ')">-</button></td></tr>')
+    );
+    table_raeume =
+      table_raeume +
+      "<tr id='raum-zeile-" +
+      (data.roomTable.length + 1) +
+      "'><td colspan='2'><button type='button' onclick='addRoom(this)' id='addNewRoomButton'>+</button></td><td></td></tr>";
+    table_raeume = table_raeume + "</tbody></table>";
+    $("#administrator_raeume").html(table_raeume);
+  }
+  function abortNewRoom(lol) {
+    $($(lol).parent().parent()).remove();
+    $("#addNewRoomButton").removeAttr("disabled");
+  }
+  function addRoom(lol) {
+    $(lol).attr("disabled", "disabled");
+    let raumneu = $("#raum-tabelle tbody").children();
+    $($(lol).parent().parent()).before(
+      '<tr id="raum-zeile-' +
+      '"' +
+      raumneu.length +
+      '"' +
+      '"><td colspan="2"><div class="d-flex flex-wrap bd-highlight mb-3"> \
+      <div class="p-2 bd-highlight"></label><label>Raum</label><input type="text" id="newRoomNameInput" /></div> \
+      <div class="p-2 bd-highlight"><label>IP</label><input type="text" id="newRoomIpInput" /></div> \
+      <div class="p-2 bd-highlight"><label>Device Id</label><input type="text" id="newRoomDeviceIdInput" /></div></div> \
+      </td><td><button onclick="saveNewRoom()">OK</button><button onclick="abortNewRoom(this)">Ne</button></tr>'
+    );
+  }
+
+  function saveNewRoom() {
+    $("#newRoomNameInput").removeClass("alert-danger border-danger border-1");
+    if (
+      data.roomTable.filter(
+        (element) => element.roomId == "Raum " + $("#newRoomNameInput").val()
+      ) == 0 &&
+      $("#newRoomNameInput").val() != ""
+    ) {
+      data.roomTable.push({
+        roomId: "Raum " + $("#newRoomNameInput").val(),
+        ipAdress: $("#newRoomIpInput").val(),
+        deviceId: $("#newRoomDeviceIdInput").val(),
+        lastRead: "",
+      });
+      initRaumTabelle();
+      initRaumDropdown();
+    }
+    else {
+      $("#newRoomNameInput").addClass("alert-danger border-danger border-1");
+    }
+  }
+  function removeRoom(wtf) {
+    let found = data.roomTable.find((element) => element.roomId == wtf);
+    data.roomTable.splice(data.roomTable.indexOf(found), 1);
+    initRaumTabelle();
+  }
+  ///////////////////////ADMIN ROOM TABLE////////////////////////////////////////////////////////
+  ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////
+  function initModeratorTabelle() {
+    let sortModeratoren = [];
+    data.administrationTable.forEach((element) => {
+      if (
+        (element.userPermission == permissionAdministrator) |
+        (element.userPermission == permissionModerator)
+      ) {
+        sortModeratoren.push(element);
+      }
+    });
+    let anzahlModeratoren = sortModeratoren.length;
+    sortModeratoren.sort((a, b) => {
+      if (a.userId < b.userId) {
+        return -1;
+      }
+      if (a.userId > b.userId) {
+        return 1;
+      }
+      return 0;
+    });
+    let table_moderatoren =
+      "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
+    sortModeratoren.forEach(
+      element =>
+        (table_moderatoren =
+          table_moderatoren +
+          "<tr><td rowspan='1' colspan='2'>" +
+          element.userId +
+          "</td><td>" +
+          '<button type="button" onclick="removeModerator(' + "'" +
+          element.userId + "'" +
+          ')">-</button></td></tr>')
+    );
+    table_moderatoren =
+      table_moderatoren +
+      "<tr id='moderator-zeile-" +
+      (anzahlModeratoren + 1) +
+      "'><td colespan='2'><button type='button' onclick='addNewModerator(this)' id='addNewModeratorButton'>+</button></td><td></td></tr>";
+    table_moderatoren = table_moderatoren + "</tbody></table>";
+    $("#administrator_moderatoren").html(table_moderatoren);
+  }
+  function removeModerator(wtf) {
+    console.log(wtf);
+    let found = data.administrationTable.find(
+      (element) => element.userId == wtf
+    );
+    found.userPermission = permissionUser;
+    initModeratorTabelle();
+  }
+  function abortNewModerator(wtf) {
+    $($(wtf).parent().parent()).remove();
+    $("#addNewModeratorButton").removeAttr("disabled");
+  }
+  var selectedModerator = "";
+  function addNewModerator(wtf) {
+    $(wtf).attr("disabled", "disabled");
+    let moderatorneu = $("#moderatoren-tabelle tbody").children();
+    let htmlString =
+      "<tr id='moderator-zeile-" +
+      moderatorneu.length +
+      "'><td colspan='2'><div class='dropdown'> \
+         <button class='dropdownbutton btn btn-secondary dropdown-toggle' id='dropdownMenu2' type='button' data-bs-toggle='dropdown' aria-expanded='false'>Select User</button> \
+          <ul class='dropdown-menu dropdown-menu-dark' aria-labelledby='dropdownMenu2' id='moderatordropdown'>";
+    data.administrationTable.forEach((element) => {
+      if (
+        (element.userPermission != permissionAdministrator) &
+        (element.userPermission != permissionModerator)
+      ) {
+        htmlString +=
+          "<li><button class='dropdown-item' type='button'>" +
+          element.userId +
+          "</button></li>";
+      }
+    });
+    htmlString +=
+      "</ul></div> \
+      </td> \
+      <td><button onclick='saveNewModerator()'>OK</button> \
+      <button onclick='abortNewModerator(this)'>Ne</button></tr>";
+    $($(wtf).parent().parent()).before(htmlString);
+    $("#moderatordropdown li button").on("click", function () {
+      $("#dropdownMenu2").text($(this).text());
+    });
+  }
+  function saveNewModerator() {
+    let found = data.administrationTable.find(
+      (element) => element.userId == $("#dropdownMenu2").text()
+    );
+    found.userPermission = permissionModerator;
+    initModeratorTabelle();
+  }
+  ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////
   function initTables() {
     initBenutzerGebuchteTermineTabelle();
     initBenutzerTerminanfragenTabelle();
