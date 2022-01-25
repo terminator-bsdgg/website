@@ -12,13 +12,13 @@
   <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
     crossorigin="anonymous"></script>
   <!-- include fullscreec calendar modal content-->
-  <!-- <script>
+  <script>
       $(function () {
         $("#includeFullScreenModalCalendarContent").load(
           "components/calendar/fullScreenModalCalendarContent.html"
         );
       });
-    </script> -->
+    </script>
 
   <!-- <script src="components/tables/data.js>"></script>
   <script src="components/calendar/data.js"></script>
@@ -130,7 +130,7 @@
 
 
   <!--------------------------------------------------------fullScreenModalContent----------------------------------------------------------->
-  <div class="modal-content">
+  <!-- <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title" id="fullScreenModalCalendarLabel"></h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="abort()"></button>
@@ -146,7 +146,7 @@
         Speichern
       </button>
     </div>
-  </div>
+  </div> -->
   <!--------------------------------------------------------fullScreenModalContent----------------------------------------------------------->
 </body>
 
@@ -292,6 +292,7 @@
 
 
   window.onload = function () {
+
     // $.get(relDataDir + "data.js", function (data, textStatus, jqxhr) {
     //   return data;
     // });
@@ -346,42 +347,42 @@
   };
 
   ////////////////////////////////////////////////////////fullScreenModalContent////////////////////////////////////////////////////////
-  function abort() {
-    if (modalSelector === "gebuchte") {
-      abortGebuchtenTermin();
-    }
-    if (modalSelector === "anfrage") {
-      abortTerminabfrage();
-    }
-  }
-  function save() {
-    if (modalSelector === "gebuchte") {
-      saveGebuchtenTermin();
-    }
-    if (modalSelector === "anfrage") {
-      saveTerminAnfrage();
-    }
-  }
-  function abortGebuchtenTermin() {
-    // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
-    benutzerAbortGebuchtenTerminEdit();
-    // });
-  }
-  function saveGebuchtenTermin() {
-    // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
-    benutzerSaveGebuchtenTermin();
-    // });
-  }
-  function abortTerminabfrage() {
-    // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
-    benutzerAbortTerminanfrage();
-    // });
-  }
-  function saveTerminAnfrage() {
-    // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
-    benutzerSaveTerminanfrage();
-    // });
-  }
+  // function abort() {
+  //   if (modalSelector === "gebuchte") {
+  //     abortGebuchtenTermin();
+  //   }
+  //   if (modalSelector === "anfrage") {
+  //     abortTerminabfrage();
+  //   }
+  // }
+  // function save() {
+  //   if (modalSelector === "gebuchte") {
+  //     saveGebuchtenTermin();
+  //   }
+  //   if (modalSelector === "anfrage") {
+  //     saveTerminAnfrage();
+  //   }
+  // }
+  // function abortGebuchtenTermin() {
+  //   // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+  //   benutzerAbortGebuchtenTerminEdit();
+  //   // });
+  // }
+  // function saveGebuchtenTermin() {
+  //   // $.getScript(relTableDir + "benutzerGebuchteTermineTable.js", function () {
+  //   benutzerSaveGebuchtenTermin();
+  //   // });
+  // }
+  // function abortTerminabfrage() {
+  //   // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
+  //   benutzerAbortTerminanfrage();
+  //   // });
+  // }
+  // function saveTerminAnfrage() {
+  //   // $.getScript(relTableDir + "benutzerTerminanfragenTable.js", function () {
+  //   benutzerSaveTerminanfrage();
+  //   // });
+  // }
   ////////////////////////////////////////////////////////fullScreenModalContent////////////////////////////////////////////////////////
   ////////////////////////////////////////////fullScreenModalCalendar///////////////////////////////////////////
   function loadModalEventListener(modal) {
@@ -398,7 +399,6 @@
       // Update the modal's content.
       var modalTitle = modal.querySelector(".modal-title");
       // var modalBodyInput = modal.querySelector(".modal-body input");
-
       modalTitle.textContent = $("#raum_dropdown_menu").text() + ": Termin für " + data.userId + ".";//recipient;
       // modalBodyInput.value = recipient;
     });
