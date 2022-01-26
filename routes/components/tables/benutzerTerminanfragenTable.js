@@ -71,12 +71,15 @@ function benutzerAddNewTermin() {
       terminneu.length +
       "'><td colspan='2'>" +
       '<div class="d-flex flex-wrap bd-highlight mb-3"> \
-      <div class="p-2 bd-highlight"><label>Von:</label><input type="text" id="newTerminanfrageInputFrom"></div> \
-      <div class="p-2 bd-highlight"><label>Bis:</label><input type="text" id="newTerminanfrageInputTo"></div>' +
+      <div class="p-2 bd-highlight"><label>Von:</label><input type="datetime-local" id="newTerminanfrageInputFrom"></div> \
+      <div class="p-2 bd-highlight"><label>Bis:</label><input type="datetime-local" id="newTerminanfrageInputTo"></div>' +
       "</td><td></tr>"
   );
 }
 function benutzerSaveTerminanfrage() {
+  console.log("save anfrage");
+  console.log($("#newTerminanfrageInputFrom").val());
+  console.log($("#newTerminanfrageInputTo").val());
   $("#newTerminanfrageInputFrom").removeClass(
     "alert-danger border-danger border-1"
   );
