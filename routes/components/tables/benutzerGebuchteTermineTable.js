@@ -47,11 +47,11 @@ function benutzerEditGebuchtenTermin(timeFrom, timeTo) {
       terminneu.length +
       "'><td colspan='2'>" +
       '<div class="d-flex flex-wrap bd-highlight mb-3"> \
-      <div class="p-2 bd-highlight"><label>Von:</label><input type="text" id="newGebuchterTerminInputFrom" value="' +
+      <div class="p-2 bd-highlight"><label>Von:</label><input type="datetime-local" id="newGebuchterTerminInputFrom" value="' +
       timeFrom +
       '">' +
       '</div> \
-      <div class="p-2 bd-highlight"><label>Bis:</label><input type="text" id="newGebuchterTerminInputTo" value="' +
+      <div class="p-2 bd-highlight"><label>Bis:</label><input type="datetime-local" id="newGebuchterTerminInputTo" value="' +
       timeTo +
       '">' +
       "</div>" +
@@ -59,6 +59,9 @@ function benutzerEditGebuchtenTermin(timeFrom, timeTo) {
   );
 }
 function benutzerSaveGebuchtenTermin() {
+  console.log("save gebuchte");
+  console.log($("#newGebuchterTerminInputFrom").val());
+  console.log($("#newGebuchterTerminInputTo").val());
   let found = data.calendarTable.find((element) => element.roomId == $("#raum_dropdown_menu").text());
   if (
     data.calendarTable[data.calendarTable.indexOf(found)].timePeriodFrom ===
@@ -74,7 +77,6 @@ function benutzerSaveGebuchtenTermin() {
       "alert-danger border-danger border-1"
     );
   } else {
-    console.log("else");
     $("#newGebuchterTerminInputFrom").removeClass(
       "alert-danger border-danger border-1"
     );
