@@ -29,6 +29,25 @@
 <html lang="en">
 
 <head>
+  <!--favicon-->
+  <!--TODO-->
+  <link rel="apple-touch-icon" sizes="57x57" href="./../assets/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="./../assets/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="./../assets/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="./../assets/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="./../assets/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="./../assets/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="./../assets/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="./../assets/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./../assets/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./../assets/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./../assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="./../assets/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./../assets/favicon-16x16.png">
+  <link rel="manifest" href="./../assets/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="./../assets/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,43 +58,40 @@
   <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
   <!-- include fullscreec calendar modal content-->
   <script>
-      $(function () {
-        $("#includeFullScreenModalCalendarContent").load(
-          "components/calendar/fullScreenModalCalendarContent.html"
-        );
-      });
-    </script>
-
-  <!-- <script src="components/tables/data.js>"></script>
-  <script src="components/calendar/data.js"></script>
-  <script src="components/navigation/data.js"></script> -->
-  <!--const relDataDir = dir + "/data/";-->
+    $(function () {
+      $("#includeFullScreenModalCalendarContent").load(
+        "components/fullScreenModalCalendarContent.html"
+      );
+    });
+  </script>
   <title>Terminator</title>
 </head>
 
 <body>
-  <!--Code here-->
   <div class="">
     <ul class="nav nav-tabs bg-dark">
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="openTab('Benutzer')">Raumbuchung</a>
+        <button class="nav-link" onclick="openTab('Benutzer')">Raumbuchung</button>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="openTab('Moderator')">Moderation</a>
+        <button class="nav-link" onclick="openTab('Moderator')">Moderation</button>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="openTab('Administrator')">Administration</a>
+        <button class="nav-link" onclick="openTab('Administrator')">Administration</button>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="raum_dropdown_menu" role="button" data-bs-toggle="dropdown"
+        <button class="nav-link dropdown-toggle" href="" id="raum_dropdown_menu" role="button" data-bs-toggle="dropdown"
           aria-expanded="false">
-        </a>
+        </button>
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink" id="raum-dropdown">
         </ul>
       </li>
+      <li class="nav-item ms-auto">
+        <label class="nav-link" id="logged-user"></label>
+      </li>
     </ul>
   </div>
-  <div id="Benutzer" class="w3-container tab">
+  <div id="Benutzer" class="tab">
     <div class="row">
       <div class="column">
         <div id="benutzer_table_gebuchte_termine"></div>
@@ -86,8 +102,7 @@
     </div>
   </div>
 
-  <div id="Moderator" class="w3-container tab" style="display: none">
-    <!--todo-->
+  <div id="Moderator" class="tab" style="display: none">
     <div class="row">
       <div class="column">
         <div id="moderator_table_gebuchte_termine"></div>
@@ -98,7 +113,7 @@
     </div>
   </div>
 
-  <div id="Administrator" class="w3-container tab" style="display: none">
+  <div id="Administrator" class="tab" style="display: none">
     <div class="row">
       <div class="column">
         <div id="administrator_moderatoren"></div>
@@ -108,34 +123,6 @@
       </div>
     </div>
   </div>
-  <!-- Button trigger modal -->
-  <!-- <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#fullScreenModal"
-      data-bs-whatever="@mdo"
-    >
-      Open modal for @mdo
-    </button> -->
-  <!-- <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#fullScreenModal"
-      data-bs-whatever="@fat"
-    >
-      Open modal for @fat
-    </button>
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#fullScreenModal"
-      data-bs-whatever="@getbootstrap"
-    >
-      Open modal for @getbootstrap
-    </button> -->
   <!--Modal Calendar-->
   <div class="modal fade" id="fullScreenModal" tabindex="-1" aria-labelledby="fullScreenModalCalendarLabel"
     aria-hidden="true">
@@ -280,75 +267,42 @@
       },
     ],
   };
-  /////////////////////////////DATA//////////////////////////////////DATA/////////////////////////////////DATA/////////////////////////////////
 
-  var loc = window.location.href;
-  var dir = loc.substring(0, loc.lastIndexOf('/'));
-
-  // console.log(dir);
-
-  const relTableDir = dir + "/components/tables/";
-  const relCalendarDir = dir + "/components/calendar/";
-  const relNavDir = dir + "/components/navigation/";
-  const relDataDir = dir + "/data/";
   var modalSelector = "";
-  //load Data
-  // console.log(relDataDir + "data.js");
-
-
+  /////////////////////////////DATA//////////////////////////////////DATA/////////////////////////////////DATA/////////////////////////////////
+  ////////////////////////////////////////////onload///////////////////////////////////////////
   window.onload = function () {
-    // $.get(relDataDir + "data.js", function (data, textStatus, jqxhr) {
-    //   return data;
-    // });
-
+    initUser();
     //name raum dropdown button
     $("#raum_dropdown_menu").html(data.roomTable[0].roomId);
-
-    //load Modal functions
-    // $.get(relCalendarDir + "fullScreenModalCalendar.js", function () {
     //   //load Modal event listener
     loadModalEventListener(fullScreenModal);
-    // });
-
-    //load nav tab functions
-    // $.get(relNavDir + "navTab.js", function (data, textStatus, jqxhr) { });
-
-    //load raum dropdown functions
-    // $.get(relNavDir + "roomDropdown.js", function () {
     //fill raum dropdown list
     initRaumDropdown();
-    // });
-    //load Benutzer gebuchte termine functions
-    // $.get(relTableDir + "benutzerGebuchteTermineTable.js", function () {
     //load & fill benutzer gebuchte termine tabelle
     initBenutzerGebuchteTermineTabelle();
-    // });
-    //load Benutzer terminanfragen functions
-    // $.get(relTableDir + "benutzerTerminanfragenTable.js", function () {
     //load & fill benutzer terminanfragen tabelle
     initBenutzerTerminanfragenTabelle();
-    // });
-    //load Moderator gebuchte Termine functions
-    // $.get(relTableDir + "moderatorGebuchteTermineTable.js", function () {
     //load & fill moderator gebuchte termine table
     initModeratorGebuchteTermineTabelle();
-    // });
-    //load Moderator terminanfragen functions
-    // $.get(relTableDir + "moderatorTerminanfrageTable.js", function () {
     //load & fill terminanfragen  table
     initModeratorTerminanfragenTabelle();
-    // });
-    //load Admin raum tablle functions
-    // $.get(relTableDir + "adminRoomTable.js", function () {
     //load & fill raum table
     initRaumTabelle();
-    // });
-    //load Admin moderator tablle functions
-    // $.get(relTableDir + "adminModeratorTable.js", function () {
     //load & fill moderator table
     initModeratorTabelle();
-    // });
   };
+  ////////////////////////////////////////////onload///////////////////////////////////////////
+  function initTables() {
+    initBenutzerGebuchteTermineTabelle();
+    initBenutzerTerminanfragenTabelle();
+    initModeratorGebuchteTermineTabelle();
+    initModeratorTerminanfragenTabelle();
+  }
+  function initUser() {
+    let user = data.userId;
+    $("#logged-user").html(user);
+  }
   ////////////////////////////////////////////fullScreenModalCalendar///////////////////////////////////////////
   function loadModalEventListener(modal) {
     modal.addEventListener("show.bs.modal", function (event) {
@@ -368,6 +322,22 @@
       // modalBodyInput.value = recipient;
     });
   }
+  function abort() {
+    if (modalSelector == "gebuchte") {
+      benutzerAbortGebuchtenTerminEdit();
+    }
+    if (modalSelector == "anfrage") {
+      benutzerAbortTerminanfrage();
+    }
+  }
+  function save() {
+    if (modalSelector == "gebuchte") {
+      benutzerSaveGebuchtenTermin();
+    }
+    if (modalSelector == "anfrage") {
+      benutzerSaveTerminanfrage();
+    }
+  }
   ////////////////////////////////////////////fullScreenModalCalendar///////////////////////////////////////////
   ///////////////////////Room Dropdown////////////////////////////////////////////////////////
   function initRaumDropdown() {
@@ -376,11 +346,11 @@
     data.roomTable.forEach((item) => {
       let changeRoom = "changeRoom(" + "'" + item.roomId + "'" + ")";
       dropdownList +=
-        '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
+        '<li><button href="" class="dropdown-item row" onclick="' +
         changeRoom +
         '">' +
         item.roomId +
-        "</a></button></li>";
+        "</button></li>";
     });
 
     $("#raum-dropdown").html(dropdownList);
@@ -411,32 +381,6 @@
     initModeratorTerminanfragenTabelle();
   }
   ///////////////////////TAB////////////////////////////////////////////////////////
-  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
-  function initRaumDropdown() {
-    let dropdownList = "";
-
-    data.roomTable.forEach((item) => {
-      let changeRoom = "changeRoom(" + "'" + item.roomId + "'" + ")";
-      dropdownList +=
-        '<li><button class="btn btn-block"><a href="#" class="dropdown-item row" onclick="' +
-        changeRoom +
-        '">' +
-        item.roomId +
-        "</a></button></li>";
-    });
-
-    $("#raum-dropdown").html(dropdownList);
-  }
-  function changeRoom(room) {
-    $("#raum_dropdown_menu").html(room);
-    initModeratorTabelle();
-    initRaumTabelle();
-    initBenutzerGebuchteTermineTabelle();
-    initBenutzerTerminanfragenTabelle();
-    initModeratorGebuchteTermineTabelle();
-    initModeratorTerminanfragenTabelle();
-  }
-  ///////////////////////Room Dropdown////////////////////////////////////////////////////////
   ///////////////////////Benutzer Gebuchte Termine Table////////////////////////////////////////////////////////
   function initBenutzerGebuchteTermineTabelle() {
     let table_gebuchte_termine =
@@ -533,8 +477,8 @@
     $($("modal-content-div").next()).remove();
     $("#benutzerEditGebuchtenterminButton").removeAttr("disabled");
   }
-  function benutzerRemoveGebuchtenTermin(wtf) {
-    let found = data.calendarTable.find((element) => element.roomId == wtf);
+  function benutzerRemoveGebuchtenTermin(termin) {
+    let found = data.calendarTable.find((element) => element.roomId == termin);
     data.calendarTable.splice(data.calendarTable.indexOf(found), 1);
     initBenutzerGebuchteTermineTabelle();
   }
@@ -552,21 +496,21 @@
     if (Array.isArray(foundTerminanfragen)) {
       foundTerminanfragen.forEach(
         (element, index) =>
-          (table_terminanfragen =
-            table_terminanfragen +
-            "<tr><td rowspan='1' colspan='2'>" +
-            "Von: " +
-            element.timePeriodFrom +
-            " Bis: " +
-            element.timePeriodTo +
-            "</td><td>" +
-            '<button type="button" onclick="benutzerRemoveTerminanfrage(' +
-            "'" +
-            element.timePeriodFrom +
-            "','" +
-            element.timePeriodTo +
-            "'" +
-            ')">-</button></td></tr>')
+        (table_terminanfragen =
+          table_terminanfragen +
+          "<tr><td rowspan='1' colspan='2'>" +
+          "Von: " +
+          element.timePeriodFrom +
+          " Bis: " +
+          element.timePeriodTo +
+          "</td><td>" +
+          '<button type="button" onclick="benutzerRemoveTerminanfrage(' +
+          "'" +
+          element.timePeriodFrom +
+          "','" +
+          element.timePeriodTo +
+          "'" +
+          ')">-</button></td></tr>')
       );
     }
     table_terminanfragen =
@@ -586,36 +530,6 @@
       "</td></tr>";
     table_terminanfragen = table_terminanfragen + "</tbody></table>";
     $("#benutzer_table_terminanfragen").html(table_terminanfragen);
-  }
-  function benutzerRemoveTerminanfrage(timeFrom, timeTo) {
-    data.calendarTable.splice(
-      data.calendarTable.indexOf(
-        data.calendarTable.find(
-          (element) =>
-            (element.timePeriodFrom == timeFrom) &
-            (element.timePeriodTo == timeTo)
-        )
-      ),
-      1
-    );
-    initBenutzerTerminanfragenTabelle();
-  }
-  function benutzerAbortTerminanfrage(wtf) {
-    $($("modal-content-div").next()).remove();
-    $("#benutzerNewTerminanfrageButton").removeAttr("disabled");
-  }
-  function benutzerAddNewTermin() {
-    $("benutzerNewTerminanfrageButton").attr("disabled", "disabled");
-    let terminneu = $("#benutzerterminanfragen-tabelle tbody").children();
-    $("#modal-content-div").html(
-      "<tr id='terminanfragen-zeile-" +
-      terminneu.length +
-      "'><td colspan='2'>" +
-      '<div class="d-flex flex-wrap bd-highlight mb-3"> \
-      <div class="p-2 bd-highlight"><label>Von:</label><input type="datetime-local"  id="newTerminanfrageInputFrom"></div> \
-      <div class="p-2 bd-highlight"><label>Bis:</label><input type="datetime-local" id="newTerminanfrageInputTo"></div>' +
-      "</td><td></tr>"
-    );
   }
   function benutzerSaveTerminanfrage() {
     $("#newTerminanfrageInputFrom").removeClass(
@@ -639,6 +553,36 @@
       terminStatus: openTermin,
     });
     initTables();
+  }
+  function benutzerRemoveTerminanfrage(timeFrom, timeTo) {
+    data.calendarTable.splice(
+      data.calendarTable.indexOf(
+        data.calendarTable.find(
+          (element) =>
+            (element.timePeriodFrom == timeFrom) &
+            (element.timePeriodTo == timeTo)
+        )
+      ),
+      1
+    );
+    initBenutzerTerminanfragenTabelle();
+  }
+  function benutzerAbortTerminanfrage() {
+    $($("modal-content-div").next()).remove();
+    $("#benutzerNewTerminanfrageButton").removeAttr("disabled");
+  }
+  function benutzerAddNewTermin() {
+    $("benutzerNewTerminanfrageButton").attr("disabled", "disabled");
+    let terminneu = $("#benutzerterminanfragen-tabelle tbody").children();
+    $("#modal-content-div").html(
+      "<tr id='terminanfragen-zeile-" +
+      terminneu.length +
+      "'><td colspan='2'>" +
+      '<div class="d-flex flex-wrap bd-highlight mb-3"> \
+      <div class="p-2 bd-highlight"><label>Von:</label><input type="datetime-local"  id="newTerminanfrageInputFrom"></div> \
+      <div class="p-2 bd-highlight"><label>Bis:</label><input type="datetime-local" id="newTerminanfrageInputTo"></div>' +
+      "</td><td></tr>"
+    );
   }
   ///////////////////////Benutzer Terminanfragen Table////////////////////////////////////////////////////////
   ///////////////////////Moderator Gebuchte Termine Table////////////////////////////////////////////////////////
@@ -673,7 +617,6 @@
     $("#moderator_table_gebuchte_termine").html(table_gebuchte_termine);
   }
   function moderatorRemoveTermin(timeFrom, timeTo) {
-    console.log("Hallo");
     data.calendarTable.splice(
       data.calendarTable.indexOf(
         data.calendarTable.find(
@@ -782,16 +725,16 @@
       "<table id='raum-tabelle'><thead><tr><th>Räume</th></tr></thead><tbody>";
     sortRaeume.forEach(
       (element) =>
-        (table_raeume =
-          table_raeume +
-          "<tr><td rowspan='1' colspan='2'>" +
-          element.roomId +
-          "</td><td>" +
-          '<button type="button" onclick="removeRoom(' +
-          "'" +
-          element.roomId +
-          "'" +
-          ')">-</button></td></tr>')
+      (table_raeume =
+        table_raeume +
+        "<tr><td rowspan='1' colspan='2'>" +
+        element.roomId +
+        "</td><td>" +
+        '<button type="button" onclick="removeRoom(' +
+        "'" +
+        element.roomId +
+        "'" +
+        ')">-</button></td></tr>')
     );
     table_raeume =
       table_raeume +
@@ -842,8 +785,8 @@
       $("#newRoomNameInput").addClass("alert-danger border-danger border-1");
     }
   }
-  function removeRoom(wtf) {
-    let found = data.roomTable.find((element) => element.roomId == wtf);
+  function removeRoom(room) {
+    let found = data.roomTable.find((element) => element.roomId == room);
     data.roomTable.splice(data.roomTable.indexOf(found), 1);
     initRaumTabelle();
   }
@@ -873,14 +816,14 @@
       "<table id='moderatoren-tabelle'><thead><tr><th>Moderatoren</th></tr></thead><tbody>";
     sortModeratoren.forEach(
       element =>
-        (table_moderatoren =
-          table_moderatoren +
-          "<tr><td rowspan='1' colspan='2'>" +
-          element.userId +
-          "</td><td>" +
-          '<button type="button" onclick="removeModerator(' + "'" +
-          element.userId + "'" +
-          ')">-</button></td></tr>')
+      (table_moderatoren =
+        table_moderatoren +
+        "<tr><td rowspan='1' colspan='2'>" +
+        element.userId +
+        "</td><td>" +
+        '<button type="button" onclick="removeModerator(' + "'" +
+        element.userId + "'" +
+        ')">-</button></td></tr>')
     );
     table_moderatoren =
       table_moderatoren +
@@ -890,21 +833,20 @@
     table_moderatoren = table_moderatoren + "</tbody></table>";
     $("#administrator_moderatoren").html(table_moderatoren);
   }
-  function removeModerator(wtf) {
-    console.log(wtf);
+  function removeModerator(modId) {
     let found = data.administrationTable.find(
-      (element) => element.userId == wtf
+      (element) => element.userId == modId
     );
     found.userPermission = permissionUser;
     initModeratorTabelle();
   }
-  function abortNewModerator(wtf) {
-    $($(wtf).parent().parent()).remove();
+  function abortNewModerator(thisMod) {
+    $($(thisMod).parent().parent()).remove();
     $("#addNewModeratorButton").removeAttr("disabled");
   }
   var selectedModerator = "";
-  function addNewModerator(wtf) {
-    $(wtf).attr("disabled", "disabled");
+  function addNewModerator(thisMod) {
+    $(thisMod).attr("disabled", "disabled");
     let moderatorneu = $("#moderatoren-tabelle tbody").children();
     let htmlString =
       "<tr id='moderator-zeile-" +
@@ -928,7 +870,7 @@
       </td> \
       <td><button onclick='saveNewModerator()'>OK</button> \
       <button onclick='abortNewModerator(this)'>Ne</button></tr>";
-    $($(wtf).parent().parent()).before(htmlString);
+    $($(thisMod).parent().parent()).before(htmlString);
     $("#moderatordropdown li button").on("click", function () {
       $("#dropdownMenu2").text($(this).text());
     });
@@ -940,13 +882,7 @@
     found.userPermission = permissionModerator;
     initModeratorTabelle();
   }
-  ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////
-  function initTables() {
-    initBenutzerGebuchteTermineTabelle();
-    initBenutzerTerminanfragenTabelle();
-    initModeratorGebuchteTermineTabelle();
-    initModeratorTerminanfragenTabelle();
-  }
+  ///////////////////////ADMIN MODERATOR TABLE////////////////////////////////////////////////////////  
 </script>
 <style>
   @import "css/raeume.css";
