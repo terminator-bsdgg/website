@@ -40,10 +40,10 @@
 ***
 
 ## Authors
-* **Milan Kovacevic** - [Profile](https://github.com/miko41)
 * **Fabian Rose** - [Profile](https://github.com/FRTerminator)
 * **Kevin Müller**
 * **Christian Sander** - [Profile](https://github.com/ModuleHunter)
+* **Milan Kovacevic** - [Profile](https://github.com/miko41)
 * **Paul Jongmans** - [Profile](https://github.com/paulus1111)
 * **Fabian Beckmann** - [Profile](https://github.com/OverratedPotato)
 ***
