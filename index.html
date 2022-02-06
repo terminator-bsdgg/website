@@ -30,6 +30,23 @@
                 align-content: flex-start;
                 background-image: url("img/hmm.png");
             }
+            #body-overlay {
+                position: absolute;
+                z-index: 9999;
+                width: 100%;
+                height: 100%;
+                opacity: 1;
+                background-color: #ffffff;
+                transition: opacity 1s;
+                display: flex;
+                align-content: center;
+                align-items: center;
+                justify-content: center;
+            }
+            #body-overlay > h1 {
+                color: var(--bs-gray-500, #adb5bd);
+                margin: 0
+            }
             header {
                 grid-column: 1 / 3;
                 grid-row: 1 / 1;
@@ -85,10 +102,13 @@
                 color: white;
                 background-color: transparent;
                 transition: background-color 200ms linear 0s;
+                text-shadow: 0 1px 0 black;
             }
-            .navbar-nav > .nav-item > .nav-link:hover, .navbar-nav > .nav-item > .nav-link:focus, .navbar-nav > .nav-item > .nav-link:active {
+            .navbar-nav > .nav-item > .nav-link:hover, .navbar-nav > .nav-item > .nav-link:active {
                 background-color: white;
                 color: black;
+                box-shadow: 0 1px 1px 0px rgba(0, 0, 0, 0.5);
+                text-shadow: 0 1px 0 transparent;
             }
             .nav-tabs > .nav-item {
                 z-index: 2;
@@ -154,13 +174,25 @@
                 border: 1px solid var(--bs-gray-300, #dee2e6) !important;
                 border-bottom: 1px solid transparent !important
             }
+            /*
+            .nav-tabs > .nav-item > .nav-link:not(.active)::after {
+                content: "";
+                position: absolute;
+                width: 1px;
+                height: 40px;
+                right: -1px;
+                bottom: -20px;
+                z-index: 10;
+                background-color: var(--bs-gray-300, #dee2e6);
+            }
+            */
             table > thead > tr > th:first-of-type {
                 border-top-left-radius: 2px;
             }
             table > thead > tr > th:last-of-type {
                 border-top-right-radius: 2px;
             }
-            table > thead > tr > th {
+            table > thead > tr > th:not(.TintengefrorenerTiefenfrisch) {
                 border-left: 1px solid var(--bs-gray-300, #dee2e6) !important;
             }
             table > thead > tr > th {
@@ -177,9 +209,6 @@
             table.dataTable:not(.table-borderless) > tbody > tr > td:not(.fritz) {
                 border-left: 1px solid var(--bs-gray-300, #dee2e6) !important
             }
-            table.dataTable:not(.table-borderless) > tbody > tr:not(.dtrg-start) > td:nth-last-of-type(2) {
-                border-right: 1px solid var(--bs-gray-300, #dee2e6) !important
-            }
             table.dataTable:not(.table-borderless) > tbody > tr.dtrg-start > td:nth-last-of-type(2) {
                 border-right: 1px solid transparent
             }
@@ -192,7 +221,7 @@
             table.dataTable:not(.table-borderless) > tbody > tr:last-of-type > td:last-of-type {
                 border-bottom-right-radius: 2px
             }
-            /* Normale Tabllen */
+            /* Normale Tabellen */
             table:not(.table-borderless, .dataTable) > tbody > tr > td:last-of-type {
                 border-right: 1px solid var(--bs-gray-300, #dee2e6)
             }
@@ -232,31 +261,93 @@
                 padding-right: 0 !important;
                 width: 100% !important
             }
+            table.dataTable:not(.table-borderless) > tbody > tr > td:only-of-type, table.dataTable:not(.table-borderless) > tbody > tr > td:last-of-type {
+                border-right: 1px solid var(--bs-gray-300, #dee2e6);
+            }
             table.dataTable > thead > tr > th {
                 box-sizing: border-box;
-            }
-            table.dataTable > thead > tr > th:nth-last-of-type(2) {
-                width: unset !important
-            }
-            table.dataTable > thead > tr > th:last-of-type {
-                width: 17px !important
-            }
-            table.dataTable > tbody > tr > td.TintengefrorenerTiefenfrisch, .dts_label {
-                display: none !important;
-            }
-            div.dataTables_scrollBody > table th {
-                border-width: 0 !important
-            }
+            } 
             div.dataTables_wrapper > .row:last-of-type {
                 margin-top: 24px
             }
-            footer a {
+            footer a, footer a:hover {
                 border-bottom: 1px dotted #ffffff;
                 text-decoration: none;
+                color: #ffffff;
             }
             .fritz {
                 margin-right: calc(var(--bs-gutter-x) * 0.5);
                 flex: 1 0 auto
+            }
+            /* Vorladen von Sortierungssymbolen in Tabellen */
+            body::after {
+                position: absolute;
+                width: 0;
+                height: 0;
+                z-index: -1;
+                overflow: hidden;
+                content: url("img/iconmonstr-sort-2.svg") url("img/iconmonstr-sort-3.svg") url("img/iconmonstr-sort-4.svg")
+            }
+            .alert-info.messageboxContainer {
+                border-color: #bbd8e6
+            }
+            .alert-warning.messageboxContainer {
+                border-color: #f2e7c4
+            }
+            .alert-danger.messageboxContainer {
+                border-color: #e5babe
+            }
+            .alert-success.messageboxContainer {
+                border-color: #b9dac1
+            }
+            .messageboxIcon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.714rem 0.357rem;
+                align-self: stretch;
+            }
+            .messageboxIcon.info {
+                background-color: #bbd8e6;
+                color: #437b95
+            }
+            .messageboxIcon.danger {
+                background-color: #e5babe;
+                color: #911
+            }
+            .messageboxIcon.success {
+                background-color: #b9dac1;
+                color: #508d50
+            }
+            .messageboxIcon.warning {
+                background-color: #f2e7c4;
+                color: #918130
+            }
+            .messageboxIcon > i {
+                font-size: 1.5625rem
+            }
+            .messageboxText {
+                padding: 0.5rem;
+                margin: 0.5rem;
+                width: 100%;
+            }
+            .messageboxContainer {
+                display: flex;
+                align-items: center;
+                padding: 0;
+                position: relative
+            }
+            .messageboxText button.close {
+                margin: 0 0 auto auto;
+            }
+            .messageboxText ul {
+                list-style-position: inside;
+                margin: 0;
+                padding: 0;
+            }
+            .table-container {
+                flex: 1 0 auto;
+                overflow-y: auto
             }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
@@ -297,20 +388,366 @@
                 .fritz {
                     margin-left: calc(var(--bs-gutter-x) * 0.5);
                 }
+                table.dataTable thead > tr > th {
+                    font-weight: 600;
+                }
+                main {
+                    padding: 0 2%
+                }
+                #second-navbar, #mobile-navbar {
+                    margin-right: 2%;
+                }
+                #first-navbar {
+                    margin-left: 2%;
+                }
+                #mobile-navbar {
+                    display: block;
+                }
+                #second-navbar {
+                    display: none;
+                }
             }
             @media only screen and (min-width: 600px) {
+                table.dataTable thead > tr > th {
+                    font-weight: 600;
+                }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                    font-size: 14px !important;
+                }
+                #second-navbar, #mobile-navbar {
+                    margin-right: 2%;
+                }
+                #first-navbar {
+                    margin-left: 2%;
+                }
+                #mobile-navbar {
+                    display: block;
+                }
+                #second-navbar {
+                    display: none;
+                }
             }
             @media only screen and (min-width: 768px) {
                 .row > label {
                     align-self: center;
                 }
+                table.dataTable thead > tr > th {
+                    font-weight: 600;
+                }
+                main {
+                    padding: 0 2%
+                }
+                #second-navbar, #mobile-navbar {
+                    margin-right: 2%;
+                }
+                #first-navbar {
+                    margin-left: 2%;
+                }
+                #mobile-navbar {
+                    display: none;
+                }
+                #second-navbar {
+                    display: block;
+                }
             }
             @media only screen and (min-width: 992px) {
+                .formContainer {
+                    flex-direction: row;
+                    align-content: center;
+                    align-items: center;
+                }
+                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
+                    margin-left: 0.5rem;
+                }
+                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                    margin-top: 0.5rem;
+                }
+                #mobile-navbar {
+                    display: none;
+                }
+                table.dataTable thead > tr > th {
+                    font-weight: bold;
+                }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                    font-size: 16px !important;
+                }
+                main {
+                    padding: 0 5%
+                }
+                #second-navbar, #mobile-navbar {
+                    margin-right: 5%;
+                }
+                #first-navbar {
+                    margin-left: 5%;
+                }
+                #mobile-navbar {
+                    display: none;
+                }
+                #second-navbar {
+                    display: block;
+                }
             }
             @media only screen and (min-width: 1200px) {
+                table.dataTable thead > tr > th {
+                    font-weight: bold;
+                }
+                main {
+                    padding: 0 5%
+                }
+                #second-navbar, #mobile-navbar {
+                    margin-right: 5%;
+                }
+                #first-navbar {
+                    margin-left: 5%;
+                }
+                #mobile-navbar {
+                    display: none;
+                }
+                #second-navbar {
+                    display: block;
+                }
             }
+            @keyframes background-flashing-success {
+                0% { background-color: rgba(var(--bs-success-rgb), 0.5) }
+                50%  { background-color: rgba(var(--bs-success-rgb), 0.25) }
+                100% { background-color: rgba(var(--bs-success-rgb), 0.5) }
+            }
+            /*animation: background-flashing-success 5s linear 0s infinite*/
         </style>
         <script>
+            var systemInfosEventSource = null;
+            var viewportWidth = visualViewport["width"];
+            var authToken = null;
+            var currentUser = null;
+            var isAdmin = false;
+            const dataTables = {};
+            const adminDataTables = {};
+            const dataTablesLocalisation = {
+                sEmptyTable: "Keine Daten vorhanden",
+                sInfo: "_START_ bis _END_ von _TOTAL_ Einträgen",
+                sInfoEmpty: "0 bis 0 von 0 Einträgen",
+                sInfoFiltered: "(gefiltert aus _MAX_ Einträgen)",
+                sInfoPostFix: "",
+                sInfoThousands: ".",
+                sLengthMenu: "_MENU_ Einträge anzeigen",
+                sLoadingRecords: "Wird geladen...",
+                sProcessing: "Bitte warten...",
+                sSearch: "Suchen:",
+                sZeroRecords: "Keine Einträge vorhanden.",
+                oPaginate: {
+                    sFirst: "Erste",
+                    sPrevious: "Zurück",
+                    sNext: "Nächste",
+                    sLast: "Letzte"
+                },
+                oAria: {
+                    sSortAscending: ": aktivieren, um Spalte aufsteigend zu sortieren",
+                    sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+                }
+            }
+            const dataTablesOptions = {
+                currentReservations: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            visible: false
+                        },
+                        {
+                            name: "room",
+                            data: "room",
+                        },
+                        {
+                            name: "time",
+                            data: "time",
+                        },
+                        {
+                            name: "booker",
+                            data: "booker",
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                //console.log(row, meta);
+                                // Momentan stattfindende Termine sollen wohl nicht mehr gelöscht/bearbeitet werden können
+                                // Wie kurzfristig dürfen Termine gelöscht/bearbeitet werden?
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
+                                /*let index = plantProperties.findIndex(key => key["id"] === row["id"]);
+                                if (index >= 0) {
+                                    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
+                                }
+                                else {
+                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
+                                }*/
+                                buttons += "</div>";
+                                return buttons;
+                            },
+                            sorting: false,
+                            width: "1%",
+                            visible: isAdmin
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "GET",
+                        data: {
+                            type: "currentReservations"
+                        },
+                        dataSrc: function(response) {
+                            isAdmin = response["isAdmin"];
+                            return response["data"];
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#currentReservationsTable").parent().addClass("table-container");
+                    }
+                },
+                pastReservations: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            visible: false
+                        },
+                        {
+                            name: "room",
+                            data: "room",
+                        },
+                        {
+                            name: "time",
+                            data: "time",
+                        },
+                        {
+                            name: "booker",
+                            data: "booker",
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "lol",
+                            sorting: false,
+                            data: null,
+                            orderable: false,
+                            defaultContent: "",
+                            className: "TintengefrorenerTiefenfrisch"
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "GET",
+                        data: {
+                            type: "currentReservations"
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#logsAdminTable > tbody > tr:not(.dtrg-start) > td:nth-last-of-type(2)").attr("colspan", "2");
+                        $("#logsAdminTable").parent().addClass("table-container");
+                    }
+                }
+            };
+            const dateTimePickerIcons = {
+                time: "far fa-clock",
+                date: "fas fa-calendar",
+                up: "fas fa-chevron-up",
+                down: "fas fa-chevron-down",
+                previous: "fas fa-chevron-left",
+                next: "fas fa-chevron-right",
+                today: "fas fa-check",
+                clear: "fas fa-trash-alt",
+                close: "fas fa-times"
+            };
+            function login(wtf) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") == "login") {
+                    if ($("#body-overlay").length == 0) {
+                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                    }
+                    if ($(wtf).find("[data-processing='true']").length == 0) {
+                        $(wtf).attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    }
+                    $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-body > .alert").remove();
+                    $.post("lol", {
+                        username: $("#username").val(),
+                        password: $("#password").val()
+                    }).done(function(response) {
+                        //cookies setzen
+                        //anmeldeknopf durch abmeldeknopf ersetzen
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        $(wtf).find("[data-processing='true']").remove();
+                        $(wtf).removeAttr("disabled");
+                        $("#body-overlay").remove();
+                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                    });
+                }
+            }
+            function logout(wtf) {
+                //cookies löschen
+                //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
+            }
+            function updateSystemInfos() {
+                if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
+                    systemInfosEventSource = new EventSource("sse_test.php");
+                    systemInfosEventSource.onmessage = function(event) {
+                        if ($("#mainModal").attr("data-name") == "systemInfos") {
+                            let data = JSON.parse(event["data"]);
+                            let statsText = "";
+                            if (data.hasOwnProperty("osname")) {
+                                statsText += "<tr><td class='align-top'>Kernelversion</td><td>" + data["osname"] + "</td></tr>";
+                            }
+                            if (data.hasOwnProperty("arch")) {
+                                statsText += "<tr><td class='align-top'>Architektur</td><td>" + data["arch"] + "</td></tr>";
+                            }
+                            if (data.hasOwnProperty("cpus")) {
+                                statsText += "<tr><td class='align-top'>CPU</td><td>" + data["cpus"][0]["model"];
+                                for (let [index, cpu] of data["cpus"].entries()) {
+                                    statsText += "<div>CPU #" + index + ":<div class='ps-3'>Takt: " + cpu["speed"] + "MHz</div></div>";
+                                }
+                                statsText += "</td></tr>";
+                            }
+                            if (data.hasOwnProperty("freememory") && data.hasOwnProperty("totalmemory")) {
+                                statsText += "<tr><td class='align-top'>Speicher</td><td>" + data["freememory"] + " MB/" + data["totalmemory"] + " MB (" + Math.floor(((data["freememory"] / data["totalmemory"]) *100)) + " %)</td></tr>";
+                            }
+                            if (data.hasOwnProperty("hostname")) {
+                                statsText += "<tr><td class='align-top'>Host</td><td>" + data["hostname"] + "</td></tr>";
+                            }
+                            if (data.hasOwnProperty("uptime")) {
+                                statsText += "<tr><td class='align-top'>Laufzeit</td><td>" + data["uptime"].duration() + "</td></tr>";
+                            }
+                            $("#systemInfosTable").html(statsText);
+                        }
+                        else {
+                            systemInfosEventSource.close();
+                            systemInfosEventSource = null;
+                        }
+                    };
+                }
+            }
+            function readjustTables() {
+                let collapses = [];
+                let element = null;
+                let tableName = null;
+                for (collapse of collapses) {
+                    element = $("a[href='" + collapse + "']");
+                    tableName = $(element).attr("data-table");
+                    if ($(element).attr("aria-expanded") === "true") {
+                        adminDataTables[tableName].columns.adjust().draw();
+                    }
+                }
+            }
             function confirmation(element, options = {}) {
                 let data = {
                     modal: {
@@ -352,7 +789,7 @@
                 Modal.create(data);
             }
             class Alert {
-                static create(type, message) {
+                static create(type, message, closeable = true, classes = "") {
                     type = type.toLowerCase();
                     let icons = {
                         danger: "fas fa-exclamation-circle",
@@ -363,8 +800,12 @@
                     if (!["primary", "success", "danger", "warning"].includes(type)) {
                         type = "primary";
                     }
-                    return "<div class='alert-dismissible alert alert-" + type + "' role='alert'><i class='" + icons[type] + "' style='font-size: x-large; vertical-align: sub'></i> " + message + "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Schließen'></button></div>";
+                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div>";
                 }
+            }
+            // Wird verwendet, um Funktionen innerhalb von Objekten auszuführen
+            function achso(callback, args = null) {
+                callback.apply(this, args);
             }
             class Modal {
                 /*
@@ -421,7 +862,7 @@
                         $("#mainModal").hide();
                     }
                     $("#mainModal > div:first-of-type").removeClass("modal-sm modal-lg modal-xl modal-dialog-scrollable");
-                    $("#mainModal > div:first-of-type").removeAttr("data-bs-backdrop data-bs-keyboard");
+                    $("#mainModal").removeAttr("data-bs-backdrop data-bs-keyboard");
                     $("#mainModal .modal-header > h4").empty();
                     $("#mainModal .modal-body").empty();
                     $("#mainModal .modal-footer").empty();
@@ -431,7 +872,7 @@
                             $("#mainModal > div:first-of-type").addClass("modal-" + data["modal"]["size"]);
                         }
                         if (data["modal"].hasOwnProperty("static") && data["modal"]["static"]) {
-                            $("#mainModal > div:first-of-type").attr({"data-bs-backdrop":"static", "data-bs-keyboard":"false"});
+                            $("#mainModal").attr({"data-bs-backdrop":"static", "data-bs-keyboard":"false"});
                         }
                         if (data.hasOwnProperty("title")) {
                             if (data["title"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
@@ -533,37 +974,40 @@
                     }
                 }
             }
+            $(window).on("load", function() {
+                $("#body-overlay").empty();
+                $("#body-overlay").css("opacity", 0).on("transitionend", function() {
+                    $(this).remove();
+                    $("body").removeClass("overflow-hidden");
+                });
+            }).on("resize", function() {
+                if (visualViewport["width"] !== viewportWidth) {
+                    viewportWidth = visualViewport["width"];
+                    /*if ($("[href='#plantsAdminCreationContainer']").hasClass("active") && $("#collapse-plants-actions").hasClass("show")) {
+                        $("#newPlantContainer").css("max-height", $("#newPlantNavigation").outerHeight(true) + "px");
+                    }*/
+                }
+            });
             $(document).on("DOMContentLoaded", function() {
+                dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                // Alle 5 Minuten Tabellen aktualisieren
+                // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
+                // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
+                setInterval(function() {
+                    $.post("lol", {
+                        _token: authToken
+                    }).done(function(response) {
+                        // Wenn man Adminstatus hat, Tabelle neu erstellen!
+                        if (DataTable.isDataTable("#currentReservationsTable")) {
+                            $("#currentReservationsTable").DataTable().ajax.reload();
+                        }
+                    }).fail(function(response) {
+                        $("#currentReservationsTable_wrapper").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                    });
+                }, 5*60*1000);
                 let date = new Date();
                 $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
-                const newReservationTimeFrom = $("#newReservationTimeFrom").datetimepicker({
-                    icons: {
-                        time: "far fa-clock",
-                        date: "fas fa-calendar",
-                        up: "fas fa-chevron-up",
-                        down: "fas fa-chevron-down",
-                        previous: "fas fa-chevron-left",
-                        next: "fas fa-chevron-right",
-                        today: "fas fa-check",
-                        clear: "fas fa-trash-alt",
-                        close: "fas fa-times"
-                    },
-                    locale: "de"
-                });
-                const newReservationTimeTo = $("#newReservationTimeTo").datetimepicker({
-                    icons: {
-                        time: "far fa-clock",
-                        date: "fas fa-calendar",
-                        up: "fas fa-chevron-up",
-                        down: "fas fa-chevron-down",
-                        previous: "fas fa-chevron-left",
-                        next: "fas fa-chevron-right",
-                        today: "fas fa-check",
-                        clear: "fas fa-trash-alt",
-                        close: "fas fa-times"
-                    },
-                    locale: "de"
-                });
                 $("a[href='#systemInfos']").click(function() {
                     let content = "<table class='table-sm w-100'>";
                     content += "<thead>";
@@ -612,10 +1056,148 @@
                     };
                     Modal.create(data);
                 });
+                $("#createNewReservationButton").click(function() {
+                    let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
+                    content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
+                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
+                    content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationRoomSelect'></select></div>";
+                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFrom'>Start:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationTimeFrom'>";
+                    content += "</div><div class='row mt-3'><label class='col-md-3' for='newReservationTimeTo'>Ende:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationTimeTo'>";
+                    content += "</div><div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'>";
+                    content += "</div></form>";
+                    let data = {
+                        modal: {
+                            name: "newReservation",
+                            static: true
+                        },
+                        title: {
+                            text: "Neuen Termin erstellen"
+                        },
+                        content: {
+                            text: content
+                        },
+                        footer: {
+                            buttons: {
+                                default: {
+                                    text: "Abbrechen",
+                                    class: "btn-danger"
+                                },
+                                custom: [
+                                    {
+                                        text: "Speichern",
+                                        class: "btn-primary",
+                                        attributes: {
+                                            id: "saveNewReservationButton"
+                                        },
+                                        actions: [
+                                            {
+                                                click: [
+                                                    {
+                                                        function: function() {
+                                                            let hasError = false;
+                                                            let from;
+                                                            let to;
+                                                            if ($("#body-overlay").length == 0) {
+                                                                $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                                                            }
+                                                            if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
+                                                                $("#saveNewReservationButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                            }
+                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                            $("#mainModal .modal-body > .alert").remove();
+                                                            try {
+                                                                let dateFrom = $("#newReservationTimeFrom").val().split(" ");
+                                                                let dateFromDate = dateFrom[0].split(".");
+                                                                let dateFromTime = dateFrom[1].split(":");
+                                                                from = new Date(dateFromDate[2], dateFromDate[1], dateFromDate[0], dateFromTime[0], dateFromTime[1], 0);
+                                                            }
+                                                            catch(error) {
+                                                                hasError = true;
+                                                                $("#mainModal .modal-body").prepend(Alert.create("danger", "Das Format für den Startzeitpunkt ist ungültig oder es ist ein anderer Fehler aufgetreten."));
+                                                                $("#saveNewReservationButton").find("[data-processing='true']").remove();
+                                                                $("#saveNewReservationButton").removeAttr("disabled");
+                                                                $("#body-overlay").remove();
+                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            }
+                                                            try {
+                                                                let dateTo = $("#newReservationTimeTo").val().split(" ");
+                                                                let dateToDate = dateTo[0].split(".");
+                                                                let dateToTime = dateTo[1].split(":");
+                                                                to = new Date(dateToDate[2], dateToDate[1], dateToDate[0], dateToTime[0], dateToTime[1], 0);
+                                                            }
+                                                            catch(error) {
+                                                                hasError = true;
+                                                                $("#mainModal .modal-body").prepend(Alert.create("danger", "Das Format für den Endzeitpunkt ist ungültig oder es ist ein anderer Fehler aufgetreten."));
+                                                                $("#saveNewReservationButton").find("[data-processing='true']").remove();
+                                                                $("#saveNewReservationButton").removeAttr("disabled");
+                                                                $("#body-overlay").remove();
+                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            }
+                                                            if (!hasError) {
+                                                                $.post("lol", {
+                                                                    _token: authToken,
+                                                                    building: $("#newReservationBuildingSelect").val(),
+                                                                    room: $("#newReservationRoomSelect").val(),
+                                                                    from: from.getTime(),
+                                                                    to: to.getTime(),
+                                                                    description: $("#newReservationDescription").val(),
+                                                                    user: currentUser
+                                                                }).done(function(response) {
+                                                                }).fail(function(response) {
+                                                                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                                                                }).always(function() {
+                                                                    $("#saveNewReservationButton").find("[data-processing='true']").remove();
+                                                                    $("#saveNewReservationButton").removeAttr("disabled");
+                                                                    $("#body-overlay").remove();
+                                                                    $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                                });
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    };
+                    $("#mainModal").on("shown.bs.modal", function() {
+                        $("#newReservationTimeFrom").datetimepicker({
+                            icons: dateTimePickerIcons,
+                            locale: "de"
+                        });
+                        $("#newReservationTimeTo").datetimepicker({
+                            icons: dateTimePickerIcons,
+                            locale: "de"
+                        });
+                    }).on("hidden.bs.modal", function(event) {
+                        if ($(this).attr("data-name") == "newReservation") {
+                            $(this).off("shown.bs.modal");
+                        }
+                    });
+                    Modal.create(data);
+                });
+                $("a[href='#currentReservations']").on("shown.bs.tab", function () {
+                    readjustTables();
+                });
+                $("a[href='#pastReservations']").on("shown.bs.tab", function () {
+                    readjustTables();
+                });
+                $("a[href='#administration']").on("shown.bs.tab", function () {
+                    readjustTables();
+                });
             });
         </script>
     </head>
     <body>
+        <div id="body-overlay" class="m-0 p-0 overflow-hidden">
+            <div class="spinner-border mr-2" style="border-width: 5px; color: var(--bs-gray-500)"></div>
+        </div>
         <header>
             <nav class="navbar navbar-expand-sm p-0" id="navigation">
                 <a class="navbar-brand ms-3 mb-0" href="#">
@@ -623,21 +1205,10 @@
                 </a>
                 <ul class="navbar-nav" id="first-navbar">
                     <li class="nav-item">
-                        <a class="nav-link rounded-3" href="#"><i class="fas fa-tachometer-alt"></i> Übersicht</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link rounded-3" href="#"><i class="fas fa-hdd"></i> Systeminformationen</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle rounded-3" href="#" role="button" data-bs-toggle="dropdown"><i class="fas fa-cogs"></i> Administration</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-door-open"></i> Raumverwaltung</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-balance-scale"></i> Rollenverwaltung</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt"></i> Terminverwaltung</a></li>
-                        </ul>
-                    </li>
                 </ul>
-                <ul class="navbar-nav mt-auto me-2 mb-auto ms-auto" id="second-navbar">
+                <ul class="navbar-nav mt-auto mb-auto ms-auto" id="second-navbar">
                     <li class="nav-item">
                         <a class="nav-link rounded-3" href="#login"><i class="fas fa-sign-in-alt"></i> Anmelden</a>
                     </li>
@@ -651,9 +1222,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-tachometer-alt"></i> Systeminformationen</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-hdd"></i> Systeminformationen</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cogs"></i> Administration</a></li>
                         <li><div class="dropdown-divider"></div></li> 
                         <li><a class="dropdown-item" href="#login"><i class="fas fa-sign-in-alt"></i> Anmelden</a></li>
                     </ul>
@@ -664,88 +1233,128 @@
             <div class="row mt-4">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#activeReservations">Aktive Termine</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#currentReservations">Anstehende Termine</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#pastReservations">Vergangene Termine</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#administration">Administration</a>
+                    </li>
                 </ul>
                 <div class="tab-content p-3">
-                    <div class="tab-pane fade active show" id="activeReservations">
-                        <h3 class="mt-3">Anstehende Termine</h3>
-                        <table class="table mt-3">
+                    <div class="tab-pane fade active show" id="currentReservations">
+                        <table class="table table-sm mt-3" id="currentReservationsTable">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
+                                    <th>Raum</th><!-- Soll nur als Administrator sichtbar sein -->
                                     <th>Zeitpunkt</th>
-                                    <th>Raum</th>
+                                    <th>Bucher</th>
                                     <th>Beschreibung</th>
+                                    <th>Optionen</th><!-- Soll nur als Administrator sichtbar sein und wenn Termin noch nicht stattfindet -->
                                 </tr>
                             </thead>
-                            <tbody id="upcomingReservations"></tbody>
-                        </table>
-                        <h3 class="mt-5">Geplante Termine</h3>
-                        <table class="table mt-3">
-                            <thead>
-                                <tr>
-                                    <th>Zeitpunkt</th>
-                                    <th>Raum</th>
-                                    <th>Beschreibung</th>
-                                </tr>
-                            </thead>
-                            <tbody id="plannedReservations"></tbody>
+                            <tbody></tbody>
                         </table>
                         <div class="d-flex mt-3 justify-content-end">
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newReservationModal"><i class="fas fa-plus"></i> Neue Reservierung</button>
+                            <button type="button" class="btn btn-success" id="createNewReservationButton"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pastReservations">
-                        <table class="table mt-3">
+                        <table class="table mt-3" id="pastReservationsTable">
                             <thead>
                                 <tr>
-                                    <th>Raum</th>
+                                    <th>ID</th>
+                                    <th>Raum</th><!-- Soll nur als Administrator sichtbar sein -->
                                     <th>Zeitpunkt</th>
                                     <th>Beschreibung</th>
                                     <th>Bucher</th>
                                 </tr>
                             </thead>
-                            <tbody id="upcomingReservations"></tbody>
+                            <tbody></tbody>
                         </table>
+                    </div>
+                    <div class="tab-pane fade" id="administration">
+                        <section id="rooms-accordion" class="mb-3">
+                            <div class="card">
+                                <div class="card-header p-0">
+                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-rooms">
+                                        <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fas fa-door-open"></i> Räume</h4>
+                                        <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
+                                    </a>
+                                </div>
+                                <div id="collapse-rooms" class="collapse hide" data-bs-parent="#rooms-accordion">
+                                    <div class="card-body">
+                                        <div class="d-flex formContainer mb-3">
+                                            <label for="roomBuildingsSelect">Gebäude:</label>
+                                            <select class="form-select w-auto d-inline-block" id="roomBuildingsSelect" data-old="0">
+                                                <option value="0">Alle</option>
+                                            </select>
+                                        </div>
+                                        <table class="table table-sm w-100 mt-3" id="roomsAdminTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Gebäude</th>
+                                                    <th>Nummer</th>
+                                                    <th>Beschreibung</th>
+                                                    <th>Optionen</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="roles-accordion" class="mb-3">
+                            <div class="card">
+                                <div class="card-header p-0">
+                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-roles">
+                                        <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fas fa-balance-scale"></i> Benutzerrollen</h4>
+                                        <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
+                                    </a>
+                                </div>
+                                <div id="collapse-roles" class="collapse hide" data-bs-parent="#roles-accordion">
+                                    <div class="card-body">
+                                        <div class="d-flex formContainer mb-3">
+                                            <label for="">Rolle:</label>
+                                            <select class="form-select w-auto d-inline-block" id="" data-old="0">
+                                                <option value="0">Alle</option>
+                                                <option value="1">Benutzer</option>
+                                                <option value="2">Administratoren</option>
+                                            </select>
+                                        </div>
+                                        <table class="table table-sm w-100 mt-3" id="rolesAdminTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Benutzer</th>
+                                                    <th>Rolle</th>
+                                                    <th>Optionen</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
         </main>
-        <footer>lol</footer>
-        <div class="modal fade" id="newReservationModal" data-bs-backdrop="static">
-            <div class="modal-dialog">
+        <footer></footer>
+        <div class="modal fade" id="mainModal">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Neue Raumreservierung</h4>
+                        <h4 class="modal-title"></h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="row g-3">
-                                <label class="col-md-3" for="newReservationRoomSelect">Raum:</label>
-                                <select class="col-md-9 w-auto form-control fritz" id="newReservationRoomSelect"></select>
-                            </div>
-                            <div class="row mt-3">
-                                <label class="col-md-3" for="newReservationTimeFrom">Beginn:</label>
-                                <input type="text" class="col-md-9 w-auto form-control fritz" id="newReservationTimeFrom">
-                            </div>
-                            <div class="row mt-3">
-                                <label class="col-md-3" for="newReservationTimeTo">Ende:</label>
-                                <input type="text" class="col-md-9 w-auto form-control fritz" id="newReservationTimeTo">
-                            </div>
-                            <div class="row mt-3">
-                                <label class="col-md-3" for="newReservationDescription">Beschreibung:</label>
-                                <input type="text" class="col-md-9 w-auto form-control fritz" id="newReservationDescription">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Speichern</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Abbrechen</button>
-                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer"></div>
                 </div>
             </div>
         </div>
