@@ -186,21 +186,21 @@
                 background-color: var(--bs-gray-300, #dee2e6);
             }
             */
-            table > thead > tr > th:first-of-type {
+            table:not(.table-borderless) > thead > tr > th:first-of-type {
                 border-top-left-radius: 2px;
             }
-            table > thead > tr > th:last-of-type {
+            table:not(.table-borderless) > thead > tr > th:last-of-type {
                 border-top-right-radius: 2px;
             }
-            table > thead > tr > th:not(.TintengefrorenerTiefenfrisch) {
+            table:not(.table-borderless) > thead > tr > th:not(.TintengefrorenerTiefenfrisch) {
                 border-left: 1px solid var(--bs-gray-300, #dee2e6) !important;
             }
-            table > thead > tr > th {
+            table:not(.table-borderless) > thead > tr > th {
                 border-top: 1px solid var(--bs-gray-300, #dee2e6) !important;
                 border-bottom: 2px solid var(--bs-gray-300, #dee2e6) !important;
                 background-color: #f7f7f7 !important
             }
-            table > thead > tr > th:last-of-type {
+            table:not(.table-borderless) > thead > tr > th:last-of-type {
                 border-right: 1px solid var(--bs-gray-300, #dee2e6) !important;
             }
             table.dataTable:not(.table-borderless) > thead > tr > th:last-of-type {
@@ -347,7 +347,8 @@
             }
             .table-container {
                 flex: 1 0 auto;
-                overflow-y: auto
+                overflow-y: auto;
+                width: 0;
             }
             .bg-gray-200 {
                 background-color: var(--bs-gray-200, #e9ecef);
@@ -395,6 +396,9 @@
                 table.dataTable thead > tr > th {
                     font-weight: 600;
                 }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                    font-size: 14px !important;
+                }
                 main {
                     padding: 0 2%
                 }
@@ -409,6 +413,22 @@
                 }
                 #second-navbar {
                     display: none;
+                }
+                .formContainer {
+                    flex-direction: column;
+                }
+                .formContainer > label {
+                    margin-right: 0;
+                }
+                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
+                    margin-left: 0;
+                }
+                /*
+                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                    margin-top: 0.5rem;
+                }*/
+                .dataTables_filter {
+                    margin-top: 0.5rem;
                 }
             }
             @media only screen and (min-width: 600px) {
@@ -430,8 +450,26 @@
                 #second-navbar {
                     display: none;
                 }
+                .formContainer {
+                    flex-direction: column;
+                }
+                .formContainer > label {
+                    margin-right: 0;
+                }
+                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
+                    margin-left: 0;
+                }/*
+                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                    margin-top: 0.5rem;
+                }*/
+                .dataTables_filter {
+                    margin-top: 0.5rem;
+                }
             }
             @media only screen and (min-width: 768px) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                    font-size: 14px !important;
+                }
                 .formContainer {
                     flex-direction: row;
                     align-content: center;
@@ -439,6 +477,12 @@
                 }
                 .formContainer > label {
                     margin-right: 0.5rem;
+                }
+                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
+                    margin-left: 0.5rem;
+                }
+                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                    margin-top: 0;
                 }
                 .row > label {
                     align-self: center;
@@ -468,12 +512,15 @@
                     align-content: center;
                     align-items: center;
                 }
+                .formContainer > label {
+                    margin-right: 0.5rem;
+                }
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
-                }/*
+                }
                 .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0.5rem;
-                }*/
+                    margin-top: 0;
+                }
                 #mobile-navbar {
                     display: none;
                 }
@@ -500,6 +547,20 @@
                 }
             }
             @media only screen and (min-width: 1200px) {
+                .formContainer {
+                    flex-direction: row;
+                    align-content: center;
+                    align-items: center;
+                }
+                .formContainer > label {
+                    margin-right: 0.5rem;
+                }
+                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
+                    margin-left: 0.5rem;
+                }
+                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                    margin-top: 0;
+                }
                 table.dataTable thead > tr > th {
                     font-weight: bold;
                 }
