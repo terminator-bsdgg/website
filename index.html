@@ -349,6 +349,10 @@
                 flex: 1 0 auto;
                 overflow-y: auto
             }
+            .bg-gray-200 {
+                background-color: var(--bs-gray-200, #e9ecef);
+                font-weight: 600;
+            }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
                 font-style: normal;
@@ -428,6 +432,14 @@
                 }
             }
             @media only screen and (min-width: 768px) {
+                .formContainer {
+                    flex-direction: row;
+                    align-content: center;
+                    align-items: center;
+                }
+                .formContainer > label {
+                    margin-right: 0.5rem;
+                }
                 .row > label {
                     align-self: center;
                 }
@@ -458,10 +470,10 @@
                 }
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
-                }
+                }/*
                 .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
                     margin-top: 0.5rem;
-                }
+                }*/
                 #mobile-navbar {
                     display: none;
                 }
@@ -561,7 +573,13 @@
                         },
                         {
                             name: "time",
-                            data: "time",
+                            data: function(row, type, set, meta) {
+                                console.log(row);
+                                if (type === "display") {
+                                    return row["time"];
+                                }
+                                return row["time"];
+                            },
                         },
                         {
                             name: "booker",
@@ -632,29 +650,123 @@
                         {
                             name: "description",
                             data: "description",
-                        },
-                        {
-                            name: "lol",
-                            sorting: false,
-                            data: null,
-                            orderable: false,
-                            defaultContent: "",
-                            className: "TintengefrorenerTiefenfrisch"
                         }
                     ],
                     ajax: {
                         url: "dataTables.php",
                         type: "GET",
                         data: {
-                            type: "currentReservations"
+                            type: "pastReservations"
+                        },
+                        dataSrc: function(response) {
+                            return response["data"];
                         }
                     },
                     drawCallback: function(settings) {
-                        $("#logsAdminTable > tbody > tr:not(.dtrg-start) > td:nth-last-of-type(2)").attr("colspan", "2");
-                        $("#logsAdminTable").parent().addClass("table-container");
+                        $("#pastReservationsAdminTable").parent().addClass("table-container");
                     }
                 }
             };
+            const dataTablesAdminOptions = {
+                roles: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            visible: false
+                        },
+                        {
+                            name: "group",
+                            data: "group",
+                            visible: false
+                        },
+                        {
+                            name: "Name",
+                            data: "name",
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
+                                //let index = plantProperties.findIndex(key => key["id"] === row["id"]);
+                                //if (index >= 0) {
+                                //    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
+                                //}
+                                //else {
+                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
+                                //}
+                                buttons += "</div>";
+                                return buttons;
+                            }
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "GET",
+                        data: {
+                            type: "roles"
+                        },
+                        dataSrc: function(response) {
+                            return response["data"];
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#rolesAdminTable").parent().addClass("table-container");
+                    }
+                },
+                rooms: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                        },
+                        {
+                            name: "building",
+                            data: "building",
+                        },
+                        {
+                            name: "name",
+                            data: "name",
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
+                                //let index = plantProperties.findIndex(key => key["id"] === row["id"]);
+                                //if (index >= 0) {
+                                //    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
+                                //}
+                                //else {
+                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
+                                //}
+                                buttons += "</div>";
+                                return buttons;
+                            }
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "GET",
+                        data: {
+                            type: "rooms"
+                        },
+                        dataSrc: function(response) {
+                            return response["data"];
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#roomsAdminTable").parent().addClass("table-container");
+                    }
+                }
+            }
             const dateTimePickerIcons = {
                 time: "far fa-clock",
                 date: "fas fa-calendar",
@@ -737,12 +849,12 @@
                 }
             }
             function readjustTables() {
-                let collapses = [];
+                let collapses = ["#collapse-rooms", "#collapse-roles"];
                 let element = null;
                 let tableName = null;
                 for (collapse of collapses) {
                     element = $("a[href='" + collapse + "']");
-                    tableName = $(element).attr("data-table");
+                    tableName = $(element).attr("data-admin-table");
                     if ($(element).attr("aria-expanded") === "true") {
                         adminDataTables[tableName].columns.adjust().draw();
                     }
@@ -974,6 +1086,31 @@
                     }
                 }
             }
+            Number.prototype.duration = function() {
+                let sec_num = parseInt(this, 10);
+                let weeks = Math.floor((sec_num / 3600 / 24) / 7);
+                let days = Math.floor((sec_num / 3600 / 24) % 7);
+                let hours = Math.floor((sec_num / 3600) % 24);
+                let minutes = Math.floor((sec_num / 60) % 60);
+                let seconds = sec_num % 60;
+                let duration = "";
+                if (weeks >= 1) {
+                    duration += weeks + (weeks >= 2 ? " Wochen, " : " Woche, ");
+                }
+                if (days >= 1) {
+                    duration += days + (days >= 2 ? " Tage, " : " Tag, ");
+                }
+                if (hours >= 1) {
+                    duration += hours + (hours >= 2 ? " Stunden, " : " Stunde, ");
+                }
+                if (minutes >= 1) {
+                    duration += minutes + (minutes >= 2 ? " Minuten, " : " Minute, ");
+                }
+                if (seconds >= 1) {
+                    duration += seconds + (seconds >= 2 ? " Sekunden, " : " Sekunde, ");
+                }
+                return duration.substr(0, duration.length -2);
+            }
             $(window).on("load", function() {
                 $("#body-overlay").empty();
                 $("#body-overlay").css("opacity", 0).on("transitionend", function() {
@@ -994,12 +1131,12 @@
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
                 setInterval(function() {
-                    $.post("lol", {
+                    $.post("dataTables.php", {
                         _token: authToken
                     }).done(function(response) {
                         // Wenn man Adminstatus hat, Tabelle neu erstellen!
                         if (DataTable.isDataTable("#currentReservationsTable")) {
-                            $("#currentReservationsTable").DataTable().ajax.reload();
+                            dataTables["currentReservations"].ajax.reload();
                         }
                     }).fail(function(response) {
                         $("#currentReservationsTable_wrapper").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
@@ -1182,14 +1319,141 @@
                     });
                     Modal.create(data);
                 });
-                $("a[href='#currentReservations']").on("shown.bs.tab", function () {
-                    readjustTables();
+                $("a[href='#currentReservations']").on("shown.bs.tab", function() {
+                    if (!DataTable.isDataTable("#currentReservationsTable")) {
+                        dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                    }
+                    else {
+                        dataTables["currentReservations"].columns.adjust().draw();
+                    }
                 });
-                $("a[href='#pastReservations']").on("shown.bs.tab", function () {
-                    readjustTables();
+                // Nur für Admins sichtbar sein?
+                $("a[href='#pastReservations']").on("shown.bs.tab", function() {
+                    if (!DataTable.isDataTable("#pastReservationsTable")) {
+                        dataTables["pastReservations"] = $("#pastReservationsTable").DataTable(dataTablesOptions["pastReservations"]);
+                    }
+                    else {
+                        dataTables["pastReservations"].columns.adjust().draw();
+                    }
                 });
-                $("a[href='#administration']").on("shown.bs.tab", function () {
-                    readjustTables();
+                $("a[href='#administration']").on("shown.bs.tab", function() {
+                    if ($("[href='#collapse-rooms']").attr("aria-expanded") === "true" && DataTable.isDataTable("#roomsAdminTable")) {
+                        adminDataTables["rooms"].columns.adjust().draw();
+                    }
+                    if ($("[href='#collapse-roles']").attr("aria-expanded") === "true" && DataTable.isDataTable("#rolesAdminTable")) {
+                        adminDataTables["roles"].columns.adjust().draw();
+                    }
+                });
+                $("#rooms-accordion").on("shown.bs.collapse", function() {
+                    if (!DataTable.isDataTable("#usersAdminTable")) {
+                        adminDataTables["users"] = $("#usersAdminTable").DataTable(dataTablesAdminOptions["users"]);
+                    }
+                    else {
+                        $("#usersAdminTable").DataTable().ajax.reload();
+                    }
+                });
+                $("#roles-accordion").on("shown.bs.collapse", function() {
+                    if (!DataTable.isDataTable("#rolesAdminTable")) {
+                        let options = {};
+                        Object.assign(options, dataTablesAdminOptions["roles"]);
+                        options["rowGroup"] = {
+                            dataSrc: "group",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            // Wird nach Erzeugung ausgelöst!
+                            startRender: function(rows, group) {
+                                //console.log(rows);
+                                let columns = adminDataTables["roles"].columns().visible();
+                                let totalColumns = columns.length;
+                                let hiddenColumns = [];
+                                for (i = 0; i < totalColumns; i++) {
+                                    if (!columns[i]) {
+                                        hiddenColumns.push(false);
+                                    }
+                                }
+                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options);
+                    }
+                    else {
+                        $("#rolesAdminTable").DataTable().ajax.reload();
+                    }
+                });
+                $("#rolesRoleSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesAdminOptions["roles"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "group",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            // Wird nach Erzeugung ausgelöst!
+                            startRender: function(rows, group) {
+                                //console.log(rows);
+                                let columns = adminDataTables["roles"].columns().visible();
+                                let totalColumns = columns.length;
+                                let hiddenColumns = [];
+                                for (i = 0; i < totalColumns; i++) {
+                                    if (!columns[i]) {
+                                        hiddenColumns.push(false);
+                                    }
+                                }
+                                console.log(totalColumns, hiddenColumns, columns);
+                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
+                    $(this).attr("data-old", value);
+                    adminDataTables["rolesAdminTable"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
+                        if (!adminDataTables["rolesAdminTable"].rowGroup().enabled()) {
+                            if ($("#createNewRoleButton").length == 0) {
+                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewRole()' id='createNewRoleButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                            }
+                        }
+                        else {
+                            $("#createNewRoleButton").remove();
+                        }
+                    });
+                });
+                $("#rooms-accordion").on("shown.bs.collapse", function() {
+                    if (!DataTable.isDataTable("#roomsAdminTable")) {
+                        let options = {};
+                        Object.assign(options, dataTablesAdminOptions["rooms"]);
+                        options["rowGroup"] = {
+                            dataSrc: "buildings",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            // Wird nach Erzeugung ausgelöst!
+                            startRender: function(rows, group) {
+                                //console.log(rows);
+                                let columns = adminDataTables["rooms"].columns().visible();
+                                let totalColumns = columns.length;
+                                let hiddenColumns = [];
+                                for (i = 0; i < totalColumns; i++) {
+                                    if (!columns[i]) {
+                                        hiddenColumns.push(false);
+                                    }
+                                }
+                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options);
+                    }
+                    else {
+                        $("#roomsAdminTable").DataTable().ajax.reload();
+                    }
                 });
             });
         </script>
@@ -1244,7 +1508,7 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="currentReservations">
-                        <table class="table table-sm mt-3" id="currentReservationsTable">
+                        <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -1262,7 +1526,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pastReservations">
-                        <table class="table mt-3" id="pastReservationsTable">
+                        <table class="table table-sm mt-3 w-100" id="pastReservationsTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -1279,7 +1543,7 @@
                         <section id="rooms-accordion" class="mb-3">
                             <div class="card">
                                 <div class="card-header p-0">
-                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-rooms">
+                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-rooms" data-admin-table="rooms">
                                         <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fas fa-door-open"></i> Räume</h4>
                                         <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
                                     </a>
@@ -1316,22 +1580,23 @@
                                         <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
                                     </a>
                                 </div>
-                                <div id="collapse-roles" class="collapse hide" data-bs-parent="#roles-accordion">
+                                <div id="collapse-roles" class="collapse hide" data-bs-parent="#roles-accordion" data-admin-table="roles">
                                     <div class="card-body">
                                         <div class="d-flex formContainer mb-3">
-                                            <label for="">Rolle:</label>
-                                            <select class="form-select w-auto d-inline-block" id="" data-old="0">
+                                            <label for="rolesRoleSelect">Rolle:</label>
+                                            <select class="form-select w-auto d-inline-block" id="rolesRoleSelect" data-old="0">
                                                 <option value="0">Alle</option>
                                                 <option value="1">Benutzer</option>
-                                                <option value="2">Administratoren</option>
+                                                <option value="2">Moderatoren</option>
+                                                <option value="3">Administratoren</option>
                                             </select>
                                         </div>
                                         <table class="table table-sm w-100 mt-3" id="rolesAdminTable">
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Benutzer</th>
                                                     <th>Rolle</th>
+                                                    <th>Benutzer</th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
