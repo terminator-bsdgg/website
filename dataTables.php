@@ -28,23 +28,23 @@
             }
             break;
         case "buildings":
-            $buildings = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+            $buildings = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
             foreach (range(1, rand(2, 10)) as $lol) {
                 $data[] = [
                     "id" => $lol,
                     "name" => $buildings[array_rand($buildings)],
-                    "description" => "Geisterhaus" . $lol,
+                    "description" => "Geisterhaus " . $lol,
                 ];
             }
             break;
         case "rooms":
-            $buildings = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+            $buildings = ["LOL", "WTF", "ROFL"];
             foreach (range(1, rand(2, 10)) as $lol) {
                 $data[] = [
                     "id" => $lol,
-                    "name" => array_rand($buildings),
+                    "name" => $buildings[array_rand($buildings)],
                     "description" => "Geisterzimmer" . $lol,
-                    "building" => $buildings[array_rand($buildings)]
+                    "building" => rand(1, 10)
                 ];
             }
             break;
@@ -55,7 +55,8 @@
                 if (array_key_exists("category", $_GET) && in_array($_GET["category"], $groups)) {
                     $data[] = [
                         "id" => $lol,
-                        "name" => $names[array_rand($names)]
+                        "name" => $names[array_rand($names)],
+                        "group" => $_GET["category"]
                     ];
                 }
                 else {

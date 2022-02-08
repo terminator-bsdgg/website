@@ -18,7 +18,8 @@
         <script src="js/dataTables.bootstrap5.min.js"></script>
         <script src="js/moment-with-locales.min.js"></script>
         <script src="js/bootstrap-datetimepicker.min.js"></script>
-        <script src="js/script.js"></script>
+        <script src="js/litepicker.js"></script>
+        <script src="js/timepicker-ui.umd.js"></script>
         <style>
             body {
                 display: grid;
@@ -266,10 +267,11 @@
             }
             table.dataTable > thead > tr > th {
                 box-sizing: border-box;
-            } 
+            }
+            /*
             div.dataTables_wrapper > .row:last-of-type {
                 margin-top: 24px
-            }
+            }*/
             footer a, footer a:hover {
                 border-bottom: 1px dotted #ffffff;
                 text-decoration: none;
@@ -474,10 +476,10 @@
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }
+                }/*
                 .formContainer > label {
                     margin-right: 0.5rem;
-                }
+                }*/
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
                 }
@@ -505,16 +507,19 @@
                 #second-navbar {
                     display: block;
                 }
+                .modal-dialog {
+                    margin-top: 5rem;
+                }
             }
             @media only screen and (min-width: 992px) {
                 .formContainer {
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }
+                }/*
                 .formContainer > label {
                     margin-right: 0.5rem;
-                }
+                }*/
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
                 }
@@ -593,6 +598,17 @@
             var authToken = null;
             var currentUser = null;
             var isAdmin = false;
+            var buildings = {};
+            var rooms = {};
+            const rowGroupStrings = {
+                admin: {
+                    roles: {
+                        1: "Benutzer",
+                        2: "Moderator",
+                        3: "Administrator"
+                    }
+                }
+            }
             const dataTables = {};
             const adminDataTables = {};
             const dataTablesLocalisation = {
@@ -735,8 +751,7 @@
                     columns: [
                         {
                             name: "id",
-                            data: "id",
-                            visible: false
+                            data: "id"
                         },
                         {
                             name: "group",
@@ -744,7 +759,7 @@
                             visible: false
                         },
                         {
-                            name: "Name",
+                            name: "name",
                             data: "name",
                         },
                         {
@@ -788,6 +803,7 @@
                         {
                             name: "building",
                             data: "building",
+                            visible: false
                         },
                         {
                             name: "name",
@@ -870,6 +886,17 @@
             function logout(wtf) {
                 //cookies löschen
                 //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
+            }
+            function getBuildings() {
+                $.get("dataTables.php", {
+                        type: "buildings"
+                    }).done(function(response) {
+                        let data = JSON.parse(response);
+                        Object.assign(buildings, data["data"]);
+                    }).fail(function(response) {
+                        $("#currentReservations").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                    });
             }
             function updateSystemInfos() {
                 if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
@@ -1188,6 +1215,7 @@
             });
             $(document).on("DOMContentLoaded", function() {
                 dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                getBuildings();
                 // Alle 5 Minuten Tabellen aktualisieren
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
@@ -1254,14 +1282,15 @@
                     };
                     Modal.create(data);
                 });
+                //https://github.com/pglejzer/timepicker-ui
                 $("#createNewReservationButton").click(function() {
                     let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
                     content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
                     content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
                     content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationRoomSelect'></select></div>";
-                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFrom'>Start:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationTimeFrom'>";
+                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
+                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFrom'>Start:</label><div class='timepicker-ui-newReservationTimeFrom'><input type='text' class='col-md-9 w-auto form-control fritz timepicker-ui-input' value='01:00 AM' id='newReservationTimeFrom'></div>";
                     content += "</div><div class='row mt-3'><label class='col-md-3' for='newReservationTimeTo'>Ende:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationTimeTo'>";
-                    content += "</div><div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'>";
                     content += "</div></form>";
                     let data = {
                         modal: {
@@ -1365,13 +1394,27 @@
                         }
                     };
                     $("#mainModal").on("shown.bs.modal", function() {
-                        $("#newReservationTimeFrom").datetimepicker({
+                        let options = {
+                            clockType: "24h",
+                            cancelLabel: "Abbrechen",
+                            backdrop: false
+                        }
+                        new TimepickerUI($(".timepicker-ui-newReservationTimeFrom")[0], options).create();
+                        /*$("#newReservationTimeFrom").datetimepicker({
                             icons: dateTimePickerIcons,
-                            locale: "de"
-                        });
+                            locale: "de",
+                            widgetPositioning: {
+                                horizontal: "auto",
+                                vertical: "top"
+                            }
+                        });*/
                         $("#newReservationTimeTo").datetimepicker({
                             icons: dateTimePickerIcons,
-                            locale: "de"
+                            locale: "de",
+                            widgetPositioning: {
+                                horizontal: "auto",
+                                vertical: "top"
+                            }
                         });
                     }).on("hidden.bs.modal", function(event) {
                         if ($(this).attr("data-name") == "newReservation") {
@@ -1412,6 +1455,13 @@
                     else {
                         $("#usersAdminTable").DataTable().ajax.reload();
                     }
+                    let wtf = Object.getOwnPropertyNames(buildings);
+                    if (wtf.length >= 1) {
+                        $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
+                        for (item of wtf) {
+                            $("#roomsBuildingSelect").append("<option value='" + buildings[item]["id"] + "'>" + buildings[item]["name"] + "</option>");
+                        }
+                    }
                 });
                 $("#roles-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#rolesAdminTable")) {
@@ -1423,16 +1473,7 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                //console.log(rows);
-                                let columns = adminDataTables["roles"].columns().visible();
-                                let totalColumns = columns.length;
-                                let hiddenColumns = [];
-                                for (i = 0; i < totalColumns; i++) {
-                                    if (!columns[i]) {
-                                        hiddenColumns.push(false);
-                                    }
-                                }
-                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1453,17 +1494,7 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                //console.log(rows);
-                                let columns = adminDataTables["roles"].columns().visible();
-                                let totalColumns = columns.length;
-                                let hiddenColumns = [];
-                                for (i = 0; i < totalColumns; i++) {
-                                    if (!columns[i]) {
-                                        hiddenColumns.push(false);
-                                    }
-                                }
-                                console.log(totalColumns, hiddenColumns, columns);
-                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1471,9 +1502,11 @@
                     options["destroy"] = true;
                     if (value >= 1) {
                         options["ajax"]["data"]["category"] = value;
+                        options["columns"][1]["visible"] = true;
                     }
                     else {
                         delete options["ajax"]["data"]["category"];
+                        options["columns"][1]["visible"] = false;
                     }
                     $(this).attr("data-old", value);
                     adminDataTables["rolesAdminTable"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
@@ -1497,16 +1530,7 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                //console.log(rows);
-                                let columns = adminDataTables["rooms"].columns().visible();
-                                let totalColumns = columns.length;
-                                let hiddenColumns = [];
-                                for (i = 0; i < totalColumns; i++) {
-                                    if (!columns[i]) {
-                                        hiddenColumns.push(false);
-                                    }
-                                }
-                                return $("<tr>").append("<td colspan='" + (totalColumns - hiddenColumns.length -1) + "' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1515,6 +1539,49 @@
                     else {
                         $("#roomsAdminTable").DataTable().ajax.reload();
                     }
+                });
+                $("#roomsBuildingSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesAdminOptions["rooms"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "building",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            // Wird nach Erzeugung ausgelöst!
+                            startRender: function(rows, group) {
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (buildings.hasOwnProperty(group) ? buildings[group]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                        options["columns"][1]["visible"] = true;
+
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                        options["columns"][1]["visible"] = false;
+                    }
+                    $(this).attr("data-old", value);
+                    adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
+                        if (!adminDataTables["roomsAdminTable"].rowGroup().enabled()) {
+                            if ($("#createNewRoomButton").length == 0) {
+                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                            }
+                        }
+                        else {
+                            $("#createNewRoomButton").remove();
+                        }
+                    });
+                });
+                const dateRangePicker = new Litepicker({
+                    element: $("#currentReservationsTimeSelect")[0],
+                    lang: "de-DE",
+                    singleMode: false
                 });
             });
         </script>
@@ -1569,6 +1636,13 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="currentReservations">
+                        <div class="d-flex formContainer mb-3">
+                            <label for="currentReservationsTimeSelect">Zeitraum:</label>
+                            <input type="text" class="form-control w-auto d-inline-block" id="currentReservationsTimeSelect">
+                        </div>
+                        <div class="timepicker-ui">
+                            <input type="text" class="timepicker-ui-input" value="12:00 AM" />
+                        </div>
                         <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
                             <thead>
                                 <tr>
@@ -1612,8 +1686,8 @@
                                 <div id="collapse-rooms" class="collapse hide" data-bs-parent="#rooms-accordion">
                                     <div class="card-body">
                                         <div class="d-flex formContainer mb-3">
-                                            <label for="roomBuildingsSelect">Gebäude:</label>
-                                            <select class="form-select w-auto d-inline-block" id="roomBuildingsSelect" data-old="0">
+                                            <label for="roomsBuildingSelect">Gebäude:</label>
+                                            <select class="form-select w-auto d-inline-block" id="roomsBuildingSelect" data-old="0">
                                                 <option value="0">Alle</option>
                                             </select>
                                         </div>
@@ -1622,7 +1696,7 @@
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>Gebäude</th>
-                                                    <th>Nummer</th>
+                                                    <th>Name</th>
                                                     <th>Beschreibung</th>
                                                     <th>Optionen</th>
                                                 </tr>
