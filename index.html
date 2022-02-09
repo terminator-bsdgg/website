@@ -12,6 +12,7 @@
         <link rel="stylesheet" type="text/css" href="css/fontawesome.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
         <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/datatables.min.js"></script>
@@ -19,7 +20,9 @@
         <script src="js/moment-with-locales.min.js"></script>
         <script src="js/bootstrap-datetimepicker.min.js"></script>
         <script src="js/litepicker.js"></script>
-        <script src="js/timepicker-ui.umd.js"></script>
+        <script src="js/fullcalendar.min.js"></script>
+        <script src="js/fullcalendar-locales/de.js"></script>
+        <script src="js/fullcalendar-locales/en-gb.js"></script>
         <style>
             body {
                 display: grid;
@@ -600,6 +603,7 @@
             var isAdmin = false;
             var buildings = {};
             var rooms = {};
+            var calendar;
             const rowGroupStrings = {
                 admin: {
                     roles: {
@@ -1214,12 +1218,41 @@
                 }
             });
             $(document).on("DOMContentLoaded", function() {
-                dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                //dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                calendar = new FullCalendar.Calendar($("#calendar")[0], {
+                    initialView: "timeGridWeek",
+                    locale: "de",
+                    events: "calendar.php",
+                    nowIndicator: true,
+                    selectable: true,
+                    dateClick: function(info) {
+                        //console.log(info);
+                    },
+                    select: function(selectionInfo) {
+                        //console.log(selectionInfo);
+                    },
+                    eventDidMount: function(info) {
+                        let content = "<div class='d-flex'><div class='me-2'><div>Veranstalter:</div><div>Start:</div></div><div><div>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</div><div>00:00 Uhr</div>";
+                        content += "</div></div>";
+                        $(info["el"]).attr("tabindex", 0);
+                        new bootstrap.Popover(info["el"], {
+                            html: true,
+                            title: info["event"]["_def"]["title"],
+                            content: content,
+                            trigger: "focus"
+                        });
+                        console.log(info.event._context.getCurrentData(), info.event.extendedProps);
+                    },
+                    eventClick: function(info) {
+                        console.log(info.event.start);
+                    }
+                });
+                calendar.render();
                 getBuildings();
                 // Alle 5 Minuten Tabellen aktualisieren
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
-                setInterval(function() {
+                /*setInterval(function() {
                     $.post("dataTables.php", {
                         _token: authToken
                     }).done(function(response) {
@@ -1231,7 +1264,7 @@
                         $("#currentReservationsTable_wrapper").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
                     });
-                }, 5*60*1000);
+                }, 5*60*1000);*/
                 let date = new Date();
                 $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#systemInfos']").click(function() {
@@ -1399,7 +1432,6 @@
                             cancelLabel: "Abbrechen",
                             backdrop: false
                         }
-                        new TimepickerUI($(".timepicker-ui-newReservationTimeFrom")[0], options).create();
                         /*$("#newReservationTimeFrom").datetimepicker({
                             icons: dateTimePickerIcons,
                             locale: "de",
@@ -1570,7 +1602,7 @@
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["roomsAdminTable"].rowGroup().enabled()) {
                             if ($("#createNewRoomButton").length == 0) {
-                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3' ><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
@@ -1578,11 +1610,12 @@
                         }
                     });
                 });
+                /*
                 const dateRangePicker = new Litepicker({
                     element: $("#currentReservationsTimeSelect")[0],
                     lang: "de-DE",
                     singleMode: false
-                });
+                });*/
             });
         </script>
     </head>
@@ -1636,26 +1669,26 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="currentReservations">
-                        <div class="d-flex formContainer mb-3">
+                        <!--<div class="d-flex formContainer mb-3">
                             <label for="currentReservationsTimeSelect">Zeitraum:</label>
                             <input type="text" class="form-control w-auto d-inline-block" id="currentReservationsTimeSelect">
-                        </div>
-                        <div class="timepicker-ui">
-                            <input type="text" class="timepicker-ui-input" value="12:00 AM" />
-                        </div>
+                        </div>-->
+                        <div id="calendar"></div>
+                        <!--
                         <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Raum</th><!-- Soll nur als Administrator sichtbar sein -->
+                                    <th>Raum</th><-- Soll nur als Administrator sichtbar sein
                                     <th>Zeitpunkt</th>
                                     <th>Bucher</th>
                                     <th>Beschreibung</th>
-                                    <th>Optionen</th><!-- Soll nur als Administrator sichtbar sein und wenn Termin noch nicht stattfindet -->
+                                    <th>Optionen</th><-- Soll nur als Administrator sichtbar sein und wenn Termin noch nicht stattfindet
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
+                        -->
                         <div class="d-flex mt-3 justify-content-end">
                             <button type="button" class="btn btn-success" id="createNewReservationButton"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
