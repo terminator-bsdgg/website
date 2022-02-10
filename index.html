@@ -359,6 +359,23 @@
                 background-color: var(--bs-gray-200, #e9ecef);
                 font-weight: 600;
             }
+            .popover-header-background {
+                padding: 0.5rem 1rem;
+                margin-bottom: 0;
+                font-size: 1rem;
+                background-color: #f0f0f0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+                border-top-left-radius: calc(0.3rem - 1px);
+                border-top-right-radius: calc(0.3rem - 1px)
+            }
+            .popover-header {
+                padding: 0 !important;
+                margin-bottom: 0 !important;
+                background-color: unset !important;
+                border-bottom: unset !important;
+                border-top-left-radius: unset !important;
+                border-top-right-radius: unset !important
+            }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
                 font-style: normal;
@@ -600,8 +617,8 @@
             var viewportWidth = visualViewport["width"];
             var authToken = null;
             var currentUser = null;
-            var isAdmin = false;
-            var buildings = {};
+            var userRole= "user";
+            var buildings = [];
             var rooms = {};
             var calendar;
             const rowGroupStrings = {
@@ -638,6 +655,12 @@
                     sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
                 }
             }
+            // Bescheuerte Filterung von bestimmten HTML-Elementen in Bootstraps "Popover" deaktivieren
+            bootstrap["Popover"]["Default"]["allowList"]["button"] = ["onclick"];
+            bootstrap["Popover"]["Default"]["allowList"]["table"] = [];
+            bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
+            bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
+            bootstrap["Popover"]["Default"]["allowList"]["td"] = [];
             const dataTablesOptions = {
                 currentReservations: {
                     order: [0, "asc"],
@@ -655,6 +678,7 @@
                         {
                             name: "time",
                             data: function(row, type, set, meta) {
+                                // Für Spaltensortierung die Sekunden nehmen, für Anzeige das Datum! 
                                 console.log(row);
                                 if (type === "display") {
                                     return row["time"];
@@ -689,7 +713,7 @@
                             },
                             sorting: false,
                             width: "1%",
-                            visible: isAdmin
+                            visible: userRole
                         }
                     ],
                     ajax: {
@@ -755,7 +779,8 @@
                     columns: [
                         {
                             name: "id",
-                            data: "id"
+                            data: "id",
+                            width: "15%"
                         },
                         {
                             name: "group",
@@ -769,17 +794,10 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
-                                //let index = plantProperties.findIndex(key => key["id"] === row["id"]);
-                                //if (index >= 0) {
-                                //    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
-                                //}
-                                //else {
-                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
-                                //}
-                                buttons += "</div>";
-                                return buttons;
-                            }
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-confirmation-sender=''><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger style='width: 32px'><i class='fas fa-times'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "20%"
                         }
                     ],
                     ajax: {
@@ -803,6 +821,7 @@
                         {
                             name: "id",
                             data: "id",
+                            width: "15%"
                         },
                         {
                             name: "building",
@@ -820,17 +839,10 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
-                                //let index = plantProperties.findIndex(key => key["id"] === row["id"]);
-                                //if (index >= 0) {
-                                //    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
-                                //}
-                                //else {
-                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
-                                //}
-                                buttons += "</div>";
-                                return buttons;
-                            }
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmation({title:5,content:9})'><i class='fas fa-times'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "20%"
                         }
                     ],
                     ajax: {
@@ -876,6 +888,7 @@
                     }).done(function(response) {
                         //cookies setzen
                         //anmeldeknopf durch abmeldeknopf ersetzen
+                        //userRole auf moderator/administrator/user setzen
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
@@ -898,7 +911,7 @@
                         let data = JSON.parse(response);
                         Object.assign(buildings, data["data"]);
                     }).fail(function(response) {
-                        $("#currentReservations").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
                     });
             }
@@ -952,7 +965,11 @@
                     }
                 }
             }
-            function confirmation(element, options = {}) {
+            function hidePopOver(element) {
+                bootstrap.Popover.getInstance($(element).parents(".popover")[0]).hide();
+            }
+            function confirmation(element, options = {}, callback) {
+                console.log(callback);
                 let data = {
                     modal: {
                         name: "confirmation"
@@ -977,9 +994,10 @@
                                         {
                                             click: [
                                                 {
-                                                    function: function() { 
+                                                    function: function() {
                                                         let event = $.Event("modalConfirmation", {response: true, sender: element});
                                                         $(window).trigger(event);
+                                                        callback(true);
                                                     },
                                                 }
                                             ]
@@ -1178,6 +1196,179 @@
                     }
                 }
             }
+            function createNewRoom(wtf = null) {
+                let content = "<form>";
+                content += "<div class='row'><label class='col-md-3' for='newRoomBuildingSelect'>Gebäude:</label>";
+                content += "<select class='col-md-9 w-auto form-select fritz' id='newRoomBuildingSelect'>";
+                if (buildings.length >= 1) {
+                    for (building of buildings) {
+                        content += "<option value='" + building["id"] + "'" + (wtf !== null && Number.parseInt(wtf) === building["id"] ? "selected=selected" : "") + ">" + building["name"] + "</option>";
+                    }
+                }
+                content += "</select></div>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newRoomRoomName'>Name:</label>";
+                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newRoomName'></div>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newRoomDescription'>Beschreibung:</label>";
+                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newRoomDescription'></div>";
+                content += "</div></form>";
+                let data = {
+                    modal: {
+                        name: "createNewRoom",
+                        static: true
+                    },
+                    title: {
+                        text: "Neuen Raum erstellen"
+                    },
+                    content: {
+                        text: content
+                    },
+                    footer: {
+                        buttons: {
+                            default: {
+                                text: "Abbrechen",
+                                class: "btn-danger"
+                            },
+                            custom: [
+                                {
+                                    text: "Speichern",
+                                    class: "btn-primary",
+                                    attributes: {
+                                        id: "saveNewRoomButton"
+                                    },
+                                    actions: [
+                                        {
+                                            click: [
+                                                {
+                                                    function: function() {
+                                                        if ($("#body-overlay").length == 0) {
+                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                                                        }
+                                                        if ($("#saveNewRoomButton").find("[data-processing='true']").length == 0) {
+                                                            $("#saveNewRoomButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                        }
+                                                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-body > .alert").remove();
+                                                        let data = {
+                                                            building: $("#newRoomBuildingSelect").val(),
+                                                            name: $("#newRoomName").val(),
+                                                            description: $("#newRoomDescription").val()
+                                                        }
+                                                        $.post("lol", {
+                                                            _token: authToken,
+                                                            data: JSON.stringify(data)
+                                                        }).done(function(response) {
+                                                        }).fail(function(response) {
+                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                                                        }).always(function() {
+                                                            $("#saveNewRoomButton").find("[data-processing='true']").remove();
+                                                            $("#saveNewRoomButton").removeAttr("disabled");
+                                                            $("#body-overlay").remove();
+                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                        });
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                };
+                Modal.create(data);
+            }
+            function createNewUser() {
+                // Moderatoren nur für einzelne Gebäude?
+                // Supermoderator für alle Gebäude, der wie lokaler Moderator Termine stornieren/bearbeiten kann?
+                let content = "<form>";
+                content += "<div class='row'><label class='col-md-3' for='newUserRoleSelect'>Rolle:</label>";
+                content += "<select class='col-md-9 w-auto form-select fritz' id='newUserRoleSelect'>";
+                content += "<option value='1'>Benutzer</option><option value='2'>Moderator</option><option value='3'>Supermoderator</option><option value='4'>Administrator</option></select></div>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newUserRoleDescrption'>Beschreibung:</label>";
+                content += "<article class='col-md-9 fritz' id='newUserRoleDescrption'></article>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newUserBuildingSelect'>Gebäude:</label>";
+                content += "<select class='col-md-9 w-auto form-select fritz' id='newRoomBuildingSelect'>";
+                if (buildings.length >= 1) {
+                    for (building of buildings) {
+                        content += "<option value='" + building["id"] + ">" + building["name"] + "</option>";
+                    }
+                }
+                content += "</select></div>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newUserName'>Benutzername:</label>";
+                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newUserName'></div>";
+                content += "<div class='row mt-3'><label class='col-md-3' for='newUserRealName'>Voller Name:</label>";
+                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newUserRealName'></div>";
+                content += "</div></form>";
+                let data = {
+                    modal: {
+                        name: "createNewUser",
+                        static: true
+                    },
+                    title: {
+                        text: "Neuen Benutzer erstellen"
+                    },
+                    content: {
+                        text: content
+                    },
+                    footer: {
+                        buttons: {
+                            default: {
+                                text: "Abbrechen",
+                                class: "btn-danger"
+                            },
+                            custom: [
+                                {
+                                    text: "Speichern",
+                                    class: "btn-primary",
+                                    attributes: {
+                                        id: "saveNewUserButton"
+                                    },
+                                    actions: [
+                                        {
+                                            click: [
+                                                {
+                                                    function: function() {
+                                                        if ($("#body-overlay").length == 0) {
+                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                                                        }
+                                                        if ($("#saveNewUserButton").find("[data-processing='true']").length == 0) {
+                                                            $("#saveNewUserButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                        }
+                                                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-body > .alert").remove();
+                                                        let data = {
+                                                            building: $("#newRoomBuildingSelect").val(),
+                                                            name: $("#newRoomName").val(),
+                                                            description: $("#newRoomDescription").val()
+                                                        }
+                                                        $.post("lol", {
+                                                            _token: authToken,
+                                                            data: JSON.stringify(data)
+                                                        }).done(function(response) {
+                                                        }).fail(function(response) {
+                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                                                        }).always(function() {
+                                                            $("#saveNewUserButton").find("[data-processing='true']").remove();
+                                                            $("#saveNewUserButton").removeAttr("disabled");
+                                                            $("#body-overlay").remove();
+                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                        });
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                };
+                Modal.create(data);
+            }
             Number.prototype.duration = function() {
                 let sec_num = parseInt(this, 10);
                 let weeks = Math.floor((sec_num / 3600 / 24) / 7);
@@ -1232,19 +1423,26 @@
                         //console.log(selectionInfo);
                     },
                     eventDidMount: function(info) {
-                        let content = "<div class='d-flex'><div class='me-2'><div>Veranstalter:</div><div>Start:</div></div><div><div>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</div><div>00:00 Uhr</div>";
-                        content += "</div></div>";
-                        $(info["el"]).attr("tabindex", 0);
+                        let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
+                        console.log(eventData.start);
+                        let startTime = eventData["start"].toLocaleTimeString().slice(0, -3) + " Uhr";
+                        let endTime = (eventData["allDay"] ? "(Ganztägig)" : eventData["end"].toLocaleTimeString().slice(0, -3) + " Uhr");
+                        let content = "<table class='table-borderless'><tbody>";
+                        content += "<tr><td class='pe-1'>Veranstalter:</td><td>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</td></tr>";
+                        content += "<tr><td class='pe-1'>Start:</td><td>" + startTime + "</td></tr>";
+                        content += "<tr><td class='pe-1'>Ende:</td><td>" + endTime + "</td></tr>";
+                        content += "</tbody></table>";
                         new bootstrap.Popover(info["el"], {
                             html: true,
                             title: info["event"]["_def"]["title"],
                             content: content,
-                            trigger: "focus"
+                            trigger: "click",
+                            template: "<div class='popover' role='tooltip'><div class='popover-arrow'></div><div class='d-flex justify-content-between align-items-center align-content-center popover-header-background'><h3 class='popover-header'></h3><button class='btn-close ' onclick='hidePopOver(this)'></button></div><div class='popover-body'></div></div>"
                         });
-                        console.log(info.event._context.getCurrentData(), info.event.extendedProps);
+                        console.log(info.event.extendedProps);
                     },
                     eventClick: function(info) {
-                        console.log(info.event.start);
+                        //console.log(info.event.start);
                     }
                 });
                 calendar.render();
@@ -1315,7 +1513,6 @@
                     };
                     Modal.create(data);
                 });
-                //https://github.com/pglejzer/timepicker-ui
                 $("#createNewReservationButton").click(function() {
                     let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
                     content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
@@ -1455,6 +1652,7 @@
                     });
                     Modal.create(data);
                 });
+                /*
                 $("a[href='#currentReservations']").on("shown.bs.tab", function() {
                     if (!DataTable.isDataTable("#currentReservationsTable")) {
                         dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
@@ -1462,7 +1660,7 @@
                     else {
                         dataTables["currentReservations"].columns.adjust().draw();
                     }
-                });
+                });*/
                 // Nur für Admins sichtbar sein?
                 $("a[href='#pastReservations']").on("shown.bs.tab", function() {
                     if (!DataTable.isDataTable("#pastReservationsTable")) {
@@ -1487,11 +1685,10 @@
                     else {
                         $("#usersAdminTable").DataTable().ajax.reload();
                     }
-                    let wtf = Object.getOwnPropertyNames(buildings);
-                    if (wtf.length >= 1) {
+                    if (buildings.length >= 1) {
                         $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
-                        for (item of wtf) {
-                            $("#roomsBuildingSelect").append("<option value='" + buildings[item]["id"] + "'>" + buildings[item]["name"] + "</option>");
+                        for (building of buildings) {
+                            $("#roomsBuildingSelect").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
                         }
                     }
                 });
@@ -1505,7 +1702,7 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewUser(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1526,7 +1723,7 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRole(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewUser(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1543,12 +1740,12 @@
                     $(this).attr("data-old", value);
                     adminDataTables["rolesAdminTable"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["rolesAdminTable"].rowGroup().enabled()) {
-                            if ($("#createNewRoleButton").length == 0) {
-                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewRole()' id='createNewRoleButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                            if ($("#createNewUserButton").length == 0) {
+                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewUser()' id='createNewUserButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
-                            $("#createNewRoleButton").remove();
+                            $("#createNewUserButton").remove();
                         }
                     });
                 });
@@ -1557,12 +1754,13 @@
                         let options = {};
                         Object.assign(options, dataTablesAdminOptions["rooms"]);
                         options["rowGroup"] = {
-                            dataSrc: "buildings",
+                            dataSrc: "building",
                             className: "bg-gray-200",
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -1583,7 +1781,8 @@
                             endRender: null,
                             // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (buildings.hasOwnProperty(group) ? buildings[group]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
