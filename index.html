@@ -620,7 +620,7 @@
             var userRole= "user";
             var buildings = [];
             var rooms = {};
-            var calendar;
+            var calendar = null;
             const rowGroupStrings = {
                 admin: {
                     roles: {
@@ -794,7 +794,7 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-confirmation-sender=''><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger style='width: 32px'><i class='fas fa-times'></i></button></div>";
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-confirmation-sender=''><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px'><i class='fas fa-times'></i></button></div>";
                             },
                             sorting: false,
                             width: "20%"
@@ -1286,13 +1286,12 @@
                 content += "<div class='row'><label class='col-md-3' for='newUserRoleSelect'>Rolle:</label>";
                 content += "<select class='col-md-9 w-auto form-select fritz' id='newUserRoleSelect'>";
                 content += "<option value='1'>Benutzer</option><option value='2'>Moderator</option><option value='3'>Supermoderator</option><option value='4'>Administrator</option></select></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newUserRoleDescrption'>Beschreibung:</label>";
-                content += "<article class='col-md-9 fritz' id='newUserRoleDescrption'></article>";
+                content += "<div class='row'><article class='col-md-9 offset-md-3 fritz ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='newUserRoleDescrption'></article></div>";
                 content += "<div class='row mt-3'><label class='col-md-3' for='newUserBuildingSelect'>Gebäude:</label>";
                 content += "<select class='col-md-9 w-auto form-select fritz' id='newRoomBuildingSelect'>";
                 if (buildings.length >= 1) {
                     for (building of buildings) {
-                        content += "<option value='" + building["id"] + ">" + building["name"] + "</option>";
+                        content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
                     }
                 }
                 content += "</select></div>";
@@ -1403,9 +1402,6 @@
             }).on("resize", function() {
                 if (visualViewport["width"] !== viewportWidth) {
                     viewportWidth = visualViewport["width"];
-                    /*if ($("[href='#plantsAdminCreationContainer']").hasClass("active") && $("#collapse-plants-actions").hasClass("show")) {
-                        $("#newPlantContainer").css("max-height", $("#newPlantNavigation").outerHeight(true) + "px");
-                    }*/
                 }
             });
             $(document).on("DOMContentLoaded", function() {
@@ -1652,15 +1648,11 @@
                     });
                     Modal.create(data);
                 });
-                /*
                 $("a[href='#currentReservations']").on("shown.bs.tab", function() {
-                    if (!DataTable.isDataTable("#currentReservationsTable")) {
-                        dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
+                    if (calendar !== null) {
+                        calendar.updateSize();
                     }
-                    else {
-                        dataTables["currentReservations"].columns.adjust().draw();
-                    }
-                });*/
+                });
                 // Nur für Admins sichtbar sein?
                 $("a[href='#pastReservations']").on("shown.bs.tab", function() {
                     if (!DataTable.isDataTable("#pastReservationsTable")) {
