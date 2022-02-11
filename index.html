@@ -359,22 +359,28 @@
                 background-color: var(--bs-gray-200, #e9ecef);
                 font-weight: 600;
             }
-            .popover-header-background {
-                padding: 0.5rem 1rem;
-                margin-bottom: 0;
-                font-size: 1rem;
-                background-color: #f0f0f0;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-                border-top-left-radius: calc(0.3rem - 1px);
-                border-top-right-radius: calc(0.3rem - 1px)
+            .on-air-alert {
+                display: flex;
+                align-items: center;
+                align-content: center;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border: 2px dashed red
             }
-            .popover-header {
-                padding: 0 !important;
-                margin-bottom: 0 !important;
-                background-color: unset !important;
-                border-bottom: unset !important;
-                border-top-left-radius: unset !important;
-                border-top-right-radius: unset !important
+            .on-air-indicator {
+                border-radius: 50%;
+                width: 1.5rem;
+                height: 1.5rem;
+                background-color: red;
+                animation: on-air-flashing 2s linear 0s infinite;
+            }
+            .on-air-details {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                align-content: flex-start;
+                margin-left: 0.75rem;
+                width: 100%
             }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
@@ -605,14 +611,19 @@
                     display: block;
                 }
             }
-            @keyframes background-flashing-success {
-                0% { background-color: rgba(var(--bs-success-rgb), 0.5) }
-                50%  { background-color: rgba(var(--bs-success-rgb), 0.25) }
-                100% { background-color: rgba(var(--bs-success-rgb), 0.5) }
+            @keyframes on-air-flashing {
+                0% { background-color: var(--bs-danger) }
+                50%  { background-color: transparent }
+                100% { background-color: var(--bs-danger) }
             }
             /*animation: background-flashing-success 5s linear 0s infinite*/
         </style>
         <script>
+            // Dürfen Terminersteller ihre eigenen Termine löschen?
+            // Wie kurzfristig können Termine geändert werden?
+            // Ist eine Übersicht vergangener Termine nötig?
+            // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
+            // laufende Konferenz ausblendet, wenn sie vorbei ist!
             var systemInfosEventSource = null;
             var viewportWidth = visualViewport["width"];
             var authToken = null;
@@ -656,81 +667,12 @@
                 }
             }
             // Bescheuerte Filterung von bestimmten HTML-Elementen in Bootstraps "Popover" deaktivieren
-            bootstrap["Popover"]["Default"]["allowList"]["button"] = ["onclick"];
+            /*bootstrap["Popover"]["Default"]["allowList"]["button"] = ["onclick"];
             bootstrap["Popover"]["Default"]["allowList"]["table"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["td"] = [];
+            bootstrap["Popover"]["Default"]["allowList"]["td"] = [];*/
             const dataTablesOptions = {
-                currentReservations: {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            visible: false
-                        },
-                        {
-                            name: "room",
-                            data: "room",
-                        },
-                        {
-                            name: "time",
-                            data: function(row, type, set, meta) {
-                                // Für Spaltensortierung die Sekunden nehmen, für Anzeige das Datum! 
-                                console.log(row);
-                                if (type === "display") {
-                                    return row["time"];
-                                }
-                                return row["time"];
-                            },
-                        },
-                        {
-                            name: "booker",
-                            data: "booker",
-                        },
-                        {
-                            name: "description",
-                            data: "description",
-                        },
-                        {
-                            name: "options",
-                            data: function(row, type, set, meta) {
-                                //console.log(row, meta);
-                                // Momentan stattfindende Termine sollen wohl nicht mehr gelöscht/bearbeitet werden können
-                                // Wie kurzfristig dürfen Termine gelöscht/bearbeitet werden?
-                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'>";
-                                /*let index = plantProperties.findIndex(key => key["id"] === row["id"]);
-                                if (index >= 0) {
-                                    buttons += "<button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editPlant(" + row["id"] + ")'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='destroyPlant(this, " + row["id"] + ")' data-confirmation-sender='destroyPlant'><i class='fas fa-times'></i></button>";
-                                }
-                                else {
-                                    buttons += "<button type='button' class='btn btn-sm btn-primary disabled' disabled='disabled' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger disabled' disabled='disabled' style='width: 32px'><i class='fas fa-times'></i></button>";
-                                }*/
-                                buttons += "</div>";
-                                return buttons;
-                            },
-                            sorting: false,
-                            width: "1%",
-                            visible: userRole
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "currentReservations"
-                        },
-                        dataSrc: function(response) {
-                            isAdmin = response["isAdmin"];
-                            return response["data"];
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#currentReservationsTable").parent().addClass("table-container");
-                    }
-                },
                 pastReservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
@@ -1196,6 +1138,30 @@
                     }
                 }
             }
+            class TimePicker {
+                constructor(element) {
+                    if ($(element).prop("tagName") === "INPUT") {
+                        this.element = element;
+                        this.wtf = "<div id='test' style='width: 300px; height: 200px; background-color: white; position: absolute; z-index: 10000; border: 1px solid blue'>LOL</div>";
+                    }
+                }
+                show() {
+                    let wtf = this.wtf;
+                    let top = $(this.element).offset()["top"] - 200 + "px";;
+                    let left = $(this.element).offset()["left"] + "px";
+                    $(this.element).focus(function() {
+                        return $("body").append($(wtf).css({"top": top, "left": left}));
+                    });
+                    this.element.addEventListener("blur", function(event) {
+                        event.stopPropagation();
+                        return false;
+                        if ($("#test").length >= 1) {
+                            event.originalEvent.stopPropagation();
+                            return false;
+                        }
+                    });
+                }
+            }
             function createNewRoom(wtf = null) {
                 let content = "<form>";
                 content += "<div class='row'><label class='col-md-3' for='newRoomBuildingSelect'>Gebäude:</label>";
@@ -1418,32 +1384,40 @@
                     select: function(selectionInfo) {
                         //console.log(selectionInfo);
                     },
-                    eventDidMount: function(info) {
-                        let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
-                        console.log(eventData.start);
-                        let startTime = eventData["start"].toLocaleTimeString().slice(0, -3) + " Uhr";
-                        let endTime = (eventData["allDay"] ? "(Ganztägig)" : eventData["end"].toLocaleTimeString().slice(0, -3) + " Uhr");
-                        let content = "<table class='table-borderless'><tbody>";
-                        content += "<tr><td class='pe-1'>Veranstalter:</td><td>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</td></tr>";
-                        content += "<tr><td class='pe-1'>Start:</td><td>" + startTime + "</td></tr>";
-                        content += "<tr><td class='pe-1'>Ende:</td><td>" + endTime + "</td></tr>";
-                        content += "</tbody></table>";
-                        new bootstrap.Popover(info["el"], {
-                            html: true,
-                            title: info["event"]["_def"]["title"],
-                            content: content,
-                            trigger: "click",
-                            template: "<div class='popover' role='tooltip'><div class='popover-arrow'></div><div class='d-flex justify-content-between align-items-center align-content-center popover-header-background'><h3 class='popover-header'></h3><button class='btn-close ' onclick='hidePopOver(this)'></button></div><div class='popover-body'></div></div>"
-                        });
-                        console.log(info.event.extendedProps);
-                    },
                     eventClick: function(info) {
-                        //console.log(info.event.start);
+                        let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
+                        //"2022-02-08T10:10:00+01:00"
+                        // Datumsformat ist ISO-Format, daher können Teile daraus einfach mit String-Methoden extrahiert werden.
+                        // Beim Datum selber müssen zur Anzeige vielleicht verschiedene Formate benutzt werden.
+                        let dateArray = eventData["startStr"].slice(0, 10).split("-");
+                        let date = dateArray[2] + "." + dateArray[1] + "." + dateArray[0];
+                        let startTime = eventData["startStr"].slice(11, 16) + " Uhr";
+                        let endTime = (eventData["allDay"] ? "(Ganztägig)" : eventData["endStr"].slice(11, 16) + " Uhr");
+                        let content = "<div class='row'><div class='col-md-3'>Beschreibung:</div><div class='col-md-9'>" + (eventData["title"] !== "" ? eventData["title"] : "(Nicht angegeben)") + "</div></div>";
+                        content += "<div class='row mt-2'><div class='col-md-3'>Veranstalter:</div><div class='col-md-9'>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</div></div>";
+                        content += "<div class='row mt-2'><div class='col-md-3'>Datum:</div><div class='col-md-9'>" + date + "</div></div>";
+                        content += "<div class='row mt-2'><div class='col-md-3'>Start:</div><div class='col-md-9'>" + startTime + "</div></div>";
+                        content += "<div class='row mt-2'><div class='col-md-3'>Ende:</div><div class='col-md-9'>" + endTime + "</div></div>";
+                        content += "</div>";
+                        let data = {
+                        modal: {
+                            name: "eventInfos"
+                        },
+                        title: {
+                            text: "Termininformationen"
+                        },
+                        content: {
+                            text: content,
+                            options: {
+                                scroll: true
+                            }
+                        }
+                    };
+                    Modal.create(data);
                     }
                 });
                 calendar.render();
                 getBuildings();
-                // Alle 5 Minuten Tabellen aktualisieren
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
                 /*setInterval(function() {
@@ -1524,7 +1498,7 @@
                             static: true
                         },
                         title: {
-                            text: "Neuen Termin erstellen"
+                            text: "Neuen Termin erstellen am 00.00.0000"
                         },
                         content: {
                             text: content
@@ -1860,26 +1834,16 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="currentReservations">
-                        <!--<div class="d-flex formContainer mb-3">
-                            <label for="currentReservationsTimeSelect">Zeitraum:</label>
-                            <input type="text" class="form-control w-auto d-inline-block" id="currentReservationsTimeSelect">
-                        </div>-->
+                        <div class="on-air-alert" id="on-air-alert">
+                            <div class="on-air-indicator"></div>
+                            <div class="on-air-details">
+                                <span style="font-weight: 600;">Momentan stattfindende Konferenz</span>
+                                <span id="on-air-description">Was ist schwarz und steht auf dem Fernseher? Ein Strauß Luftpumpen.</span>
+                                <hr class="w-100 m-0">
+                                <span id="on-air-footer">(Deine Mutter, endet voraussichtlich um 00:00 Uhr)</span>
+                            </div>
+                        </div>
                         <div id="calendar"></div>
-                        <!--
-                        <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Raum</th><-- Soll nur als Administrator sichtbar sein
-                                    <th>Zeitpunkt</th>
-                                    <th>Bucher</th>
-                                    <th>Beschreibung</th>
-                                    <th>Optionen</th><-- Soll nur als Administrator sichtbar sein und wenn Termin noch nicht stattfindet
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                        -->
                         <div class="d-flex mt-3 justify-content-end">
                             <button type="button" class="btn btn-success" id="createNewReservationButton"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
