@@ -17,8 +17,6 @@
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/datatables.min.js"></script>
         <script src="js/dataTables.bootstrap5.min.js"></script>
-        <script src="js/moment-with-locales.min.js"></script>
-        <script src="js/bootstrap-datetimepicker.min.js"></script>
         <script src="js/litepicker.js"></script>
         <script src="js/fullcalendar.min.js"></script>
         <script src="js/fullcalendar-locales/de.js"></script>
@@ -382,6 +380,38 @@
                 margin-left: 0.75rem;
                 width: 100%
             }
+            .time-picker {
+                box-shadow: 0 0 3px 0 #0000006e;
+                background-color: white;
+                position: absolute;
+                z-index: 1100
+            }
+            .time-picker::after {
+                content: "";
+                position: absolute;
+                left: 5px;
+                bottom: -6px;
+                width: 0;
+	            height: 0;
+	            border-left: 6px solid transparent;
+	            border-right: 6px solid transparent;
+	            border-top: 6px solid white;
+                z-index: 0;
+                filter: drop-shadow(0px 0px 3px #0000006e)
+            }
+            /*
+            .time-picker::after {
+                content: "";
+                position: absolute;
+                left: 5px;
+                bottom: -5px;
+                width: 0;
+	            height: 0;
+	            border-left: 6px solid transparent;
+	            border-right: 6px solid transparent;
+	            border-top: 6px solid #0000006e;
+                z-index: 9;
+            }*/
             @font-face {
                 font-family: "Font Awesome 5 Brands";
                 font-style: normal;
@@ -411,7 +441,7 @@
                 src: url("font/free-fa-solid-900.woff") format("woff")
             }
             @font-face {
-                font-family:"Font Awe0some 5 Pro";
+                font-family: "Font Awesome 5 Pro";
                 font-style: normal;
                 font-weight: 900;
                 font-display: block;
@@ -533,9 +563,6 @@
                 #second-navbar {
                     display: block;
                 }
-                .modal-dialog {
-                    margin-top: 5rem;
-                }
             }
             @media only screen and (min-width: 992px) {
                 .formContainer {
@@ -624,13 +651,46 @@
             // Ist eine Übersicht vergangener Termine nötig?
             // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
             // laufende Konferenz ausblendet, wenn sie vorbei ist!
+
+            // https://stackoverflow.com/a/49186677
+            const getScrollParent = (node) => {
+                const regex = /(auto|scroll)/;
+                const parents = (_node, ps) => {
+                if (_node.parentNode === null) { return ps; }
+                    return parents(_node.parentNode, ps.concat([_node]));
+                };
+
+                const style = (_node, prop) => getComputedStyle(_node, null).getPropertyValue(prop);
+                const overflow = _node => style(_node, 'overflow') + style(_node, 'overflow-y') + style(_node, 'overflow-x');
+                const scroll = _node => regex.test(overflow(_node));
+
+                /* eslint-disable consistent-return */
+                const scrollParent = (_node) => {
+                    if (!(_node instanceof HTMLElement || _node instanceof SVGElement)) {
+                        return;
+                    }
+
+                    const ps = parents(_node.parentNode, []);
+
+                    for (let i = 0; i < ps.length; i += 1) {
+                        if (scroll(ps[i])) {
+                            return ps[i];
+                        }
+                    }
+
+                    return document.scrollingElement || document.documentElement;
+                };
+
+                return scrollParent(node);
+                /* eslint-enable consistent-return */
+            };
             var systemInfosEventSource = null;
             var viewportWidth = visualViewport["width"];
             var authToken = null;
             var currentUser = null;
-            var userRole= "user";
+            var userRole = "user";
             var buildings = [];
-            var rooms = {};
+            var rooms = [];
             var calendar = null;
             const rowGroupStrings = {
                 admin: {
@@ -641,7 +701,7 @@
                     }
                 }
             }
-            const dataTables = {};
+            //const dataTables = {};
             const adminDataTables = {};
             const dataTablesLocalisation = {
                 sEmptyTable: "Keine Daten vorhanden",
@@ -672,7 +732,7 @@
             bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["td"] = [];*/
-            const dataTablesOptions = {
+            /*const dataTablesOptions = {
                 pastReservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
@@ -714,6 +774,7 @@
                     }
                 }
             };
+            */
             const dataTablesAdminOptions = {
                 roles: {
                     order: [0, "asc"],
@@ -907,9 +968,11 @@
                     }
                 }
             }
+            /*
             function hidePopOver(element) {
                 bootstrap.Popover.getInstance($(element).parents(".popover")[0]).hide();
             }
+            */
             function confirmation(element, options = {}, callback) {
                 console.log(callback);
                 let data = {
@@ -1138,28 +1201,164 @@
                     }
                 }
             }
+            /*
             class TimePicker {
                 constructor(element) {
-                    if ($(element).prop("tagName") === "INPUT") {
+                    if ($(element).prop("tagName") === "INPUT" && (typeof($(element).attr("data-time-picker-id")) !== "undefined" && timePickers.findIndex(key => key["id"] === Number.parseInt($(element).attr("data-time-picker-id"))) <= 0) || (typeof($(element).attr("data-time-picker-id")) === "undefined")) {
+                        this.id = new Date().getMilliseconds() + Math.floor(Math.random(0, viewportWidth));
                         this.element = element;
-                        this.wtf = "<div id='test' style='width: 300px; height: 200px; background-color: white; position: absolute; z-index: 10000; border: 1px solid blue'>LOL</div>";
+                        this.hours = 0;
+                        this.minutes = 0;
+                        $(element).attr("data-time-picker-id", this.id);
+                        let picker = "<div class='d-flex rounded-2 p-1 time-picker' data-time-picker-id='" + this.id +  "'>";
+                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='hours'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div>";
+                        picker += "<div class='d-flex align-items-center align-content-center'><div style='height: 2rem; visibility: hidden'></div><h3 class='m-0 text-center'>:</h3><div style='height: 2rem; visibility: hidden'></div></div>";
+                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='minutes'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div></div>";
+                        this.picker = $(picker);
+                        this.picker.find("[data-action='increaseHour']").click(function() {
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
+                            if (index >= 0) {
+                                $(timePickers[index].increaseHour());
+                            }
+                        });
+                        this.picker.find("[data-action='decreaseHour']").click(function() {
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
+                            if (index >= 0) {
+                                $(timePickers[index].decreaseHour());
+                            }
+                        });
+                        this.picker.find("[data-action='increaseMinute']").click(function() {
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
+                            if (index >= 0) {
+                                $(timePickers[index].increaseMinute());
+                            }
+                        });
+                        this.picker.find("[data-action='decreaseMinute']").click(function() {
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
+                            if (index >= 0) {
+                                $(timePickers[index].decreaseMinute());
+                            }
+                        });
+                        timePickers.push(this);
+                        $("body").append($(this.picker).on("mousedown", false));
+                        // Referenz auf this, da sich this immer auf die aktuelle Funktion bezieht
+                        let that = this;
+                        $(element).focus(function() {
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
+                            if (index >= 0) {
+                                console.log(getScrollParent(element));
+                                $(getScrollParent(element)).scroll({index: index}, that.scroll);
+                                let position = $(this).offset();
+                                $(timePickers[index]["picker"]).removeClass("d-none").addClass("d-flex").css({"top": position["top"] - $(timePickers[index]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
+                                if (timePickers[index].hasOwnProperty("hours") && Number.isSafeInteger(timePickers[index]["hours"]) && timePickers[index].hasOwnProperty("minutes") && Number.isSafeInteger(timePickers[index]["minutes"])) {
+                                    $(timePickers[index]["picker"]).find("h3[data-unit='hours']").html((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString());
+                                    $(timePickers[index]["picker"]).find("h3[data-unit='minutes']").html((timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
+                                    $(timePickers[index]["element"]).val((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString() + ":" + (timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
+                                }
+                                else {
+                                    $(timePickers[index]["element"]).val("00:00");
+                                }
+                            }
+                        }).blur(function() {
+                            $("#mainModal").off("scroll", that.scroll);
+                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
+                            if (index >= 0) {
+                                //$(timePickers[index]["picker"]).removeClass("d-flex").addClass("d-none");
+                            }
+                        });
                     }
                 }
                 show() {
-                    let wtf = this.wtf;
-                    let top = $(this.element).offset()["top"] - 200 + "px";;
-                    let left = $(this.element).offset()["left"] + "px";
-                    $(this.element).focus(function() {
-                        return $("body").append($(wtf).css({"top": top, "left": left}));
-                    });
-                    this.element.addEventListener("blur", function(event) {
-                        event.stopPropagation();
-                        return false;
-                        if ($("#test").length >= 1) {
-                            event.originalEvent.stopPropagation();
-                            return false;
+                }
+                hide() {
+                }
+                scroll(event) {
+                    let position = $(timePickers[event["data"]["index"]]["element"]).offset();
+                    console.log(position);
+                    $(timePickers[event["data"]["index"]]["picker"]).css({"top": position["top"] - $(timePickers[event["data"]["index"]]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
+                }
+                increaseHour() {
+                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
+                        if (this.hours >= 0 && this.hours <= 22) {
+                            this.hours++;
                         }
-                    });
+                        else {
+                            this.hours = 0;
+                        }
+                    }
+                    else {
+                        this.hours = 0;
+                    }
+                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
+                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                }
+                decreaseHour() {
+                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
+                        if (this.hours >= 1 && this.hours <= 23) {
+                            this.hours--;
+                        }
+                        else {
+                            this.hours = 23;
+                        }
+                    }
+                    else {
+                        this.hours = 0;
+                    }
+                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
+                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                }
+                increaseMinute() {
+                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
+                        if (this.minutes >= 0 && this.minutes <= 58) {
+                            this.minutes++;
+                        }
+                        else {
+                            this.minutes = 0;
+                        }
+                    }
+                    else {
+                        this.minutes = 0;
+                    }
+                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                }
+                decreaseMinute() {
+                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
+                        if (this.minutes >= 1 && this.minutes <= 59) {
+                            this.minutes--;
+                        }
+                        else {
+                            this.minutes = 59;
+                        }
+                    }
+                    else {
+                        this.minutes = 0;
+                    }
+                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
+                }
+            }
+            */
+            function checkHours(element) {
+                let value = Number.parseInt($(element).val());
+                if (Number.isSafeInteger(value)) {
+                    if (value <= -1 || value >= 24) {
+                        $(element).val("00");
+                    }
+                }
+                else {
+                    $(element).val("00");
+                }
+            }
+            function checkMinutes(element) {
+                let value = Number.parseInt($(element).val());
+                if (Number.isSafeInteger(value)) {
+                    if (value <= -1 || value >= 60) {
+                        $(element).val("00");
+                    }
+                }
+                else {
+                    $(element).val("00");
                 }
             }
             function createNewRoom(wtf = null) {
@@ -1382,7 +1581,8 @@
                         //console.log(info);
                     },
                     select: function(selectionInfo) {
-                        //console.log(selectionInfo);
+                        $("#createNewReservationButton").attr("data-selected-date", selectionInfo["startStr"]).removeAttr("disabled");
+                        console.log(selectionInfo);
                     },
                     eventClick: function(info) {
                         let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
@@ -1484,94 +1684,73 @@
                     Modal.create(data);
                 });
                 $("#createNewReservationButton").click(function() {
-                    let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
-                    content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
-                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
-                    content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationRoomSelect'></select></div>";
-                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
-                    content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFrom'>Start:</label><div class='timepicker-ui-newReservationTimeFrom'><input type='text' class='col-md-9 w-auto form-control fritz timepicker-ui-input' value='01:00 AM' id='newReservationTimeFrom'></div>";
-                    content += "</div><div class='row mt-3'><label class='col-md-3' for='newReservationTimeTo'>Ende:</label><input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationTimeTo'>";
-                    content += "</div></form>";
-                    let data = {
-                        modal: {
-                            name: "newReservation",
-                            static: true
-                        },
-                        title: {
-                            text: "Neuen Termin erstellen am 00.00.0000"
-                        },
-                        content: {
-                            text: content
-                        },
-                        footer: {
-                            buttons: {
-                                default: {
-                                    text: "Abbrechen",
-                                    class: "btn-danger"
-                                },
-                                custom: [
-                                    {
-                                        text: "Speichern",
-                                        class: "btn-primary",
-                                        attributes: {
-                                            id: "saveNewReservationButton"
-                                        },
-                                        actions: [
-                                            {
-                                                click: [
-                                                    {
-                                                        function: function() {
-                                                            let hasError = false;
-                                                            let from;
-                                                            let to;
-                                                            if ($("#body-overlay").length == 0) {
-                                                                $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                            }
-                                                            if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
-                                                                $("#saveNewReservationButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                            }
-                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                            $("#mainModal .modal-body > .alert").remove();
-                                                            try {
-                                                                let dateFrom = $("#newReservationTimeFrom").val().split(" ");
-                                                                let dateFromDate = dateFrom[0].split(".");
-                                                                let dateFromTime = dateFrom[1].split(":");
-                                                                from = new Date(dateFromDate[2], dateFromDate[1], dateFromDate[0], dateFromTime[0], dateFromTime[1], 0);
-                                                            }
-                                                            catch(error) {
-                                                                hasError = true;
-                                                                $("#mainModal .modal-body").prepend(Alert.create("danger", "Das Format für den Startzeitpunkt ist ungültig oder es ist ein anderer Fehler aufgetreten."));
-                                                                $("#saveNewReservationButton").find("[data-processing='true']").remove();
-                                                                $("#saveNewReservationButton").removeAttr("disabled");
-                                                                $("#body-overlay").remove();
-                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                            }
-                                                            try {
-                                                                let dateTo = $("#newReservationTimeTo").val().split(" ");
-                                                                let dateToDate = dateTo[0].split(".");
-                                                                let dateToTime = dateTo[1].split(":");
-                                                                to = new Date(dateToDate[2], dateToDate[1], dateToDate[0], dateToTime[0], dateToTime[1], 0);
-                                                            }
-                                                            catch(error) {
-                                                                hasError = true;
-                                                                $("#mainModal .modal-body").prepend(Alert.create("danger", "Das Format für den Endzeitpunkt ist ungültig oder es ist ein anderer Fehler aufgetreten."));
-                                                                $("#saveNewReservationButton").find("[data-processing='true']").remove();
-                                                                $("#saveNewReservationButton").removeAttr("disabled");
-                                                                $("#body-overlay").remove();
-                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                            }
-                                                            if (!hasError) {
+                    let selectedDate = $(this).attr("data-selected-date");
+                    if (typeof(selectedDate) !== "undefined") {
+                        dateArray = selectedDate.slice(0, 10).split("-");
+                        let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
+                        content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
+                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
+                        content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationRoomSelect'></select></div>";
+                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label>";
+                        content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
+                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFromHours'>Start:</label>";
+                        content += "<div class='col-md-3 input-group w-25 p-0'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + selectedDate.slice(11, 13) + "'>";
+                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + selectedDate.slice(14, 16) + "'></div>";
+                        content += "<label class='col-md-2' for='newReservationTimeFromMinutes'>Uhr</label></div>";
+                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>"
+                        content += "<div class='col-md-3 input-group w-25 p-0'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
+                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes'></div>";
+                        content += "<label class='col-md-2' for='newReservationTimeToMinutes'>Uhr</label></div><input class='col-md-4' type='checkbox'>Ganztätig";
+                        content += "</div></form>";
+                        let data = {
+                            modal: {
+                                name: "newReservation",
+                                static: true
+                            },
+                            title: {
+                                text: "Neuen Termin erstellen am " + dateArray[2] + "." + dateArray[1] + "." + dateArray[0]
+                            },
+                            content: {
+                                text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveNewReservationButton"
+                                            },
+                                            actions: [
+                                                {
+                                                    click: [
+                                                        {
+                                                            function: function() {
+                                                                if ($("#body-overlay").length == 0) {
+                                                                    $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                                                                }
+                                                                if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
+                                                                    $("#saveNewReservationButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                                }
+                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                                $("#mainModal .modal-body > .alert").remove();
+                                                                let data = {
+                                                                    building: $("#newReservationBuildingSelect").val(),
+                                                                    description: $("#newReservationDescription").val(),
+                                                                    room: $("#newReservationRoomSelect").val(),
+                                                                    from: [$("#newReservationTimeFromHours").val(), $("#newReservationTimeFromMinutes").val()],
+                                                                    to: [$("#newReservationTimeToHours").val(), $("#newReservationTimeToMinutes").val()]
+                                                                }
                                                                 $.post("lol", {
                                                                     _token: authToken,
-                                                                    building: $("#newReservationBuildingSelect").val(),
-                                                                    room: $("#newReservationRoomSelect").val(),
-                                                                    from: from.getTime(),
-                                                                    to: to.getTime(),
-                                                                    description: $("#newReservationDescription").val(),
-                                                                    user: currentUser
+                                                                    data: JSON.stringify(data)
+                                                                    //user: currentUser datenbank soll den nutzer selber anhand des tokens erkennen
                                                                 }).done(function(response) {
                                                                 }).fail(function(response) {
                                                                     $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
@@ -1584,50 +1763,24 @@
                                                                 });
                                                             }
                                                         }
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    };
-                    $("#mainModal").on("shown.bs.modal", function() {
-                        let options = {
-                            clockType: "24h",
-                            cancelLabel: "Abbrechen",
-                            backdrop: false
-                        }
-                        /*$("#newReservationTimeFrom").datetimepicker({
-                            icons: dateTimePickerIcons,
-                            locale: "de",
-                            widgetPositioning: {
-                                horizontal: "auto",
-                                vertical: "top"
-                            }
-                        });*/
-                        $("#newReservationTimeTo").datetimepicker({
-                            icons: dateTimePickerIcons,
-                            locale: "de",
-                            widgetPositioning: {
-                                horizontal: "auto",
-                                vertical: "top"
-                            }
-                        });
-                    }).on("hidden.bs.modal", function(event) {
-                        if ($(this).attr("data-name") == "newReservation") {
-                            $(this).off("shown.bs.modal");
-                        }
-                    });
-                    Modal.create(data);
+                        };
+                        Modal.create(data);
+                    }
                 });
-                $("a[href='#currentReservations']").on("shown.bs.tab", function() {
+                $("a[href='#reservationsOverview']").on("shown.bs.tab", function() {
                     if (calendar !== null) {
                         calendar.updateSize();
                     }
                 });
                 // Nur für Admins sichtbar sein?
+                /*
                 $("a[href='#pastReservations']").on("shown.bs.tab", function() {
                     if (!DataTable.isDataTable("#pastReservationsTable")) {
                         dataTables["pastReservations"] = $("#pastReservationsTable").DataTable(dataTablesOptions["pastReservations"]);
@@ -1636,6 +1789,7 @@
                         dataTables["pastReservations"].columns.adjust().draw();
                     }
                 });
+                */
                 $("a[href='#administration']").on("shown.bs.tab", function() {
                     if ($("[href='#collapse-rooms']").attr("aria-expanded") === "true" && DataTable.isDataTable("#roomsAdminTable")) {
                         adminDataTables["rooms"].columns.adjust().draw();
@@ -1823,17 +1977,19 @@
             <div class="row mt-4">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#currentReservations">Anstehende Termine</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#reservationsOverview">Übersicht</a>
                     </li>
+                    <!--
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#pastReservations">Vergangene Termine</a>
                     </li>
+                -->
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#administration">Administration</a>
                     </li>
                 </ul>
                 <div class="tab-content p-3">
-                    <div class="tab-pane fade active show" id="currentReservations">
+                    <div class="tab-pane fade active show" id="reservationsOverview">
                         <div class="on-air-alert" id="on-air-alert">
                             <div class="on-air-indicator"></div>
                             <div class="on-air-details">
@@ -1845,7 +2001,7 @@
                         </div>
                         <div id="calendar"></div>
                         <div class="d-flex mt-3 justify-content-end">
-                            <button type="button" class="btn btn-success" id="createNewReservationButton"><i class="fas fa-plus"></i> Neuer Termin</button>
+                            <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pastReservations">

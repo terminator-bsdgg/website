@@ -24,7 +24,7 @@ FullCalendar.globalLocales.push(function () {
     },
     weekText: 'KW',
     weekTextLong: 'Woche',
-    allDayText: 'Ganztägig',
+    allDayText: 'Ganz-tägig',
     moreLinkText: function(n) {
       return '+ weitere ' + n
     },
