@@ -488,6 +488,13 @@
                 .dataTables_filter {
                     margin-top: 0.5rem;
                 }
+                .peter {
+                    max-width: 40%;
+                }
+                .konrad {
+                    margin-left: calc(0.5 * var(--bs-gutter-x));
+                    margin-top: 0.25rem;
+                }
             }
             @media only screen and (min-width: 600px) {
                 table.dataTable thead > tr > th {
@@ -522,6 +529,13 @@
                 }*/
                 .dataTables_filter {
                     margin-top: 0.5rem;
+                }
+                .peter {
+                    max-width: 40%;
+                }
+                .konrad {
+                    margin-left: calc(0.5 * var(--bs-gutter-x));
+                    margin-top: 0.25rem;
                 }
             }
             @media only screen and (min-width: 768px) {
@@ -563,6 +577,14 @@
                 #second-navbar {
                     display: block;
                 }
+                .peter {
+                    max-width: unset;
+                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
+                }
+                .konrad {
+                    margin-left: 0;
+                    margin-top: 0;
+                }
             }
             @media only screen and (min-width: 992px) {
                 .formContainer {
@@ -603,6 +625,14 @@
                 #second-navbar {
                     display: block;
                 }
+                .peter {
+                    max-width: unset;
+                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
+                }
+                .konrad {
+                    margin-left: 0;
+                    margin-top: 0;
+                }
             }
             @media only screen and (min-width: 1200px) {
                 .formContainer {
@@ -636,6 +666,14 @@
                 }
                 #second-navbar {
                     display: block;
+                }
+                .peter {
+                    max-width: unset;
+                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
+                }
+                .konrad {
+                    margin-left: 0;
+                    margin-top: 0;
                 }
             }
             @keyframes on-air-flashing {
@@ -1444,6 +1482,19 @@
                 };
                 Modal.create(data);
             }
+            function toggleNewReservationTimes(element) {
+                if ($("#mainModal").attr("data-name") === "newReservation") {
+                    console.log($(element).prop("checked"));
+                    if ($(element).prop("checked")) {
+                        $("#newReservationTimeToHours").attr("disabled", "disabled");
+                        $("#newReservationTimeToMinutes").attr("disabled", "disabled");
+                    }
+                    else {
+                        $("#newReservationTimeToHours").removeAttr("disabled");
+                        $("#newReservationTimeToMinutes").removeAttr("disabled");
+                    }
+                }
+            }
             function createNewUser() {
                 // Moderatoren nur für einzelne Gebäude?
                 // Supermoderator für alle Gebäude, der wie lokaler Moderator Termine stornieren/bearbeiten kann?
@@ -1694,14 +1745,14 @@
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label>";
                         content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFromHours'>Start:</label>";
-                        content += "<div class='col-md-3 input-group w-25 p-0'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + selectedDate.slice(11, 13) + "'>";
+                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + selectedDate.slice(11, 13) + "'>";
                         content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + selectedDate.slice(14, 16) + "'></div>";
-                        content += "<label class='col-md-2' for='newReservationTimeFromMinutes'>Uhr</label></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>"
-                        content += "<div class='col-md-3 input-group w-25 p-0'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
+                        content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
+                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>";
+                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
                         content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes'></div>";
-                        content += "<label class='col-md-2' for='newReservationTimeToMinutes'>Uhr</label></div><input class='col-md-4' type='checkbox'>Ganztätig";
-                        content += "</div></form>";
+                        content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0 col-md-4 konrad'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'><label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
+                        content += "</div></div></form>";
                         let data = {
                             modal: {
                                 name: "newReservation",
@@ -1861,7 +1912,7 @@
                     adminDataTables["rolesAdminTable"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["rolesAdminTable"].rowGroup().enabled()) {
                             if ($("#createNewUserButton").length == 0) {
-                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3' ><button type='button' class='btn btn-success' onclick='createNewUser()' id='createNewUserButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='createNewUser()' id='createNewUserButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
@@ -1921,7 +1972,7 @@
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["roomsAdminTable"].rowGroup().enabled()) {
                             if ($("#createNewRoomButton").length == 0) {
-                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3' ><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
+                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
