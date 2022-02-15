@@ -835,7 +835,7 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-confirmation-sender=''><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px'><i class='fas fa-times'></i></button></div>";
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmUserDeletion(" + row["id"] + ")'><i class='fas fa-times'></i></button></div>";
                             },
                             sorting: false,
                             width: "20%"
@@ -880,7 +880,7 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmation({title:5,content:9})'><i class='fas fa-times'></i></button></div>";
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoomDeletion(" + row["id"] + "," + row["building"] + ")'><i class='fas fa-times'></i></button></div>";
                             },
                             sorting: false,
                             width: "20%"
@@ -918,9 +918,9 @@
                         $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                     }
                     if ($(wtf).find("[data-processing='true']").length == 0) {
-                        $(wtf).attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                        $(wtf).prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                     }
-                    $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
                     $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
                     $("#mainModal .modal-body > .alert").remove();
                     $.post("lol", {
@@ -936,7 +936,7 @@
                         $(wtf).find("[data-processing='true']").remove();
                         $(wtf).removeAttr("disabled");
                         $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        $("#mainModal .modal-footer > button").removeAttr("disabled");
                         $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                     });
                 }
@@ -951,6 +951,17 @@
                     }).done(function(response) {
                         let data = JSON.parse(response);
                         Object.assign(buildings, data["data"]);
+                    }).fail(function(response) {
+                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                    });
+            }
+            function getRooms() {
+                $.get("dataTables.php", {
+                        type: "rooms"
+                    }).done(function(response) {
+                        let data = JSON.parse(response);
+                        Object.assign(rooms, data["data"]);
                     }).fail(function(response) {
                         $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
@@ -1011,8 +1022,84 @@
                 bootstrap.Popover.getInstance($(element).parents(".popover")[0]).hide();
             }
             */
-            function confirmation(element, options = {}, callback) {
-                console.log(callback);
+            async function confirmUserDeletion(user, room = null, building = null) {
+                let prompt = new Promise(function(resolve) {
+                    confirmation({
+                        title: "Benutzer entfernen bestätigen",
+                        content: "Soll der Benutzer &quot;"  + user + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                    },
+                    resolve);
+                });
+                let result = await prompt;
+                if (result) {
+                    if ($("#body-overlay").length == 0) {
+                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                    }
+                    if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
+                        $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    }
+                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-body > .alert").remove();
+                    let data = {
+                        user: user,
+                        room: room,
+                        building: building
+                    }
+                    $.post("lol", {
+                        _token: authToken,
+                        data: JSON.stringify(data)
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        $("#confirmationButton").find("[data-processing='true']").remove();
+                        $("#body-overlay").remove();
+                        $("#mainModal .modal-footer > button").removeAttr("disabled");
+                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                    });
+                }
+            }
+            async function confirmRoomDeletion(room, building) {
+                let prompt = new Promise(function(resolve) {
+                    confirmation({
+                        title: "Raum entfernen bestätigen",
+                        content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                    },
+                    resolve);
+                });
+                let result = await prompt;
+                if (result) {
+                    if ($("#body-overlay").length == 0) {
+                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                    }
+                    if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
+                        $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    }
+                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-body > .alert").remove();
+                    let data = {
+                        room: room,
+                        building: building
+                    }
+                    $.post("lol", {
+                        _token: authToken,
+                        data: JSON.stringify(data)
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        $("#confirmationButton").find("[data-processing='true']").remove();
+                        $("#body-overlay").remove();
+                        $("#mainModal .modal-footer > button").removeAttr("disabled");
+                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                    });
+                }
+            }
+            function confirmation(options = {}, resolve) {
                 let data = {
                     modal: {
                         name: "confirmation"
@@ -1033,15 +1120,16 @@
                                 {
                                     text: "Ja",
                                     class: "btn-danger",
+                                    attributes: {
+                                        id: "confirmationButton"
+                                    },
                                     actions: [
                                         {
                                             click: [
                                                 {
                                                     function: function() {
-                                                        let event = $.Event("modalConfirmation", {response: true, sender: element});
-                                                        $(window).trigger(event);
-                                                        callback(true);
-                                                    },
+                                                        resolve(true);
+                                                    }
                                                 }
                                             ]
                                         }
@@ -1447,9 +1535,9 @@
                                                             $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                                                         }
                                                         if ($("#saveNewRoomButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewRoomButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                            $("#saveNewRoomButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                                                         }
-                                                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
                                                         $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
                                                         $("#mainModal .modal-body > .alert").remove();
                                                         let data = {
@@ -1467,7 +1555,7 @@
                                                             $("#saveNewRoomButton").find("[data-processing='true']").remove();
                                                             $("#saveNewRoomButton").removeAttr("disabled");
                                                             $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
                                                             $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                                                         });
                                                     }
@@ -1484,7 +1572,6 @@
             }
             function toggleNewReservationTimes(element) {
                 if ($("#mainModal").attr("data-name") === "newReservation") {
-                    console.log($(element).prop("checked"));
                     if ($(element).prop("checked")) {
                         $("#newReservationTimeToHours").attr("disabled", "disabled");
                         $("#newReservationTimeToMinutes").attr("disabled", "disabled");
@@ -1549,9 +1636,9 @@
                                                             $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                                                         }
                                                         if ($("#saveNewUserButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewUserButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                            $("#saveNewUserButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                                                         }
-                                                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
                                                         $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
                                                         $("#mainModal .modal-body > .alert").remove();
                                                         let data = {
@@ -1569,7 +1656,7 @@
                                                             $("#saveNewUserButton").find("[data-processing='true']").remove();
                                                             $("#saveNewUserButton").removeAttr("disabled");
                                                             $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
                                                             $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                                                         });
                                                     }
@@ -1669,6 +1756,7 @@
                 });
                 calendar.render();
                 getBuildings();
+                getRooms();
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
                 /*setInterval(function() {
@@ -1786,9 +1874,9 @@
                                                                     $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                                                                 }
                                                                 if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
-                                                                    $("#saveNewReservationButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                                    $("#saveNewReservationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                                                                 }
-                                                                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                                $("#mainModal .modal-footer > button").attr("disabled", "disabled");
                                                                 $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
                                                                 $("#mainModal .modal-body > .alert").remove();
                                                                 let data = {
@@ -1809,7 +1897,7 @@
                                                                     $("#saveNewReservationButton").find("[data-processing='true']").remove();
                                                                     $("#saveNewReservationButton").removeAttr("disabled");
                                                                     $("#body-overlay").remove();
-                                                                    $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                                    $("#mainModal .modal-footer > button").removeAttr("disabled");
                                                                     $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                                                                 });
                                                             }
