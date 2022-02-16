@@ -738,6 +738,7 @@
             var buildings = [];
             var rooms = [];
             var calendar = null;
+            const dataTables = [];
             const rowGroupStrings = {
                 admin: {
                     roles: {
@@ -821,6 +822,7 @@
                 }
             };
             */
+
             const dataTablesAdminOptions = {
                 roles: {
                     order: [0, "asc"],
@@ -1716,15 +1718,58 @@
                 }
             });
             $(document).on("DOMContentLoaded", function() {
-                //dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
-                calendar = new FullCalendar.Calendar($("#calendar")[0], {
+                dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(
+                    {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            visible: false
+                        },
+                        {
+                            name: "room",
+                            data: "room",
+                        },
+                        {
+                            name: "time",
+                            data: "time",
+                        },
+                        {
+                            name: "booker",
+                            data: "booker",
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "GET",
+                        data: {
+                            type: "currentReservations"
+                        },
+                        dataSrc: function(response) {
+                            return response["data"];
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#pastReservationsAdminTable").parent().addClass("table-container");
+                    }
+                }
+                );
+                /*calendar = new FullCalendar.Calendar($("#calendar")[0], {
                     initialView: "timeGrid",
                     locale: "de",
                     events: "calendar.php",
                     nowIndicator: true,
-                    selectable: true,
+                    selectable: false,
+                    allDaySlot: false,
                     slotMinTime: "08:00:00",
-                    slotMaxTime: "20:00:00",
+                    slotMaxTime: "21:00:00",
+                    expandRows: true,
                     dateClick: function(info) {
                         //console.log(info);
                     },
@@ -1772,6 +1817,7 @@
                 calendar.render();
                 getBuildings();
                 getRooms();
+                */
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
                 /*setInterval(function() {
@@ -2105,7 +2151,19 @@
         </header>
         <main>
             <div class="row mt-4">
-                <div id="calendar"></div>
+                <!--<div id="calendar"></div>-->
+                <table id="currentReservationsTable" class="w-100 table-sm">
+                    <thead>
+                        <tr>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </main>
         <footer></footer>
