@@ -11,16 +11,11 @@
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/fontawesome.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
         <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/datatables.min.js"></script>
         <script src="js/dataTables.bootstrap5.min.js"></script>
         <script src="js/litepicker.js"></script>
-        <script src="js/fullcalendar.min.js"></script>
-        <script src="js/fullcalendar-locales/de.js"></script>
-        <script src="js/fullcalendar-locales/en-gb.js"></script>
         <style>
             body {
                 display: grid;
@@ -90,104 +85,6 @@
             ul.dropdown-menu {
                 box-shadow: 0 0 5px 1px #0000008a
             }
-            .tab-content {
-                background-color: #fffefd;
-                box-shadow: 0 2px 5px 0px #00000057;
-                border-left: 1px solid var(--bs-gray-300);
-                border-right: 1px solid var(--bs-gray-300);
-                border-bottom: 1px solid var(--bs-gray-300);
-                border-bottom-left-radius: 5px;
-                border-bottom-right-radius: 5px;
-                border-top-right-radius: 5px;
-            }
-            .navbar-nav > .nav-item > .nav-link, .navbar-nav > .nav-item > .nav-link:hover, .navbar-nav > .nav-item > .nav-link:focus, .navbar-nav > .nav-item > .nav-link:visited, .navbar-nav > .nav-item >  .nav-link:active {
-                color: white;
-                background-color: transparent;
-                transition: background-color 200ms linear 0s;
-                text-shadow: 0 1px 0 black;
-            }
-            .navbar-nav > .nav-item > .nav-link:hover, .navbar-nav > .nav-item > .nav-link:active {
-                background-color: white;
-                color: black;
-                box-shadow: 0 1px 1px 0px rgba(0, 0, 0, 0.5);
-                text-shadow: 0 1px 0 transparent;
-            }
-            .nav-tabs > .nav-item {
-                z-index: 2;
-            }
-            .nav-tabs {
-                border-bottom-width: 0 !important;
-            }
-            .nav-tabs > .nav-item {
-                position: relative
-            }
-            .nav-tabs > .nav-item > .nav-link.active::after {
-                content: "";
-                position: absolute;
-                width: 100%;
-                height: 15px;
-                left: 0;
-                bottom: -12px;
-                z-index: 10;
-                background-color: #fffefd;
-                display: block
-            }
-            .nav-tabs > .nav-item:first-of-type::after {
-                content: "";
-                position: absolute;
-                width: 6px;
-                height: 5px;
-                right: -3px;
-                bottom: -6px;
-                z-index: 10;
-                background-color: #fffefd;
-            }
-            .nav-tabs > .nav-item:last-of-type::after {
-                content: "";
-                position: absolute;
-                width: 6px;
-                height: 5px;
-                right: -3px;
-                bottom: -6px;
-                z-index: 10;
-                background-color: #fffefd;
-            }
-            .nav-tabs > .nav-item:first-of-type > .nav-link.active::before {
-                content: "";
-                position: absolute;
-                width: 1px;
-                height: 40px;
-                left: -1px;
-                bottom: -20px;
-                z-index: 10;
-                background-color: var(--bs-gray-300, #dee2e6);
-            }
-            .nav-tabs > .nav-item > .nav-link.active {
-                box-shadow: 0 2px 5px 0px #00000057;
-                background-color: white;
-                border-bottom-color: white;
-                position: relative;
-            }
-            .nav-tabs > .nav-item > .nav-link.disabled {
-                border: 1px solid var(--bs-gray-200, #e9ecef) !important;
-            }
-            .nav-tabs > .nav-item > a.nav-link:not(.disabled, .active):hover, .nav-tabs > .nav-item > a.nav-link:not(.disabled, .active):active,
-            .nav-tabs > .nav-item > a.nav-link:not(.disabled, .active):focus {
-                border: 1px solid var(--bs-gray-300, #dee2e6) !important;
-                border-bottom: 1px solid transparent !important
-            }
-            /*
-            .nav-tabs > .nav-item > .nav-link:not(.active)::after {
-                content: "";
-                position: absolute;
-                width: 1px;
-                height: 40px;
-                right: -1px;
-                bottom: -20px;
-                z-index: 10;
-                background-color: var(--bs-gray-300, #dee2e6);
-            }
-            */
             table:not(.table-borderless) > thead > tr > th:first-of-type {
                 border-top-left-radius: 2px;
             }
@@ -357,68 +254,13 @@
                 background-color: var(--bs-gray-200, #e9ecef);
                 font-weight: 600;
             }
-            .on-air-alert {
-                display: flex;
-                align-items: center;
-                align-content: center;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                border: 2px dashed red
-            }
-            .on-air-indicator {
-                border-radius: 50%;
-                width: 1.5rem;
-                height: 1.5rem;
-                background-color: red;
-                animation: on-air-flashing 2s linear 0s infinite;
-            }
-            .on-air-details {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                align-content: flex-start;
-                margin-left: 0.75rem;
-                width: 100%
-            }
-            .time-picker {
-                box-shadow: 0 0 3px 0 #0000006e;
-                background-color: white;
-                position: absolute;
-                z-index: 1100
-            }
-            .time-picker::after {
-                content: "";
-                position: absolute;
-                left: 5px;
-                bottom: -6px;
-                width: 0;
-	            height: 0;
-	            border-left: 6px solid transparent;
-	            border-right: 6px solid transparent;
-	            border-top: 6px solid white;
-                z-index: 0;
-                filter: drop-shadow(0px 0px 3px #0000006e)
-            }
-            /*
-            .time-picker::after {
-                content: "";
-                position: absolute;
-                left: 5px;
-                bottom: -5px;
-                width: 0;
-	            height: 0;
-	            border-left: 6px solid transparent;
-	            border-right: 6px solid transparent;
-	            border-top: 6px solid #0000006e;
-                z-index: 9;
-            }*/
             #logo {
                 background-image: url("img/termiconator.png");
                 background-repeat: no-repeat;
-                background-size: 43px 50px;
+                background-size: 41px 49px;
                 background-position: "top left";
-                width: 43px;
-                height: 50px;
+                width: 41px;
+                height: 49px;
             }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
@@ -462,7 +304,7 @@
                 table.dataTable thead > tr > th {
                     font-weight: 600;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
                     font-size: 14px !important;
                 }
                 main {
@@ -508,7 +350,7 @@
                 table.dataTable thead > tr > th {
                     font-weight: 600;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
                     font-size: 14px !important;
                 }
                 #second-navbar, #mobile-navbar {
@@ -547,7 +389,7 @@
                 }
             }
             @media only screen and (min-width: 768px) {
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
                     font-size: 14px !important;
                 }
                 .formContainer {
@@ -615,7 +457,7 @@
                 table.dataTable thead > tr > th {
                     font-weight: bold;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
                     font-size: 16px !important;
                 }
                 main {
@@ -697,59 +539,8 @@
             // Ist eine Übersicht vergangener Termine nötig?
             // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
             // laufende Konferenz ausblendet, wenn sie vorbei ist!
-
-            // https://stackoverflow.com/a/49186677
-            const getScrollParent = (node) => {
-                const regex = /(auto|scroll)/;
-                const parents = (_node, ps) => {
-                if (_node.parentNode === null) { return ps; }
-                    return parents(_node.parentNode, ps.concat([_node]));
-                };
-
-                const style = (_node, prop) => getComputedStyle(_node, null).getPropertyValue(prop);
-                const overflow = _node => style(_node, 'overflow') + style(_node, 'overflow-y') + style(_node, 'overflow-x');
-                const scroll = _node => regex.test(overflow(_node));
-
-                /* eslint-disable consistent-return */
-                const scrollParent = (_node) => {
-                    if (!(_node instanceof HTMLElement || _node instanceof SVGElement)) {
-                        return;
-                    }
-
-                    const ps = parents(_node.parentNode, []);
-
-                    for (let i = 0; i < ps.length; i += 1) {
-                        if (scroll(ps[i])) {
-                            return ps[i];
-                        }
-                    }
-
-                    return document.scrollingElement || document.documentElement;
-                };
-
-                return scrollParent(node);
-                /* eslint-enable consistent-return */
-            };
             var systemInfosEventSource = null;
-            var viewportWidth = visualViewport["width"];
-            var authToken = null;
-            var currentUser = null;
-            var userRole = "user";
-            var buildings = [];
-            var rooms = [];
-            var calendar = null;
-            const dataTables = [];
-            const rowGroupStrings = {
-                admin: {
-                    roles: {
-                        1: "Benutzer",
-                        2: "Moderator",
-                        3: "Administrator"
-                    }
-                }
-            }
-            //const dataTables = {};
-            const adminDataTables = {};
+            const currentReservations = [];
             const dataTablesLocalisation = {
                 sEmptyTable: "Keine Daten vorhanden",
                 sInfo: "_START_ bis _END_ von _TOTAL_ Einträgen",
@@ -773,12 +564,6 @@
                     sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
                 }
             }
-            // Bescheuerte Filterung von bestimmten HTML-Elementen in Bootstraps "Popover" deaktivieren
-            /*bootstrap["Popover"]["Default"]["allowList"]["button"] = ["onclick"];
-            bootstrap["Popover"]["Default"]["allowList"]["table"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["td"] = [];*/
             /*const dataTablesOptions = {
                 pastReservations: {
                     order: [0, "asc"],
@@ -822,161 +607,6 @@
                 }
             };
             */
-
-            const dataTablesAdminOptions = {
-                roles: {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            width: "15%"
-                        },
-                        {
-                            name: "group",
-                            data: "group",
-                            visible: false
-                        },
-                        {
-                            name: "name",
-                            data: "name",
-                        },
-                        {
-                            name: "options",
-                            data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmUserDeletion(" + row["id"] + ")'><i class='fas fa-times'></i></button></div>";
-                            },
-                            sorting: false,
-                            width: "20%"
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "roles"
-                        },
-                        dataSrc: function(response) {
-                            return response["data"];
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#rolesAdminTable").parent().addClass("table-container");
-                    }
-                },
-                rooms: {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            width: "15%"
-                        },
-                        {
-                            name: "building",
-                            data: "building",
-                            visible: false
-                        },
-                        {
-                            name: "name",
-                            data: "name",
-                        },
-                        {
-                            name: "description",
-                            data: "description",
-                        },
-                        {
-                            name: "options",
-                            data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoomDeletion(" + row["id"] + "," + row["building"] + ")'><i class='fas fa-times'></i></button></div>";
-                            },
-                            sorting: false,
-                            width: "20%"
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "rooms"
-                        },
-                        dataSrc: function(response) {
-                            return response["data"];
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#roomsAdminTable").parent().addClass("table-container");
-                    }
-                }
-            }
-            const dateTimePickerIcons = {
-                time: "far fa-clock",
-                date: "fas fa-calendar",
-                up: "fas fa-chevron-up",
-                down: "fas fa-chevron-down",
-                previous: "fas fa-chevron-left",
-                next: "fas fa-chevron-right",
-                today: "fas fa-check",
-                clear: "fas fa-trash-alt",
-                close: "fas fa-times"
-            };
-            function login(wtf) {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") == "login") {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($(wtf).find("[data-processing='true']").length == 0) {
-                        $(wtf).prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
-                    $.post("lol", {
-                        username: $("#username").val(),
-                        password: $("#password").val()
-                    }).done(function(response) {
-                        //cookies setzen
-                        //anmeldeknopf durch abmeldeknopf ersetzen
-                        //userRole auf moderator/administrator/user setzen
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        $(wtf).find("[data-processing='true']").remove();
-                        $(wtf).removeAttr("disabled");
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > button").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                    });
-                }
-            }
-            function logout(wtf) {
-                //cookies löschen
-                //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
-            }
-            function getBuildings() {
-                $.get("dataTables.php", {
-                        type: "buildings"
-                    }).done(function(response) {
-                        let data = JSON.parse(response);
-                        Object.assign(buildings, data["data"]);
-                    }).fail(function(response) {
-                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                    });
-            }
-            function getRooms() {
-                $.get("dataTables.php", {
-                        type: "rooms"
-                    }).done(function(response) {
-                        let data = JSON.parse(response);
-                        Object.assign(rooms, data["data"]);
-                    }).fail(function(response) {
-                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                    });
-            }
             function updateSystemInfos() {
                 if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
                     systemInfosEventSource = new EventSource("sse_test.php");
@@ -1015,141 +645,55 @@
                     };
                 }
             }
-            function readjustTables() {
-                let collapses = ["#collapse-rooms", "#collapse-roles"];
-                let element = null;
-                let tableName = null;
-                for (collapse of collapses) {
-                    element = $("a[href='" + collapse + "']");
-                    tableName = $(element).attr("data-admin-table");
-                    if ($(element).attr("aria-expanded") === "true") {
-                        adminDataTables[tableName].columns.adjust().draw();
-                    }
+            function showReservationDetails(id) {
+                let index = currentReservations.findIndex(key => key["id"] === id);
+                let content = "";
+                if (index >= 0) {
+                    content = "<div class='row'><div class='col-md-3'>Beschreibung:</div><div class='col-md-9'>" + (currentReservations[index]["description"] !== "" ? currentReservations[index]["description"] : "(Nicht angegeben)") + "</div></div>";
+                    content += "<div class='row mt-2'><div class='col-md-3'>Veranstalter:</div><div class='col-md-9'>" + (currentReservations[index]["booker"] !== "" ? currentReservations[index]["booker"] : "(Nicht angegeben)") + "</div></div>";
+                    content += "<div class='row mt-2'><div class='col-md-3'>Start:</div><div class='col-md-9'>" + (currentReservations[index]["start"] !== "" ? currentReservations[index]["start"] : "(Nicht angegeben)") + "</div></div>";
+                    content += "<div class='row mt-2'><div class='col-md-3'>Ende:</div><div class='col-md-9'>" + (currentReservations[index]["end"] !== "" ? currentReservations[index]["end"] : "(Nicht angegeben)") + "</div></div>";
+                    content += "</div>";
                 }
-            }
-            /*
-            function hidePopOver(element) {
-                bootstrap.Popover.getInstance($(element).parents(".popover")[0]).hide();
-            }
-            */
-            async function confirmUserDeletion(user, room = null, building = null) {
-                let prompt = new Promise(function(resolve) {
-                    confirmation({
-                        title: "Benutzer entfernen bestätigen",
-                        content: "Soll der Benutzer &quot;"  + user + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
-                    },
-                    resolve);
-                });
-                let result = await prompt;
-                if (result) {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
-                        $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
-                    let data = {
-                        user: user,
-                        room: room,
-                        building: building
-                    }
-                    $.post("lol", {
-                        _token: authToken,
-                        data: JSON.stringify(data)
-                    }).done(function(response) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        $("#confirmationButton").find("[data-processing='true']").remove();
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > button").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                    });
+                else {
+                    content = Alert.create("warning", "(Keine Daten für Reservierung mit ID &quot;" + id + "&quot; vorhanden.)", false);
                 }
-            }
-            async function confirmRoomDeletion(room, building) {
-                let prompt = new Promise(function(resolve) {
-                    confirmation({
-                        title: "Raum entfernen bestätigen",
-                        content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
-                    },
-                    resolve);
-                });
-                let result = await prompt;
-                if (result) {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
-                        $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
-                    let data = {
-                        room: room,
-                        building: building
-                    }
-                    $.post("lol", {
-                        _token: authToken,
-                        data: JSON.stringify(data)
-                    }).done(function(response) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        $("#confirmationButton").find("[data-processing='true']").remove();
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > button").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                    });
-                }
-            }
-            function confirmation(options = {}, resolve) {
                 let data = {
                     modal: {
-                        name: "confirmation"
+                        name: "reservationsInfos"
                     },
                     title: {
-                        text: (options.hasOwnProperty("title") ? options["title"] : "Bestätigung")
+                        text: "Reservierungsinformationen"
                     },
                     content: {
-                        text: (options.hasOwnProperty("content") ? options["content"] : "Soll diese Aktion wirklich ausgeführt werden?")
-                    },
-                    footer: {
-                        buttons: {
-                            default: {
-                                text: "Nein",
-                                class: "btn-primary"
-                            },
-                            custom: [
-                                {
-                                    text: "Ja",
-                                    class: "btn-danger",
-                                    attributes: {
-                                        id: "confirmationButton"
-                                    },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        resolve(true);
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
+                        text: content,
+                        options: {
+                            scroll: true
                         }
                     }
                 };
                 Modal.create(data);
+            }
+            function getReservations() {
+                $.get("dataTables.php", {
+                    type: "today"
+                }).done(function(response) {
+                    let data = JSON.parse(response);
+                    Object.assign(currentReservations, data["reservations"]);
+                    let items = "<div class='list-group'>";
+                    $("#todaysReservationDate").html(data["date"]);
+                    for (reservation of data["reservations"]) {
+                        items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
+                        items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
+                        items += "<span class='badge bg-primary rounded-pill'>14</span></div>";
+                        items += "<p class='m-0 text-secondary'>" + reservation["booker"] + "</p></button>";
+                    }
+                    items += "</div>";
+                    $("#todaysReservationsList").html(items);
+                }).fail(function(response) {
+                    $("#reservationsContainer").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                }).always(function() {
+                });
             }
             class Alert {
                 static create(type, message, closeable = true, classes = "") {
@@ -1163,12 +707,8 @@
                     if (!["primary", "success", "danger", "warning"].includes(type)) {
                         type = "primary";
                     }
-                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div>";
+                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
                 }
-            }
-            // Wird verwendet, um Funktionen innerhalb von Objekten auszuführen
-            function achso(callback, args = null) {
-                callback.apply(this, args);
             }
             class Modal {
                 /*
@@ -1337,350 +877,6 @@
                     }
                 }
             }
-            /*
-            class TimePicker {
-                constructor(element) {
-                    if ($(element).prop("tagName") === "INPUT" && (typeof($(element).attr("data-time-picker-id")) !== "undefined" && timePickers.findIndex(key => key["id"] === Number.parseInt($(element).attr("data-time-picker-id"))) <= 0) || (typeof($(element).attr("data-time-picker-id")) === "undefined")) {
-                        this.id = new Date().getMilliseconds() + Math.floor(Math.random(0, viewportWidth));
-                        this.element = element;
-                        this.hours = 0;
-                        this.minutes = 0;
-                        $(element).attr("data-time-picker-id", this.id);
-                        let picker = "<div class='d-flex rounded-2 p-1 time-picker' data-time-picker-id='" + this.id +  "'>";
-                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='hours'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div>";
-                        picker += "<div class='d-flex align-items-center align-content-center'><div style='height: 2rem; visibility: hidden'></div><h3 class='m-0 text-center'>:</h3><div style='height: 2rem; visibility: hidden'></div></div>";
-                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='minutes'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div></div>";
-                        this.picker = $(picker);
-                        this.picker.find("[data-action='increaseHour']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].increaseHour());
-                            }
-                        });
-                        this.picker.find("[data-action='decreaseHour']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].decreaseHour());
-                            }
-                        });
-                        this.picker.find("[data-action='increaseMinute']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].increaseMinute());
-                            }
-                        });
-                        this.picker.find("[data-action='decreaseMinute']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].decreaseMinute());
-                            }
-                        });
-                        timePickers.push(this);
-                        $("body").append($(this.picker).on("mousedown", false));
-                        // Referenz auf this, da sich this immer auf die aktuelle Funktion bezieht
-                        let that = this;
-                        $(element).focus(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
-                            if (index >= 0) {
-                                console.log(getScrollParent(element));
-                                $(getScrollParent(element)).scroll({index: index}, that.scroll);
-                                let position = $(this).offset();
-                                $(timePickers[index]["picker"]).removeClass("d-none").addClass("d-flex").css({"top": position["top"] - $(timePickers[index]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
-                                if (timePickers[index].hasOwnProperty("hours") && Number.isSafeInteger(timePickers[index]["hours"]) && timePickers[index].hasOwnProperty("minutes") && Number.isSafeInteger(timePickers[index]["minutes"])) {
-                                    $(timePickers[index]["picker"]).find("h3[data-unit='hours']").html((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString());
-                                    $(timePickers[index]["picker"]).find("h3[data-unit='minutes']").html((timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
-                                    $(timePickers[index]["element"]).val((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString() + ":" + (timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
-                                }
-                                else {
-                                    $(timePickers[index]["element"]).val("00:00");
-                                }
-                            }
-                        }).blur(function() {
-                            $("#mainModal").off("scroll", that.scroll);
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
-                            if (index >= 0) {
-                                //$(timePickers[index]["picker"]).removeClass("d-flex").addClass("d-none");
-                            }
-                        });
-                    }
-                }
-                show() {
-                }
-                hide() {
-                }
-                scroll(event) {
-                    let position = $(timePickers[event["data"]["index"]]["element"]).offset();
-                    console.log(position);
-                    $(timePickers[event["data"]["index"]]["picker"]).css({"top": position["top"] - $(timePickers[event["data"]["index"]]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
-                }
-                increaseHour() {
-                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
-                        if (this.hours >= 0 && this.hours <= 22) {
-                            this.hours++;
-                        }
-                        else {
-                            this.hours = 0;
-                        }
-                    }
-                    else {
-                        this.hours = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                decreaseHour() {
-                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
-                        if (this.hours >= 1 && this.hours <= 23) {
-                            this.hours--;
-                        }
-                        else {
-                            this.hours = 23;
-                        }
-                    }
-                    else {
-                        this.hours = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                increaseMinute() {
-                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
-                        if (this.minutes >= 0 && this.minutes <= 58) {
-                            this.minutes++;
-                        }
-                        else {
-                            this.minutes = 0;
-                        }
-                    }
-                    else {
-                        this.minutes = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                decreaseMinute() {
-                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
-                        if (this.minutes >= 1 && this.minutes <= 59) {
-                            this.minutes--;
-                        }
-                        else {
-                            this.minutes = 59;
-                        }
-                    }
-                    else {
-                        this.minutes = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-            }
-            */
-            function checkHours(element) {
-                let value = Number.parseInt($(element).val());
-                if (Number.isSafeInteger(value)) {
-                    if (value <= -1 || value >= 24) {
-                        $(element).val("00");
-                    }
-                }
-                else {
-                    $(element).val("00");
-                }
-            }
-            function checkMinutes(element) {
-                let value = Number.parseInt($(element).val());
-                if (Number.isSafeInteger(value)) {
-                    if (value <= -1 || value >= 60) {
-                        $(element).val("00");
-                    }
-                }
-                else {
-                    $(element).val("00");
-                }
-            }
-            function createNewRoom(wtf = null) {
-                let content = "<form>";
-                content += "<div class='row'><label class='col-md-3' for='newRoomBuildingSelect'>Gebäude:</label>";
-                content += "<select class='col-md-9 w-auto form-select fritz' id='newRoomBuildingSelect'>";
-                if (buildings.length >= 1) {
-                    for (building of buildings) {
-                        content += "<option value='" + building["id"] + "'" + (wtf !== null && Number.parseInt(wtf) === building["id"] ? "selected=selected" : "") + ">" + building["name"] + "</option>";
-                    }
-                }
-                content += "</select></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newRoomRoomName'>Name:</label>";
-                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newRoomName'></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newRoomDescription'>Beschreibung:</label>";
-                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newRoomDescription'></div>";
-                content += "</div></form>";
-                let data = {
-                    modal: {
-                        name: "createNewRoom",
-                        static: true
-                    },
-                    title: {
-                        text: "Neuen Raum erstellen"
-                    },
-                    content: {
-                        text: content
-                    },
-                    footer: {
-                        buttons: {
-                            default: {
-                                text: "Abbrechen",
-                                class: "btn-danger"
-                            },
-                            custom: [
-                                {
-                                    text: "Speichern",
-                                    class: "btn-primary",
-                                    attributes: {
-                                        id: "saveNewRoomButton"
-                                    },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        if ($("#body-overlay").length == 0) {
-                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                        }
-                                                        if ($("#saveNewRoomButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewRoomButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                        }
-                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-body > .alert").remove();
-                                                        let data = {
-                                                            building: $("#newRoomBuildingSelect").val(),
-                                                            name: $("#newRoomName").val(),
-                                                            description: $("#newRoomDescription").val()
-                                                        }
-                                                        $.post("lol", {
-                                                            _token: authToken,
-                                                            data: JSON.stringify(data)
-                                                        }).done(function(response) {
-                                                        }).fail(function(response) {
-                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                        }).always(function() {
-                                                            $("#saveNewRoomButton").find("[data-processing='true']").remove();
-                                                            $("#saveNewRoomButton").removeAttr("disabled");
-                                                            $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                };
-                Modal.create(data);
-            }
-            function toggleNewReservationTimes(element) {
-                if ($("#mainModal").attr("data-name") === "newReservation") {
-                    if ($(element).prop("checked")) {
-                        $("#newReservationTimeToHours").attr("disabled", "disabled");
-                        $("#newReservationTimeToMinutes").attr("disabled", "disabled");
-                    }
-                    else {
-                        $("#newReservationTimeToHours").removeAttr("disabled");
-                        $("#newReservationTimeToMinutes").removeAttr("disabled");
-                    }
-                }
-            }
-            function createNewUser() {
-                // Moderatoren nur für einzelne Gebäude?
-                // Supermoderator für alle Gebäude, der wie lokaler Moderator Termine stornieren/bearbeiten kann?
-                let content = "<form>";
-                content += "<div class='row'><label class='col-md-3' for='newUserRoleSelect'>Rolle:</label>";
-                content += "<select class='col-md-9 w-auto form-select fritz' id='newUserRoleSelect'>";
-                content += "<option value='1'>Benutzer</option><option value='2'>Moderator</option><option value='3'>Supermoderator</option><option value='4'>Administrator</option></select></div>";
-                content += "<div class='row'><article class='col-md-9 offset-md-3 fritz ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='newUserRoleDescrption'></article></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newUserBuildingSelect'>Gebäude:</label>";
-                content += "<select class='col-md-9 w-auto form-select fritz' id='newRoomBuildingSelect'>";
-                if (buildings.length >= 1) {
-                    for (building of buildings) {
-                        content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
-                    }
-                }
-                content += "</select></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newUserName'>Benutzername:</label>";
-                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newUserName'></div>";
-                content += "<div class='row mt-3'><label class='col-md-3' for='newUserRealName'>Voller Name:</label>";
-                content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newUserRealName'></div>";
-                content += "</div></form>";
-                let data = {
-                    modal: {
-                        name: "createNewUser",
-                        static: true
-                    },
-                    title: {
-                        text: "Neuen Benutzer erstellen"
-                    },
-                    content: {
-                        text: content
-                    },
-                    footer: {
-                        buttons: {
-                            default: {
-                                text: "Abbrechen",
-                                class: "btn-danger"
-                            },
-                            custom: [
-                                {
-                                    text: "Speichern",
-                                    class: "btn-primary",
-                                    attributes: {
-                                        id: "saveNewUserButton"
-                                    },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        if ($("#body-overlay").length == 0) {
-                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                        }
-                                                        if ($("#saveNewUserButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewUserButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                        }
-                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-body > .alert").remove();
-                                                        let data = {
-                                                            building: $("#newRoomBuildingSelect").val(),
-                                                            name: $("#newRoomName").val(),
-                                                            description: $("#newRoomDescription").val()
-                                                        }
-                                                        $.post("lol", {
-                                                            _token: authToken,
-                                                            data: JSON.stringify(data)
-                                                        }).done(function(response) {
-                                                        }).fail(function(response) {
-                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                        }).always(function() {
-                                                            $("#saveNewUserButton").find("[data-processing='true']").remove();
-                                                            $("#saveNewUserButton").removeAttr("disabled");
-                                                            $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                };
-                Modal.create(data);
-            }
             Number.prototype.duration = function() {
                 let sec_num = parseInt(this, 10);
                 let weeks = Math.floor((sec_num / 3600 / 24) / 7);
@@ -1712,54 +908,8 @@
                     $(this).remove();
                     $("body").removeClass("overflow-hidden");
                 });
-            }).on("resize", function() {
-                if (visualViewport["width"] !== viewportWidth) {
-                    viewportWidth = visualViewport["width"];
-                }
             });
             $(document).on("DOMContentLoaded", function() {
-                dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(
-                    {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            visible: false
-                        },
-                        {
-                            name: "room",
-                            data: "room",
-                        },
-                        {
-                            name: "time",
-                            data: "time",
-                        },
-                        {
-                            name: "booker",
-                            data: "booker",
-                        },
-                        {
-                            name: "description",
-                            data: "description",
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "currentReservations"
-                        },
-                        dataSrc: function(response) {
-                            return response["data"];
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#pastReservationsAdminTable").parent().addClass("table-container");
-                    }
-                }
-                );
                 /*calendar = new FullCalendar.Calendar($("#calendar")[0], {
                     initialView: "timeGrid",
                     locale: "de",
@@ -1815,24 +965,9 @@
                     }
                 });
                 calendar.render();
-                getBuildings();
-                getRooms();
                 */
-                // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
-                // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
-                /*setInterval(function() {
-                    $.post("dataTables.php", {
-                        _token: authToken
-                    }).done(function(response) {
-                        // Wenn man Adminstatus hat, Tabelle neu erstellen!
-                        if (DataTable.isDataTable("#currentReservationsTable")) {
-                            dataTables["currentReservations"].ajax.reload();
-                        }
-                    }).fail(function(response) {
-                        $("#currentReservationsTable_wrapper").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                    });
-                }, 5*60*1000);*/
+               getReservations();
+               setInterval(getReservations, 60*1000);
                 let date = new Date();
                 $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#systemInfos']").click(function() {
@@ -1863,283 +998,19 @@
                     Modal.create(data);
                     updateSystemInfos();
                 });
-                $("a[href='#login']").click(function() {
-                    let content = "<div><label for='username' class='form-label'>Benutzername:</label>";
-                    content += "<input type='text' class='form-control' id='username' placeholder='Benutzernamen eingeben'></div>";
-                    content += "<div class='mt-3'><label for='password' class='form-label'>Passwort:</label>";
-                    content += "<input type='password' class='form-control' id='password' placeholder='Passwort eingeben'></div>";
-                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button onclick='login(this)' class='btn btn-primary'>Anmelden";
-                    content += "</button><a href='#'>Ich habe mein Passwort vergessen!</a></div>";
-                    let data = {
-                        modal: {
-                            name: "login"
-                        },
-                        title: {
-                            text: "Anmelden"
-                        },
-                        content: {
-                            text: content
-                        }
-                    };
-                    Modal.create(data);
-                });
-                $("#createNewReservationButton").click(function() {
-                    let selectedDate = $(this).attr("data-selected-date");
-                    if (typeof(selectedDate) !== "undefined") {
-                        dateArray = selectedDate.slice(0, 10).split("-");
-                        let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
-                        content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
-                        content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationRoomSelect'></select></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label>";
-                        content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFromHours'>Start:</label>";
-                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + selectedDate.slice(11, 13) + "'>";
-                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + selectedDate.slice(14, 16) + "'></div>";
-                        content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>";
-                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
-                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes'></div>";
-                        content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0 col-md-4 konrad'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'><label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
-                        content += "</div></div></form>";
-                        let data = {
-                            modal: {
-                                name: "newReservation",
-                                static: true
-                            },
-                            title: {
-                                text: "Neuen Termin erstellen am " + dateArray[2] + "." + dateArray[1] + "." + dateArray[0]
-                            },
-                            content: {
-                                text: content
-                            },
-                            footer: {
-                                buttons: {
-                                    default: {
-                                        text: "Abbrechen",
-                                        class: "btn-danger"
-                                    },
-                                    custom: [
-                                        {
-                                            text: "Speichern",
-                                            class: "btn-primary",
-                                            attributes: {
-                                                id: "saveNewReservationButton"
-                                            },
-                                            actions: [
-                                                {
-                                                    click: [
-                                                        {
-                                                            function: function() {
-                                                                if ($("#body-overlay").length == 0) {
-                                                                    $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                                }
-                                                                if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
-                                                                    $("#saveNewReservationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                                }
-                                                                $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                                $("#mainModal .modal-body > .alert").remove();
-                                                                let data = {
-                                                                    building: $("#newReservationBuildingSelect").val(),
-                                                                    description: $("#newReservationDescription").val(),
-                                                                    room: $("#newReservationRoomSelect").val(),
-                                                                    from: [$("#newReservationTimeFromHours").val(), $("#newReservationTimeFromMinutes").val()],
-                                                                    to: [$("#newReservationTimeToHours").val(), $("#newReservationTimeToMinutes").val()]
-                                                                }
-                                                                $.post("lol", {
-                                                                    _token: authToken,
-                                                                    data: JSON.stringify(data)
-                                                                    //user: currentUser datenbank soll den nutzer selber anhand des tokens erkennen
-                                                                }).done(function(response) {
-                                                                }).fail(function(response) {
-                                                                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                                }).always(function() {
-                                                                    $("#saveNewReservationButton").find("[data-processing='true']").remove();
-                                                                    $("#saveNewReservationButton").removeAttr("disabled");
-                                                                    $("#body-overlay").remove();
-                                                                    $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                                });
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        };
-                        Modal.create(data);
-                    }
-                });
-                $("a[href='#reservationsOverview']").on("shown.bs.tab", function() {
-                    if (calendar !== null) {
-                        calendar.updateSize();
-                    }
-                });
-                // Nur für Admins sichtbar sein?
-                /*
-                $("a[href='#pastReservations']").on("shown.bs.tab", function() {
-                    if (!DataTable.isDataTable("#pastReservationsTable")) {
-                        dataTables["pastReservations"] = $("#pastReservationsTable").DataTable(dataTablesOptions["pastReservations"]);
-                    }
-                    else {
-                        dataTables["pastReservations"].columns.adjust().draw();
-                    }
-                });
-                */
-                $("a[href='#administration']").on("shown.bs.tab", function() {
-                    if ($("[href='#collapse-rooms']").attr("aria-expanded") === "true" && DataTable.isDataTable("#roomsAdminTable")) {
-                        adminDataTables["rooms"].columns.adjust().draw();
-                    }
-                    if ($("[href='#collapse-roles']").attr("aria-expanded") === "true" && DataTable.isDataTable("#rolesAdminTable")) {
-                        adminDataTables["roles"].columns.adjust().draw();
-                    }
-                });
-                $("#rooms-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#usersAdminTable")) {
-                        adminDataTables["users"] = $("#usersAdminTable").DataTable(dataTablesAdminOptions["users"]);
-                    }
-                    else {
-                        $("#usersAdminTable").DataTable().ajax.reload();
-                    }
-                    if (buildings.length >= 1) {
-                        $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
-                        for (building of buildings) {
-                            $("#roomsBuildingSelect").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
-                        }
-                    }
-                });
-                $("#roles-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#rolesAdminTable")) {
-                        let options = {};
-                        Object.assign(options, dataTablesAdminOptions["roles"]);
-                        options["rowGroup"] = {
-                            dataSrc: "group",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewUser(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options);
-                    }
-                    else {
-                        $("#rolesAdminTable").DataTable().ajax.reload();
-                    }
-                });
-                $("#rolesRoleSelect").change(function() {
-                    let options = {};
-                    let value = Number.parseInt($(this).val());
-                    Object.assign(options, dataTablesAdminOptions["roles"]);
-                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
-                        options["rowGroup"] = {
-                            dataSrc: "group",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewUser(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                    }
-                    options["destroy"] = true;
-                    if (value >= 1) {
-                        options["ajax"]["data"]["category"] = value;
-                        options["columns"][1]["visible"] = true;
-                    }
-                    else {
-                        delete options["ajax"]["data"]["category"];
-                        options["columns"][1]["visible"] = false;
-                    }
-                    $(this).attr("data-old", value);
-                    adminDataTables["rolesAdminTable"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
-                        if (!adminDataTables["rolesAdminTable"].rowGroup().enabled()) {
-                            if ($("#createNewUserButton").length == 0) {
-                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='createNewUser()' id='createNewUserButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
-                            }
-                        }
-                        else {
-                            $("#createNewUserButton").remove();
-                        }
-                    });
-                });
-                $("#rooms-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#roomsAdminTable")) {
-                        let options = {};
-                        Object.assign(options, dataTablesAdminOptions["rooms"]);
-                        options["rowGroup"] = {
-                            dataSrc: "building",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                let index = buildings.findIndex(key => key["id"] === group);
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options);
-                    }
-                    else {
-                        $("#roomsAdminTable").DataTable().ajax.reload();
-                    }
-                });
-                $("#roomsBuildingSelect").change(function() {
-                    let options = {};
-                    let value = Number.parseInt($(this).val());
-                    Object.assign(options, dataTablesAdminOptions["rooms"]);
-                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
-                        options["rowGroup"] = {
-                            dataSrc: "building",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                let index = buildings.findIndex(key => key["id"] === group);
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='createNewRoom(" + group + ")'><i class='fas fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                    }
-                    options["destroy"] = true;
-                    if (value >= 1) {
-                        options["ajax"]["data"]["category"] = value;
-                        options["columns"][1]["visible"] = true;
-
-                    }
-                    else {
-                        delete options["ajax"]["data"]["category"];
-                        options["columns"][1]["visible"] = false;
-                    }
-                    $(this).attr("data-old", value);
-                    adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
-                        if (!adminDataTables["roomsAdminTable"].rowGroup().enabled()) {
-                            if ($("#createNewRoomButton").length == 0) {
-                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='createNewRoom()' id='createNewRoomButton'><i class='fas fa-asterisk'></i> Neu...</button></div>");
-                            }
-                        }
-                        else {
-                            $("#createNewRoomButton").remove();
-                        }
-                    });
-                });
-                /*
-                const dateRangePicker = new Litepicker({
-                    element: $("#currentReservationsTimeSelect")[0],
-                    lang: "de-DE",
-                    singleMode: false
-                });*/
             });
         </script>
     </head>
     <body>
         <div id="body-overlay" class="m-0 p-0 overflow-hidden">
+            <noscript>
+                <div class="alert alert-danger messageboxContainer" role="alert">
+                    <div class="messageboxIcon danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="messageboxText">Um diese Seite nutzen zu können, muss JavaScript aktiviert sein.</div>
+                </div>
+            </noscript>
             <div class="spinner-border mr-2" style="border-width: 5px; color: var(--bs-gray-500)"></div>
         </div>
         <header>
@@ -2150,20 +1021,10 @@
             </nav>
         </header>
         <main>
-            <div class="row mt-4">
-                <!--<div id="calendar"></div>-->
-                <table id="currentReservationsTable" class="w-100 table-sm">
-                    <thead>
-                        <tr>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="row mt-4" id="reservationsContainer">
+                <h2 class="col-md-12 p-0 mb-3">Reservierungen für <span id="todaysReservationDate"></span></h2>
+                <div class="list-group col-md-12" id="todaysReservationsList">
+                </div>
             </div>
         </main>
         <footer></footer>

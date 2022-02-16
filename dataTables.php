@@ -1,15 +1,17 @@
 <?php
     $data = [];
     $isAdmin = false;
+    date_default_timezone_set("Europe/Berlin");
     if (array_key_exists("_token", $_GET) && !is_null($_GET["_token"])) {
         $isAdmin = true;
     }
     switch ($_GET["type"]) {
-        case "currentReservations":
+        case "today":
             foreach (range(1, rand(2, 10)) as $lol) {
                 $data[] = [
                     "id" => rand(1,10),
-                    "time" => date_format(date_create(), "d.m.Y, H:i:s"),
+                    "start" => date_format(date_create(), "d.m.Y, H:i:s"),
+                    "end" => date_format(date_modify(date_create(), "+1 hour"), "d.m.Y, H:i:s"),
                     "description" => "Beim Jupiter!",
                     "room" => 1337,
                     "booker" => "Hellmut Dunkelangst"
@@ -72,6 +74,6 @@
             $data = null;
             break;
     }
-    echo json_encode(["data" => $data, "admin" => $isAdmin]);
+    echo json_encode(["reservations" => $data, "date" => date_format(date_create(), "d. F Y")]);
     return;
 ?>
