@@ -1728,6 +1728,11 @@
                     dateClick: function(info) {
                         //console.log(info);
                     },
+                    headerToolbar: {
+                        left: 'prev,today,next',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
                     select: function(selectionInfo) {
                         $("#createNewReservationButton").attr("data-selected-date", selectionInfo["startStr"]).removeAttr("disabled");
                         console.log(selectionInfo);
@@ -2100,17 +2105,7 @@
         </header>
         <main>
             <div class="row mt-4">
-                <div class="on-air-alert" id="on-air-alert">
-                    <div class="on-air-indicator"></div>
-                        <div class="on-air-details">
-                            <span style="font-weight: 600;">Momentan stattfindende Konferenz</span>
-                            <span id="on-air-description">Was ist schwarz und steht auf dem Fernseher? Ein Strauß Luftpumpen.</span>
-                            <hr class="w-100 m-0">
-                            <span id="on-air-footer">(Deine Mutter, endet voraussichtlich um 00:00 Uhr)</span>
-                        </div>
-                    </div>
-                    <div id="calendar"></div>
-                </div>
+                <div id="calendar"></div>
             </div>
         </main>
         <footer></footer>
