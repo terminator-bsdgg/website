@@ -685,8 +685,9 @@
                     for (reservation of data["reservations"]) {
                         items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
                         items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
-                        items += "<span class='badge bg-primary rounded-pill'>14</span></div>";
+                        items += "<span class='badge bg-primary rounded-pill'><i class='fas fa-hourglass-half'></i> 10:00 Uhr</span></div>";
                         items += "<p class='m-0 text-secondary'>" + reservation["booker"] + "</p></button>";
+                        //fas fa-circle für laufende konferenzen
                     }
                     items += "</div>";
                     $("#todaysReservationsList").html(items);
@@ -966,8 +967,8 @@
                 });
                 calendar.render();
                 */
-               getReservations();
-               setInterval(getReservations, 60*1000);
+                getReservations();
+                setInterval(getReservations, 60*1000);
                 let date = new Date();
                 $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#systemInfos']").click(function() {
