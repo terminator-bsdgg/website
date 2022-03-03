@@ -85,108 +85,10 @@
             ul.dropdown-menu {
                 box-shadow: 0 0 5px 1px #0000008a
             }
-            table:not(.table-borderless) > thead > tr > th:first-of-type {
-                border-top-left-radius: 2px;
-            }
-            table:not(.table-borderless) > thead > tr > th:last-of-type {
-                border-top-right-radius: 2px;
-            }
-            table:not(.table-borderless) > thead > tr > th:not(.TintengefrorenerTiefenfrisch) {
-                border-left: 1px solid var(--bs-gray-300, #dee2e6) !important;
-            }
-            table:not(.table-borderless) > thead > tr > th {
-                border-top: 1px solid var(--bs-gray-300, #dee2e6) !important;
-                border-bottom: 2px solid var(--bs-gray-300, #dee2e6) !important;
-                background-color: #f7f7f7 !important
-            }
-            table:not(.table-borderless) > thead > tr > th:last-of-type {
-                border-right: 1px solid var(--bs-gray-300, #dee2e6) !important;
-            }
-            table.dataTable:not(.table-borderless) > thead > tr > th:last-of-type {
-                border-right: 1px solid var(--bs-gray-300, #dee2e6) !important
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr > td:not(.fritz) {
-                border-left: 1px solid var(--bs-gray-300, #dee2e6) !important
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr.dtrg-start > td:nth-last-of-type(2) {
-                border-right: 1px solid transparent
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr:last-of-type > td {
-                border-bottom: 1px solid var(--bs-gray-300, #dee2e6) !important
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr:last-of-type > td:first-of-type {
-                border-bottom-left-radius: 2px
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr:last-of-type > td:last-of-type {
-                border-bottom-right-radius: 2px
-            }
-            /* Normale Tabellen */
-            table:not(.table-borderless, .dataTable) > tbody > tr > td:last-of-type {
-                border-right: 1px solid var(--bs-gray-300, #dee2e6)
-            }
-            table:not(.table-borderless, .dataTable) > tbody > tr > td {
-                border-bottom: 1px solid var(--bs-gray-300, #dee2e6);
-                border-left: 1px solid var(--bs-gray-300, #dee2e6)
-            }
-            table.dataTable > thead .sorting::before, table.dataTable > thead .sorting_asc::before, 
-            table.dataTable > thead .sorting_desc::before, table.dataTable > thead .sorting_asc_disabled::before, 
-            table.dataTable > thead .sorting_desc_disabled::before,
-            table.dataTable > thead .sorting::after, table.dataTable > thead .sorting_asc::after,
-            table.dataTable > thead .sorting_desc::after, table.dataTable > thead .sorting_asc_disabled::after,
-            table.dataTable > thead .sorting_desc_disabled::after {
-                content: "" !important;
-                right: auto !important
-            }
-            table.dataTable thead .sorting::after {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                right: 5px !important;
-                top: 0 !important;
-                opacity: 0.5 !important;
-                background-repeat: no-repeat;
-                background-position-x: right;
-                background-position-y: center;
-                background-size: 16px 16px;
-                background-image: url("img/iconmonstr-sort-2.svg")
-            }
-            table.dataTable thead .sorting_desc::after {
-                background-image: url("img/iconmonstr-sort-3.svg") !important
-            }
-            table.dataTable thead .sorting_asc::after {
-                background-image: url("img/iconmonstr-sort-4.svg") !important
-            }
-            div.dataTables_scrollHeadInner {
-                padding-right: 0 !important;
-                width: 100% !important
-            }
-            table.dataTable:not(.table-borderless) > tbody > tr > td:only-of-type, table.dataTable:not(.table-borderless) > tbody > tr > td:last-of-type {
-                border-right: 1px solid var(--bs-gray-300, #dee2e6);
-            }
-            table.dataTable > thead > tr > th {
-                box-sizing: border-box;
-            }
-            /*
-            div.dataTables_wrapper > .row:last-of-type {
-                margin-top: 24px
-            }*/
             footer a, footer a:hover {
                 border-bottom: 1px dotted #ffffff;
                 text-decoration: none;
                 color: #ffffff;
-            }
-            .fritz {
-                margin-right: calc(var(--bs-gutter-x) * 0.5);
-                flex: 1 0 auto
-            }
-            /* Vorladen von Sortierungssymbolen in Tabellen */
-            body::after {
-                position: absolute;
-                width: 0;
-                height: 0;
-                z-index: -1;
-                overflow: hidden;
-                content: url("img/iconmonstr-sort-2.svg") url("img/iconmonstr-sort-3.svg") url("img/iconmonstr-sort-4.svg")
             }
             .alert-info.messageboxContainer {
                 border-color: #bbd8e6
@@ -244,15 +146,6 @@
                 list-style-position: inside;
                 margin: 0;
                 padding: 0;
-            }
-            .table-container {
-                flex: 1 0 auto;
-                overflow-y: auto;
-                width: 0;
-            }
-            .bg-gray-200 {
-                background-color: var(--bs-gray-200, #e9ecef);
-                font-weight: 600;
             }
             #logo {
                 background-image: url("img/termiconator.png");
@@ -331,20 +224,6 @@
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0;
                 }
-                /*
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0.5rem;
-                }*/
-                .dataTables_filter {
-                    margin-top: 0.5rem;
-                }
-                .peter {
-                    max-width: 40%;
-                }
-                .konrad {
-                    margin-left: calc(0.5 * var(--bs-gutter-x));
-                    margin-top: 0.25rem;
-                }
             }
             @media only screen and (min-width: 600px) {
                 table.dataTable thead > tr > th {
@@ -373,19 +252,6 @@
                 }
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0;
-                }/*
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0.5rem;
-                }*/
-                .dataTables_filter {
-                    margin-top: 0.5rem;
-                }
-                .peter {
-                    max-width: 40%;
-                }
-                .konrad {
-                    margin-left: calc(0.5 * var(--bs-gutter-x));
-                    margin-top: 0.25rem;
                 }
             }
             @media only screen and (min-width: 768px) {
@@ -396,10 +262,7 @@
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }/*
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }*/
+                }
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
                 }
@@ -427,24 +290,13 @@
                 #second-navbar {
                     display: block;
                 }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
-                }
             }
             @media only screen and (min-width: 992px) {
                 .formContainer {
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }/*
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }*/
+                }
                 .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
                     margin-left: 0.5rem;
                 }
@@ -474,14 +326,6 @@
                 }
                 #second-navbar {
                     display: block;
-                }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
                 }
             }
             @media only screen and (min-width: 1200px) {
@@ -517,21 +361,7 @@
                 #second-navbar {
                     display: block;
                 }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
-                }
             }
-            @keyframes on-air-flashing {
-                0% { background-color: var(--bs-danger) }
-                50%  { background-color: transparent }
-                100% { background-color: var(--bs-danger) }
-            }
-            /*animation: background-flashing-success 5s linear 0s infinite*/
         </style>
         <script>
             // Dürfen Terminersteller ihre eigenen Termine löschen?
@@ -541,72 +371,6 @@
             // laufende Konferenz ausblendet, wenn sie vorbei ist!
             var systemInfosEventSource = null;
             const currentReservations = [];
-            const dataTablesLocalisation = {
-                sEmptyTable: "Keine Daten vorhanden",
-                sInfo: "_START_ bis _END_ von _TOTAL_ Einträgen",
-                sInfoEmpty: "0 bis 0 von 0 Einträgen",
-                sInfoFiltered: "(gefiltert aus _MAX_ Einträgen)",
-                sInfoPostFix: "",
-                sInfoThousands: ".",
-                sLengthMenu: "_MENU_ Einträge anzeigen",
-                sLoadingRecords: "Wird geladen...",
-                sProcessing: "Bitte warten...",
-                sSearch: "Suchen:",
-                sZeroRecords: "Keine Einträge vorhanden.",
-                oPaginate: {
-                    sFirst: "Erste",
-                    sPrevious: "Zurück",
-                    sNext: "Nächste",
-                    sLast: "Letzte"
-                },
-                oAria: {
-                    sSortAscending: ": aktivieren, um Spalte aufsteigend zu sortieren",
-                    sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
-                }
-            }
-            /*const dataTablesOptions = {
-                pastReservations: {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            visible: false
-                        },
-                        {
-                            name: "room",
-                            data: "room",
-                        },
-                        {
-                            name: "time",
-                            data: "time",
-                        },
-                        {
-                            name: "booker",
-                            data: "booker",
-                        },
-                        {
-                            name: "description",
-                            data: "description",
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "pastReservations"
-                        },
-                        dataSrc: function(response) {
-                            return response["data"];
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#pastReservationsAdminTable").parent().addClass("table-container");
-                    }
-                }
-            };
-            */
             function updateSystemInfos() {
                 if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
                     systemInfosEventSource = new EventSource("sse_test.php");
@@ -647,32 +411,12 @@
             }
             function showReservationDetails(id) {
                 let index = currentReservations.findIndex(key => key["id"] === id);
-                let content = "";
                 if (index >= 0) {
-                    content = "<div class='row'><div class='col-md-3'>Beschreibung:</div><div class='col-md-9'>" + (currentReservations[index]["description"] !== "" ? currentReservations[index]["description"] : "(Nicht angegeben)") + "</div></div>";
-                    content += "<div class='row mt-2'><div class='col-md-3'>Veranstalter:</div><div class='col-md-9'>" + (currentReservations[index]["booker"] !== "" ? currentReservations[index]["booker"] : "(Nicht angegeben)") + "</div></div>";
-                    content += "<div class='row mt-2'><div class='col-md-3'>Start:</div><div class='col-md-9'>" + (currentReservations[index]["start"] !== "" ? currentReservations[index]["start"] : "(Nicht angegeben)") + "</div></div>";
-                    content += "<div class='row mt-2'><div class='col-md-3'>Ende:</div><div class='col-md-9'>" + (currentReservations[index]["end"] !== "" ? currentReservations[index]["end"] : "(Nicht angegeben)") + "</div></div>";
-                    content += "</div>";
+                    $("#reservationDescription").html(currentReservations[index]["description"]);
+                    $("#reservationOrganiser").html(currentReservations[index]["organiser"]);
+                    $("#reservationStart").html(currentReservations[index]["start"]);
+                    $("#reservationEnd").html(currentReservations[index]["end"]);
                 }
-                else {
-                    content = Alert.create("warning", "(Keine Daten für Reservierung mit ID &quot;" + id + "&quot; vorhanden.)", false);
-                }
-                let data = {
-                    modal: {
-                        name: "reservationsInfos"
-                    },
-                    title: {
-                        text: "Reservierungsinformationen"
-                    },
-                    content: {
-                        text: content,
-                        options: {
-                            scroll: true
-                        }
-                    }
-                };
-                Modal.create(data);
             }
             function getReservations() {
                 $.get("dataTables.php", {
@@ -709,173 +453,6 @@
                         type = "primary";
                     }
                     return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
-                }
-            }
-            class Modal {
-                /*
-                data: {
-                    modal: {
-                        size: sm|default|lg|xl,
-                        static: bool,
-                        name: string
-                    },
-                    title: {
-                        text: string
-                    },
-                    content: {
-                        text: string
-                        options: {
-                            scroll: bool,
-                            align: left|center|right
-                        }
-                    },
-                    footer: {
-                        buttons: {
-                            default: {
-                                text: string,
-                                class: string,
-                                display: bool,
-                                attributes: {}
-                            }
-                            // Eigene
-                            custom: [
-                                {
-                                    text: string,
-                                    class: string,
-                                    attributes: {},
-                                    actions: [{
-                                        click: [
-                                            {
-                                                function: string,
-                                                args: []
-                                            },
-                                            {
-                                                function: string,
-                                                args: []
-                                            }
-                                        ]
-                                    }]
-                                }]
-                            }
-                        }
-                    }
-                }
-                */
-                static create(data = {}) {
-                    if ($("#mainModal").hasClass("show")) {
-                        $("#mainModal").hide();
-                    }
-                    $("#mainModal > div:first-of-type").removeClass("modal-sm modal-lg modal-xl modal-dialog-scrollable");
-                    $("#mainModal").removeAttr("data-bs-backdrop data-bs-keyboard");
-                    $("#mainModal .modal-header > h4").empty();
-                    $("#mainModal .modal-body").empty();
-                    $("#mainModal .modal-footer").empty();
-                    if (data.hasOwnProperty("modal") && data["modal"].hasOwnProperty("name") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
-                        $("#mainModal").attr("data-name", data["modal"]["name"]);
-                        if (data["modal"].hasOwnProperty("size") && ["sm", "lg", "xl"].includes(data["modal"]["size"])) {
-                            $("#mainModal > div:first-of-type").addClass("modal-" + data["modal"]["size"]);
-                        }
-                        if (data["modal"].hasOwnProperty("static") && data["modal"]["static"]) {
-                            $("#mainModal").attr({"data-bs-backdrop":"static", "data-bs-keyboard":"false"});
-                        }
-                        if (data.hasOwnProperty("title")) {
-                            if (data["title"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
-                                $("#mainModal .modal-header > h4").html(data["title"]["text"]);
-                            }
-                        }
-                        if (data.hasOwnProperty("content")) {
-                            if (data["content"].hasOwnProperty("options")) {
-                                if (data["content"]["options"].hasOwnProperty("scroll") && data["content"]["options"]["scroll"]) {
-                                    $("#mainModal > div:first-of-type").addClass("modal-dialog-scrollable");
-                                }
-                            }
-                            if (data["content"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["content"]["text"])) {
-                                $("#mainModal .modal-body").html(data["content"]["text"]);
-                            }
-                        }
-                        if (data.hasOwnProperty("footer")) {
-                            if (data["footer"].hasOwnProperty("buttons")) {
-                                if (data["footer"]["buttons"].hasOwnProperty("default")) {
-                                    let defaultButtonText = "";
-                                    let defaultButtonClass = "";
-                                    let defaultButton = $("<button type='button' data-bs-dismiss='modal' class='btn'>");
-                                    if ((data["footer"]["buttons"].hasOwnProperty("display") && data["footer"]["buttons"]["display"]) || !data["footer"]["buttons"].hasOwnProperty("display")) {
-                                        if (data["footer"]["buttons"]["default"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["footer"]["buttons"]["default"]["text"])) {
-                                            defaultButtonText = data["footer"]["buttons"]["default"]["text"];
-                                        }
-                                        else {
-                                            defaultButtonText = "Schließen";
-                                        }
-                                    }
-                                    if (data["footer"]["buttons"]["default"].hasOwnProperty("class") && !["undefined", "", undefined, null].includes(data["footer"]["buttons"]["default"]["class"])) {
-                                        defaultButtonClass = data["footer"]["buttons"]["default"]["class"];
-                                    }
-                                    else {
-                                        defaultButtonClass = "btn-secondary";
-                                    }
-                                    $(defaultButton).addClass(defaultButtonClass).html(defaultButtonText);
-                                    if (data["footer"]["buttons"]["default"].hasOwnProperty("attributes")) {
-                                        let attributes = Object.getOwnPropertyNames(data["footer"]["buttons"]["default"]["attributes"]);
-                                        for (let attribute of attributes) {
-                                            $(defaultButton).attr(attribute, data["footer"]["buttons"]["default"]["attributes"][attribute]);
-                                        }
-                                    }
-                                    $("#mainModal .modal-footer").append(defaultButton);
-                                }
-                                else {
-                                    $("#mainModal .modal-footer").append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Schließen</button>");
-                                }
-                                if (data["footer"]["buttons"].hasOwnProperty("custom")) {
-                                    let customButtons = data["footer"]["buttons"]["custom"];
-                                    for (let customButton of customButtons) {
-                                        if (customButton.hasOwnProperty("text") && !["undefined", "", undefined, null].includes(customButton["text"]) /*&& customButton.hasOwnProperty("actions") && !["undefined", undefined, null].includes(customButton["actions"])*/) {
-                                            let currentButton = $("<button type='button' class='btn'>" + customButton["text"] + "</button>");
-                                            if (customButton.hasOwnProperty("class") && !["undefined", "", undefined, null].includes(customButton["class"])) {
-                                                $(currentButton).addClass(customButton["class"]);
-                                            }
-                                            else {
-                                                $(currentButton).addClass("btn-primary");
-                                            }
-                                            for (let action of customButton["actions"]) {
-                                                let events = Object.getOwnPropertyNames(action);
-                                                for (event of events) {
-                                                    for (let func of action[event]) {
-                                                        if (func.hasOwnProperty("args") && typeof(func["function"]) === "object") {
-                                                            $(currentButton).on(event, function() {
-                                                                achso(func["function"], func["args"]);
-                                                            });
-                                                        }
-                                                        else {
-                                                            $(currentButton).on(event, function() {
-                                                                achso(func["function"]);
-                                                            });
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            if (customButton.hasOwnProperty("attributes")) {
-                                                let attributes = Object.getOwnPropertyNames(customButton["attributes"]);
-                                                for (let attribute of attributes) {
-                                                    $(currentButton).attr(attribute, customButton["attributes"][attribute]);
-                                                }
-                                            }
-                                            $("#mainModal .modal-footer").prepend(currentButton);
-                                        }
-                                    }
-                                }
-                            }
-                            else {
-                                $("#mainModal .modal-footer").append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Schließen</button>");
-                            }
-                        }
-                        else {
-                            $("#mainModal .modal-footer").append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Schließen</button>");
-                        }
-                        new bootstrap.Modal($("#mainModal")).show();
-                    }
-                    else {
-                        alert("Fehler: Es muss ein gültiger Name für den Dialog angegeben werden.");
-                    }
                 }
             }
             Number.prototype.duration = function() {
@@ -1029,14 +606,31 @@
             </div>
         </main>
         <footer></footer>
-        <div class="modal fade" id="mainModal">
-            <div class="modal-dialog modal-dialog-centered">
+        <div class="modal fade" id="reservationDetailsModal">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title"></h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body"></div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-3">Beschreibung:</div>
+                            <div class="col-md-9" id="reservationDescription"></div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-3">Veranstalter:</div>
+                            <div class="col-md-9" id="reservationOrganiser"></div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-3">Start:</div>
+                            <div class="col-md-9" id="reservationStart"></div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-3">Ende:</div>
+                            <div class="col-md-9" id="reservationEnd"></div>
+                        </div>
+                    </div>
                     <div class="modal-footer"></div>
                 </div>
             </div>
