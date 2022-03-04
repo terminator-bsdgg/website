@@ -14,7 +14,7 @@
                     "end" => date_format(date_modify(date_create(), "+1 hour"), "d.m.Y, H:i:s"),
                     "description" => "Beim Jupiter!",
                     "room" => 1337,
-                    "booker" => "Hellmut Dunkelangst"
+                    "organiser" => "Hellmut Dunkelangst"
                 ];
             }
             break;
@@ -25,7 +25,7 @@
                     "time" => date_format(date_create(), "d.m.Y, H:i:s"),
                     "description" => "Beim Jupiter!",
                     "room" => 1337,
-                    "booker" => "Hellmut Dunkelangst"
+                    "organiser" => "Hellmut Dunkelangst"
                 ];
             }
             break;

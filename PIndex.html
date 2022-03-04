@@ -3,19 +3,15 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="verdammt">
-        <meta name="keywords" content="lol,wtf">
+        <meta name="description" content="Reservierungen von individuellen Räumen für Konferenzen">
+        <meta name="keywords" content="Terminator, Reservierung, Konferenz, Raum, Räume">
         <meta name="copyright" content="IN20">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>STARTSEITE || TERMINATOR</title>
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/fontawesome.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap5.min.css">
         <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
-        <script src="js/datatables.min.js"></script>
-        <script src="js/dataTables.bootstrap5.min.js"></script>
-        <script src="js/litepicker.js"></script>
         <style>
             body {
                 display: grid;
@@ -90,8 +86,8 @@
                 text-decoration: none;
                 color: #ffffff;
             }
-            .alert-info.messageboxContainer {
-                border-color: #bbd8e6
+            .alert-primary.messageboxContainer {
+                border-color: #52709d
             }
             .alert-warning.messageboxContainer {
                 border-color: #f2e7c4
@@ -109,9 +105,9 @@
                 padding: 0.714rem 0.357rem;
                 align-self: stretch;
             }
-            .messageboxIcon.info {
-                background-color: #bbd8e6;
-                color: #437b95
+            .messageboxIcon.primary {
+                background-color: #c3d3ed;
+                color: #52709d
             }
             .messageboxIcon.danger {
                 background-color: #e5babe;
@@ -194,10 +190,7 @@
                 .fritz {
                     margin-left: calc(var(--bs-gutter-x) * 0.5);
                 }
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 main {
@@ -215,21 +208,9 @@
                 #second-navbar {
                     display: none;
                 }
-                .formContainer {
-                    flex-direction: column;
-                }
-                .formContainer > label {
-                    margin-right: 0;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0;
-                }
             }
             @media only screen and (min-width: 600px) {
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 #second-navbar, #mobile-navbar {
@@ -244,36 +225,13 @@
                 #second-navbar {
                     display: none;
                 }
-                .formContainer {
-                    flex-direction: column;
-                }
-                .formContainer > label {
-                    margin-right: 0;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0;
-                }
             }
             @media only screen and (min-width: 768px) {
                 *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
                     font-size: 14px !important;
                 }
-                .formContainer {
-                    flex-direction: row;
-                    align-content: center;
-                    align-items: center;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
-                }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0;
-                }
                 .row > label {
                     align-self: center;
-                }
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
                 }
                 main {
                     padding: 0 2%
@@ -292,24 +250,10 @@
                 }
             }
             @media only screen and (min-width: 992px) {
-                .formContainer {
-                    flex-direction: row;
-                    align-content: center;
-                    align-items: center;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
-                }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0;
-                }
                 #mobile-navbar {
                     display: none;
                 }
-                table.dataTable thead > tr > th {
-                    font-weight: bold;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 16px !important;
                 }
                 main {
@@ -329,22 +273,8 @@
                 }
             }
             @media only screen and (min-width: 1200px) {
-                .formContainer {
-                    flex-direction: row;
-                    align-content: center;
-                    align-items: center;
-                }
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
-                }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0;
-                }
-                table.dataTable thead > tr > th {
-                    font-weight: bold;
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                    font-size: 16px !important;
                 }
                 main {
                     padding: 0 5%
@@ -416,32 +346,42 @@
                     $("#reservationOrganiser").html(currentReservations[index]["organiser"]);
                     $("#reservationStart").html(currentReservations[index]["start"]);
                     $("#reservationEnd").html(currentReservations[index]["end"]);
+                    new bootstrap.Modal($("#reservationDetailsModal")[0]).show();
                 }
             }
             function getReservations() {
+                currentReservations = [];
+                if ($("#reservationDetailsModal").hasClass("show")) {
+                    bootstrap.Modal.getInstance($("#reservationDetailsModal")[0]).hide();
+                }
                 $.get("dataTables.php", {
                     type: "today"
                 }).done(function(response) {
                     let data = JSON.parse(response);
-                    Object.assign(currentReservations, data["reservations"]);
-                    let items = "<div class='list-group'>";
-                    $("#todaysReservationDate").html(data["date"]);
-                    for (reservation of data["reservations"]) {
-                        items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
-                        items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
-                        items += "<span class='badge bg-primary rounded-pill'><i class='fas fa-hourglass-half'></i> 10:00 Uhr</span></div>";
-                        items += "<p class='m-0 text-secondary'>" + reservation["booker"] + "</p></button>";
-                        //fas fa-circle für laufende konferenzen
+                    if (data["reservations"].length >= 1) {
+                        Object.assign(currentReservations, data["reservations"]);
+                        let items = "<div class='list-group'>";
+                        $("#todaysReservationDate").html(data["date"]);
+                        for (reservation of data["reservations"]) {
+                            items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
+                            items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
+                            items += "<span class='badge bg-primary rounded-pill'><i class='fas fa-hourglass-half'></i> 10:00 Uhr</span></div>";
+                            items += "<p class='m-0 text-secondary'>" + reservation["organiser"] + "</p></button>";
+                            //fas fa-circle für laufende konferenzen
+                        }
+                        items += "</div>";
+                        $("#todaysReservationsList").html(items);
                     }
-                    items += "</div>";
-                    $("#todaysReservationsList").html(items);
+                    else {
+                        $("#todaysReservationsList").html(Alert.create("primary", "Es sind derzeit keine Reservierungen geplant."));
+                    }
                 }).fail(function(response) {
                     $("#reservationsContainer").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
                 });
             }
             class Alert {
-                static create(type, message, closeable = true, classes = "") {
+                static create(type, message, closeable = true, classes = "", id = null) {
                     type = type.toLowerCase();
                     let icons = {
                         danger: "fas fa-exclamation-circle",
@@ -452,7 +392,7 @@
                     if (!["primary", "success", "danger", "warning"].includes(type)) {
                         type = "primary";
                     }
-                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
+                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'" + (id !== null ? " id='" + id + "'" : "") + "><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
                 }
             }
             Number.prototype.duration = function() {
@@ -610,7 +550,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title"></h4>
+                        <h4 class="modal-title">Reservierungsdetails</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -631,7 +571,9 @@
                             <div class="col-md-9" id="reservationEnd"></div>
                         </div>
                     </div>
-                    <div class="modal-footer"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                    </div>
                 </div>
             </div>
         </div>
