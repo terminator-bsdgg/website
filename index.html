@@ -288,8 +288,8 @@
                 overflow: hidden;
                 content: url("img/iconmonstr-sort-2.svg") url("img/iconmonstr-sort-3.svg") url("img/iconmonstr-sort-4.svg")
             }
-            .alert-info.messageboxContainer {
-                border-color: #bbd8e6
+            .alert-primary.messageboxContainer {
+                border-color: #b1cbf5
             }
             .alert-warning.messageboxContainer {
                 border-color: #f2e7c4
@@ -307,8 +307,8 @@
                 padding: 0.714rem 0.357rem;
                 align-self: stretch;
             }
-            .messageboxIcon.info {
-                background-color: #bbd8e6;
+            .messageboxIcon.primary {
+                background-color: #b1cbf5;
                 color: #437b95
             }
             .messageboxIcon.danger {
@@ -1291,7 +1291,7 @@
                                                                 achso(func["function"], func["args"]);
                                                             });
                                                         }
-                                                        else {
+                                                        else if (typeof(func["function"]) === "function") {
                                                             $(currentButton).on(event, function() {
                                                                 achso(func["function"]);
                                                             });
@@ -1316,6 +1316,24 @@
                         }
                         else {
                             $("#mainModal .modal-footer").append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Schließen</button>");
+                        }
+                        if (data["modal"].hasOwnProperty("events")) {
+                            let eventNames = {hide: "hide.bs.modal", hidden: "hidden.bs.modal", show: "show.bs.modal", shown: "shown.bs.modal", hidePrevented: "hidePrevented.bs.modal"};
+                            let events_ = Object.getOwnPropertyNames(data["modal"]["events"]);
+                            for (let event_ of events_) {
+                                if (eventNames.hasOwnProperty(event_)) {
+                                    if (data["modal"]["events"][event_].hasOwnProperty("args") && typeof(data["modal"]["events"][event_]["function"]) === "object") {
+                                        $("#mainModal").one(eventNames[event_], function() {
+                                            achso(data["modal"]["events"][event_]["function"], data["modal"]["events"][event_]["args"]);
+                                        });
+                                    }
+                                    else if (typeof(data["modal"]["events"][event_]["function"]) === "function") {
+                                        $("#mainModal").one(eventNames[event_], function() {
+                                            achso(data["modal"]["events"][event_]["function"]);
+                                        });
+                                    }
+                                }
+                            }
                         }
                         new bootstrap.Modal($("#mainModal")).show();
                     }

@@ -3,14 +3,13 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Reservierungen von individuellen Räumen für Konferenzen">
+        <meta name="description" content="Reservierung von individuellen Räumen für Konferenzen">
         <meta name="keywords" content="Terminator, Reservierung, Konferenz, Raum, Räume">
         <meta name="copyright" content="IN20">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>STARTSEITE || TERMINATOR</title>
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/fontawesome.css">
-        <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <style>
             body {
@@ -36,9 +35,8 @@
                 align-items: center;
                 justify-content: center;
             }
-            #body-overlay > h1 {
-                color: var(--bs-gray-500, #adb5bd);
-                margin: 0
+            #body-overlay .spinner-border:not(:only-child)  {
+                display: none
             }
             header {
                 grid-column: 1 / 3;
@@ -78,6 +76,7 @@
                 display: block;
                 margin: auto 20px auto auto;
             }
+            /*nötig?*/
             ul.dropdown-menu {
                 box-shadow: 0 0 5px 1px #0000008a
             }
@@ -87,7 +86,7 @@
                 color: #ffffff;
             }
             .alert-primary.messageboxContainer {
-                border-color: #52709d
+                border-color: #b1cbf5
             }
             .alert-warning.messageboxContainer {
                 border-color: #f2e7c4
@@ -106,7 +105,7 @@
                 align-self: stretch;
             }
             .messageboxIcon.primary {
-                background-color: #c3d3ed;
+                background-color: #b1cbf5;
                 color: #52709d
             }
             .messageboxIcon.danger {
@@ -184,12 +183,9 @@
                 font-style: normal;
                 font-weight: 900;
                 font-display: block;
-                src: url("fonts/free-fa-solid-900.woff") format("woff")
+                src: url("font/free-fa-solid-900.woff") format("woff")
             }
             @media only screen and (max-width: 600px) {
-                .fritz {
-                    margin-left: calc(var(--bs-gutter-x) * 0.5);
-                }
                 *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
@@ -227,11 +223,8 @@
                 }
             }
             @media only screen and (min-width: 768px) {
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
-                }
-                .row > label {
-                    align-self: center;
                 }
                 main {
                     padding: 0 2%
@@ -294,91 +287,55 @@
             }
         </style>
         <script>
-            // Dürfen Terminersteller ihre eigenen Termine löschen?
-            // Wie kurzfristig können Termine geändert werden?
-            // Ist eine Übersicht vergangener Termine nötig?
-            // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
-            // laufende Konferenz ausblendet, wenn sie vorbei ist!
-            var systemInfosEventSource = null;
             const currentReservations = [];
-            function updateSystemInfos() {
-                if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
-                    systemInfosEventSource = new EventSource("sse_test.php");
-                    systemInfosEventSource.onmessage = function(event) {
-                        if ($("#mainModal").attr("data-name") == "systemInfos") {
-                            let data = JSON.parse(event["data"]);
-                            let statsText = "";
-                            if (data.hasOwnProperty("osname")) {
-                                statsText += "<tr><td class='align-top'>Kernelversion</td><td>" + data["osname"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("arch")) {
-                                statsText += "<tr><td class='align-top'>Architektur</td><td>" + data["arch"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("cpus")) {
-                                statsText += "<tr><td class='align-top'>CPU</td><td>" + data["cpus"][0]["model"];
-                                for (let [index, cpu] of data["cpus"].entries()) {
-                                    statsText += "<div>CPU #" + index + ":<div class='ps-3'>Takt: " + cpu["speed"] + "MHz</div></div>";
-                                }
-                                statsText += "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("freememory") && data.hasOwnProperty("totalmemory")) {
-                                statsText += "<tr><td class='align-top'>Speicher</td><td>" + data["freememory"] + " MB/" + data["totalmemory"] + " MB (" + Math.floor(((data["freememory"] / data["totalmemory"]) *100)) + " %)</td></tr>";
-                            }
-                            if (data.hasOwnProperty("hostname")) {
-                                statsText += "<tr><td class='align-top'>Host</td><td>" + data["hostname"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("uptime")) {
-                                statsText += "<tr><td class='align-top'>Laufzeit</td><td>" + data["uptime"].duration() + "</td></tr>";
-                            }
-                            $("#systemInfosTable").html(statsText);
-                        }
-                        else {
-                            systemInfosEventSource.close();
-                            systemInfosEventSource = null;
-                        }
-                    };
-                }
-            }
+            const $ = query => document.querySelectorAll(query);
             function showReservationDetails(id) {
                 let index = currentReservations.findIndex(key => key["id"] === id);
                 if (index >= 0) {
-                    $("#reservationDescription").html(currentReservations[index]["description"]);
-                    $("#reservationOrganiser").html(currentReservations[index]["organiser"]);
-                    $("#reservationStart").html(currentReservations[index]["start"]);
-                    $("#reservationEnd").html(currentReservations[index]["end"]);
+                    $("#reservationDescription")[0].innerHTML = currentReservations[index]["description"];
+                    $("#reservationOrganiser")[0].innerHTML = currentReservations[index]["organiser"];
+                    $("#reservationStart")[0].innerHTML = currentReservations[index]["start"];
+                    $("#reservationEnd")[0].innerHTML = currentReservations[index]["end"];
                     new bootstrap.Modal($("#reservationDetailsModal")[0]).show();
                 }
             }
             function getReservations() {
-                currentReservations = [];
-                if ($("#reservationDetailsModal").hasClass("show")) {
-                    bootstrap.Modal.getInstance($("#reservationDetailsModal")[0]).hide();
+                currentReservations.clear();
+                let element = $("#reservationDetailsModal")[0];
+                if (element.classList.contains("show")) {
+                    bootstrap.Modal.getInstance(element).hide();
                 }
-                $.get("dataTables.php", {
-                    type: "today"
-                }).done(function(response) {
-                    let data = JSON.parse(response);
-                    if (data["reservations"].length >= 1) {
-                        Object.assign(currentReservations, data["reservations"]);
-                        let items = "<div class='list-group'>";
-                        $("#todaysReservationDate").html(data["date"]);
-                        for (reservation of data["reservations"]) {
-                            items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
-                            items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
-                            items += "<span class='badge bg-primary rounded-pill'><i class='fas fa-hourglass-half'></i> 10:00 Uhr</span></div>";
-                            items += "<p class='m-0 text-secondary'>" + reservation["organiser"] + "</p></button>";
-                            //fas fa-circle für laufende konferenzen
+                const xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (xhttp["readyState"] === XMLHttpRequest.DONE) {
+                        if (xhttp["status"] === 0 || (xhttp["status"] >= 200 && xhttp["status"] < 400)) {
+                            let data = JSON.parse(this["responseText"]);
+                            if (data["reservations"].length >= 1) {
+                                Object.assign(currentReservations, data["reservations"]);
+                                let items = "<div class='list-group'>";
+                                $("#todaysReservationDate")[0].innerHTML = data["date"];
+                                for (reservation of data["reservations"]) {
+                                    items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
+                                    items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
+                                    items += "<span class='badge bg-primary rounded-pill'><i class='far fa-clock'></i> 10:00 Uhr</span></div>";
+                                    items += "<p class='m-0 text-secondary'>" + reservation["organiser"] + "</p></button>";
+                                    //fas fa-circle für laufende konferenzen
+                                }
+                                items += "</div>";
+                                $("#todaysReservationsList")[0].innerHTML = items;
+                            }
+                            else {
+                                $("#todaysReservationsList")[0].innerHTML = Alert.create("primary", "Es sind derzeit keine Reservierungen geplant.", false);
+                            }
                         }
-                        items += "</div>";
-                        $("#todaysReservationsList").html(items);
+                        else {
+                            $("#todaysReservationsList")[0].innerHTML = Alert.create("danger", this["status"] + " " + this["statusText"] + ": " + this["responseURL"], false);
+                        }
                     }
-                    else {
-                        $("#todaysReservationsList").html(Alert.create("primary", "Es sind derzeit keine Reservierungen geplant."));
-                    }
-                }).fail(function(response) {
-                    $("#reservationsContainer").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                }).always(function() {
-                });
+                }
+                xhttp.open("POST", "dataTables.php");
+                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhttp.send("type=today");
             }
             class Alert {
                 static create(type, message, closeable = true, classes = "", id = null) {
@@ -395,127 +352,31 @@
                     return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'" + (id !== null ? " id='" + id + "'" : "") + "><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
                 }
             }
-            Number.prototype.duration = function() {
-                let sec_num = parseInt(this, 10);
-                let weeks = Math.floor((sec_num / 3600 / 24) / 7);
-                let days = Math.floor((sec_num / 3600 / 24) % 7);
-                let hours = Math.floor((sec_num / 3600) % 24);
-                let minutes = Math.floor((sec_num / 60) % 60);
-                let seconds = sec_num % 60;
-                let duration = "";
-                if (weeks >= 1) {
-                    duration += weeks + (weeks >= 2 ? " Wochen, " : " Woche, ");
+            Array.prototype.clear = function() {
+                while (this.length >= 1) {
+                    this.pop();
                 }
-                if (days >= 1) {
-                    duration += days + (days >= 2 ? " Tage, " : " Tag, ");
-                }
-                if (hours >= 1) {
-                    duration += hours + (hours >= 2 ? " Stunden, " : " Stunde, ");
-                }
-                if (minutes >= 1) {
-                    duration += minutes + (minutes >= 2 ? " Minuten, " : " Minute, ");
-                }
-                if (seconds >= 1) {
-                    duration += seconds + (seconds >= 2 ? " Sekunden, " : " Sekunde, ");
-                }
-                return duration.substr(0, duration.length -2);
             }
-            $(window).on("load", function() {
-                $("#body-overlay").empty();
-                $("#body-overlay").css("opacity", 0).on("transitionend", function() {
-                    $(this).remove();
-                    $("body").removeClass("overflow-hidden");
-                });
-            });
-            $(document).on("DOMContentLoaded", function() {
-                /*calendar = new FullCalendar.Calendar($("#calendar")[0], {
-                    initialView: "timeGrid",
-                    locale: "de",
-                    events: "calendar.php",
-                    nowIndicator: true,
-                    selectable: false,
-                    allDaySlot: false,
-                    slotMinTime: "08:00:00",
-                    slotMaxTime: "21:00:00",
-                    expandRows: true,
-                    dateClick: function(info) {
-                        //console.log(info);
-                    },
-                    headerToolbar: {
-                        left: 'prev,today,next',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    select: function(selectionInfo) {
-                        $("#createNewReservationButton").attr("data-selected-date", selectionInfo["startStr"]).removeAttr("disabled");
-                        console.log(selectionInfo);
-                    },
-                    eventClick: function(info) {
-                        let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
-                        //"2022-02-08T10:10:00+01:00"
-                        // Datumsformat ist ISO-Format, daher können Teile daraus einfach mit String-Methoden extrahiert werden.
-                        // Beim Datum selber müssen zur Anzeige vielleicht verschiedene Formate benutzt werden.
-                        let dateArray = eventData["startStr"].slice(0, 10).split("-");
-                        let date = dateArray[2] + "." + dateArray[1] + "." + dateArray[0];
-                        let startTime = eventData["startStr"].slice(11, 16) + " Uhr";
-                        let endTime = (eventData["allDay"] ? "(Ganztägig)" : eventData["endStr"].slice(11, 16) + " Uhr");
-                        let content = "<div class='row'><div class='col-md-3'>Beschreibung:</div><div class='col-md-9'>" + (eventData["title"] !== "" ? eventData["title"] : "(Nicht angegeben)") + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Veranstalter:</div><div class='col-md-9'>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Datum:</div><div class='col-md-9'>" + date + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Start:</div><div class='col-md-9'>" + startTime + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Ende:</div><div class='col-md-9'>" + endTime + "</div></div>";
-                        content += "</div>";
-                        let data = {
-                        modal: {
-                            name: "eventInfos"
-                        },
-                        title: {
-                            text: "Termininformationen"
-                        },
-                        content: {
-                            text: content,
-                            options: {
-                                scroll: true
-                            }
-                        }
-                    };
-                    Modal.create(data);
-                    }
-                });
-                calendar.render();
-                */
+            window.onload = function() {
+                let element = $("#body-overlay")[0];
+                let children = element.children;
+                for (let i = 0; i < children.length; i++) {
+                    children[i].remove();
+                }
+                element.style["opacity"] = 0;
+                element.ontransitionend = function() {
+                    this.remove();
+                    document.body.classList.remove("overflow-hidden");
+                }
+            }
+            document.addEventListener("DOMContentLoaded", function() {
                 getReservations();
-                setInterval(getReservations, 60*1000);
+                setInterval(getReservations, 30*1000);
                 let date = new Date();
-                $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
-                $("a[href='#systemInfos']").click(function() {
-                    let content = "<table class='table-sm w-100'>";
-                    content += "<thead>";
-                    content += "<tr>";
-                    content += "<th class='w-25'>Eigenschaft</th>";
-                    content +=" <th>Wert</th>";
-                    content += "</tr>";
-                    content += "</thead>";
-                    content += "<tbody id='systemInfosTable'>";
-                    content += "</tbody>";
-                    content += "</table>";
-                    let data = {
-                        modal: {
-                            name: "systemInfos"
-                        },
-                        title: {
-                            text: "Systeminformationen"
-                        },
-                        content: {
-                            text: content,
-                            options: {
-                                scroll: true
-                            }
-                        }
-                    };
-                    Modal.create(data);
-                    updateSystemInfos();
-                });
+                let elements = $("footer");
+                for (element of elements) {
+                    element.innerHTML = "<a href='#'>&copy; 2021-" + date.getFullYear() + " BSDGG/IN20/FIAE</a>";
+                }
             });
         </script>
     </head>
@@ -540,9 +401,8 @@
         </header>
         <main>
             <div class="row mt-4" id="reservationsContainer">
-                <h2 class="col-md-12 p-0 mb-3">Reservierungen für <span id="todaysReservationDate"></span></h2>
-                <div class="list-group col-md-12" id="todaysReservationsList">
-                </div>
+                <h2 class="col-md-12 p-0 mb-3">Reservierungen für den <span id="todaysReservationDate">29. Juli 1991</span></h2>
+                <div class="list-group col-md-12" id="todaysReservationsList"></div>
             </div>
         </main>
         <footer></footer>

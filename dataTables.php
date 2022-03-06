@@ -2,12 +2,13 @@
     $data = [];
     $isAdmin = false;
     date_default_timezone_set("Europe/Berlin");
+    //echo var_dump($_POST);
     if (array_key_exists("_token", $_GET) && !is_null($_GET["_token"])) {
         $isAdmin = true;
     }
-    switch ($_GET["type"]) {
+    switch ($_POST["type"]) {
         case "today":
-            foreach (range(1, rand(2, 10)) as $lol) {
+            foreach (range(0, rand(2, 10)) as $lol) {
                 $data[] = [
                     "id" => rand(1,10),
                     "start" => date_format(date_create(), "d.m.Y, H:i:s"),
