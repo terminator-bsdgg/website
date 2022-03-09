@@ -13,7 +13,7 @@
                     "id" => rand(1,10),
                     "start" => date_format(date_create(), "d.m.Y, H:i:s"),
                     "end" => date_format(date_modify(date_create(), "+1 hour"), "d.m.Y, H:i:s"),
-                    "description" => "Beim Jupiter!",
+                    "description" => "Beim JupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiterJupiter!",
                     "room" => 1337,
                     "organiser" => "Hellmut Dunkelangst"
                 ];

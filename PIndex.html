@@ -150,6 +150,9 @@
                 width: 41px;
                 height: 49px;
             }
+            #reservationDescription {
+                overflow-wrap: anywhere;
+            }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
                 font-style: normal;
@@ -289,11 +292,12 @@
         <script>
             const currentReservations = [];
             const $ = query => document.querySelectorAll(query);
+            const monthNames = ["Januar", "Februar", "März", "April", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
             function showReservationDetails(id) {
                 let index = currentReservations.findIndex(key => key["id"] === id);
                 if (index >= 0) {
                     $("#reservationDescription")[0].innerHTML = currentReservations[index]["description"];
-                    $("#reservationOrganiser")[0].innerHTML = currentReservations[index]["organiser"];
+                    $("#reservationOrganiser")[0].innerHTML = currentReservations[index]["roomBooker"];
                     $("#reservationStart")[0].innerHTML = currentReservations[index]["start"];
                     $("#reservationEnd")[0].innerHTML = currentReservations[index]["end"];
                     new bootstrap.Modal($("#reservationDetailsModal")[0]).show();
@@ -309,20 +313,38 @@
                 xhttp.onreadystatechange = function() {
                     if (xhttp["readyState"] === XMLHttpRequest.DONE) {
                         if (xhttp["status"] === 0 || (xhttp["status"] >= 200 && xhttp["status"] < 400)) {
-                            let data = JSON.parse(this["responseText"]);
-                            if (data["reservations"].length >= 1) {
-                                Object.assign(currentReservations, data["reservations"]);
-                                let items = "<div class='list-group'>";
+                            let reservations = JSON.parse(this["responseText"]);
+                            if (reservations.length >= 1) {
+                                Object.assign(currentReservations, reservations);
+                                let header;
+                                let date;
+                                let lol;
+                                let wtf;
+                                for (reservation of reservations) {
+                                    date = new Date(reservation["timeStart"]).toISOString().slice(0, 10).split("-");
+                                    lol = date[2] + ". " + monthNames[Number.parseInt(date[1]) -1] + " " + date[0];
+                                    header = document.createElement("h2");
+                                    header.classList.add("col-md-12", "p-0", "mb-3");
+                                    //items = document.createElement("div");
+                                    //items.classList.add("list-group");
+                                    //items.style["overflow-wrap"] = "anywhere";
+                                    header.setAttribute("data-date", wtf);
+                                    header.innerHTML = lol;
+                                    $("#todaysReservationsList")[0].after(header);
+                                }
+                                /*
+                                let items = "<div class='list-group' style='overflow-wrap: anywhere'>";
                                 $("#todaysReservationDate")[0].innerHTML = data["date"];
                                 for (reservation of data["reservations"]) {
                                     items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
                                     items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
-                                    items += "<span class='badge bg-primary rounded-pill'><i class='far fa-clock'></i> 10:00 Uhr</span></div>";
+                                    items += "<span class='badge bg-primary rounded-pill align-self-start'><i class='far fa-clock'></i> 10:00 Uhr</span></div>";
                                     items += "<p class='m-0 text-secondary'>" + reservation["organiser"] + "</p></button>";
                                     //fas fa-circle für laufende konferenzen
                                 }
                                 items += "</div>";
                                 $("#todaysReservationsList")[0].innerHTML = items;
+                                */
                             }
                             else {
                                 $("#todaysReservationsList")[0].innerHTML = Alert.create("primary", "Es sind derzeit keine Reservierungen geplant.", false);
@@ -333,9 +355,9 @@
                         }
                     }
                 }
-                xhttp.open("POST", "dataTables.php");
-                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhttp.send("type=today");
+                xhttp.open("POST", "http://s-terminator.it.gla:5500/user/room");
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.send(JSON.stringify({roomId: 1007}));
             }
             class Alert {
                 static create(type, message, closeable = true, classes = "", id = null) {
@@ -371,7 +393,7 @@
             }
             document.addEventListener("DOMContentLoaded", function() {
                 getReservations();
-                setInterval(getReservations, 30*1000);
+                setInterval(getReservations, 300*1000);
                 let date = new Date();
                 let elements = $("footer");
                 for (element of elements) {
@@ -407,7 +429,7 @@
         </main>
         <footer></footer>
         <div class="modal fade" id="reservationDetailsModal">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Reservierungsdetails</h4>

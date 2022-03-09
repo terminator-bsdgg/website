@@ -2107,10 +2107,6 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav mt-auto mb-auto ms-auto" id="second-navbar">
-                    <li class="nav-item">
-                        <a class="nav-link rounded-3" href="#login"><i class="fas fa-sign-in-alt"></i> Anmelden</a>
-                    </li>
-                    <!-- Es darf immer nur eine Aktion möglich sein -->
                     <li class="nav-item d-none">
                         <a class="nav-link rounded-3" href="#"><i class="fas fa-sign-out-alt"></i> Abmelden</a>
                     </li>
@@ -2131,13 +2127,11 @@
             <div class="row mt-4">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#reservationsOverview">Übersicht</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#reservationsOverview">Reservieren</a>
                     </li>
-                    <!--
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#pastReservations">Vergangene Termine</a>
+                        <a class="nav-link" data-bs-toggle="tab" href="#moderation">Moderation</a>
                     </li>
-                -->
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#administration">Administration</a>
                     </li>
@@ -2158,8 +2152,8 @@
                             <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="pastReservations">
-                        <table class="table table-sm mt-3 w-100" id="pastReservationsTable">
+                    <div class="tab-pane fade" id="moderation">
+                        <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
