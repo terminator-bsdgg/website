@@ -354,29 +354,6 @@
                 background-color: var(--bs-gray-200, #e9ecef);
                 font-weight: 600;
             }
-            .on-air-alert {
-                display: flex;
-                align-items: center;
-                align-content: center;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                border: 2px dashed red
-            }
-            .on-air-indicator {
-                border-radius: 50%;
-                width: 1.5rem;
-                height: 1.5rem;
-                background-color: red;
-                animation: on-air-flashing 2s linear 0s infinite;
-            }
-            .on-air-details {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                align-content: flex-start;
-                margin-left: 0.75rem;
-                width: 100%
-            }
             .time-picker {
                 box-shadow: 0 0 3px 0 #0000006e;
                 background-color: white;
@@ -673,12 +650,6 @@
                     margin-top: 0;
                 }
             }
-            @keyframes on-air-flashing {
-                0% { background-color: var(--bs-danger) }
-                50%  { background-color: transparent }
-                100% { background-color: var(--bs-danger) }
-            }
-            /*animation: background-flashing-success 5s linear 0s infinite*/
         </style>
         <script>
             // Dürfen Terminersteller ihre eigenen Termine löschen?
@@ -2138,29 +2109,27 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="reservationsOverview">
-                        <div class="on-air-alert" id="on-air-alert">
-                            <div class="on-air-indicator"></div>
-                            <div class="on-air-details">
-                                <span style="font-weight: 600;">Momentan stattfindende Konferenz</span>
-                                <span id="on-air-description">Was ist schwarz und steht auf dem Fernseher? Ein Strauß Luftpumpen.</span>
-                                <hr class="w-100 m-0">
-                                <span id="on-air-footer">(Deine Mutter, endet voraussichtlich um 00:00 Uhr)</span>
-                            </div>
-                        </div>
                         <div id="calendar"></div>
                         <div class="d-flex mt-3 justify-content-end">
                             <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neuer Termin</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="moderation">
+                        <div class="d-flex formContainer mb-3">
+                            <label for="moderationRoomSelect">Gebäude:</label>
+                            <select class="form-select w-auto d-inline-block" id="moderationRoomSelect" data-old="0">
+                                <option value="0">Alle</option>
+                            </select>
+                        </div>
                         <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Raum</th><!-- Soll nur als Administrator sichtbar sein -->
+                                    <th>Raum</th>
                                     <th>Zeitpunkt</th>
                                     <th>Beschreibung</th>
                                     <th>Bucher</th>
+                                    <th>Optionen</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
