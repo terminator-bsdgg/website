@@ -1132,43 +1132,49 @@
                 /*
                 data: {
                     modal: {
-                        size: sm|default|lg|xl,
-                        static: bool,
-                        name: string
+                        size?: sm|default|lg|xl|fullscreen,
+                        static?: bool,
+                        name: string,
+                        events?: [
+                            {
+                                hide: {
+                                    function: function() { },
+                                    args?: []
+                                }
+                            }
+                        ]
                     },
                     title: {
                         text: string
                     },
                     content: {
                         text: string
-                        options: {
-                            scroll: bool,
-                            align: left|center|right
+                        options?: {
+                            scroll?: bool,
+                            align?: left|center|right
                         }
                     },
-                    footer: {
-                        buttons: {
-                            default: {
+                    footer?: {
+                        buttons?: {
+                            default?: {
                                 text: string,
-                                class: string,
-                                display: bool,
-                                attributes: {}
+                                class?: string,
+                                display?: bool,
+                                attributes?: {
+                                    attribute: value
+                                }
                             }
                             // Eigene
-                            custom: [
+                            custom?: [
                                 {
                                     text: string,
-                                    class: string,
-                                    attributes: {},
+                                    class?: string,
+                                    attributes?: {},
                                     actions: [{
                                         click: [
                                             {
-                                                function: string,
-                                                args: []
-                                            },
-                                            {
-                                                function: string,
-                                                args: []
+                                                function: (string|function() {}),
+                                                args?: []
                                             }
                                         ]
                                     }]
@@ -1182,14 +1188,14 @@
                     if ($("#mainModal").hasClass("show")) {
                         $("#mainModal").hide();
                     }
-                    $("#mainModal > div:first-of-type").removeClass("modal-sm modal-lg modal-xl modal-dialog-scrollable");
+                    $("#mainModal > div:first-of-type").removeClass("modal-sm modal-lg modal-xl modal-fullscreen modal-dialog-scrollable modal-dialog-centered");
                     $("#mainModal").removeAttr("data-bs-backdrop data-bs-keyboard");
                     $("#mainModal .modal-header > h4").empty();
                     $("#mainModal .modal-body").empty();
                     $("#mainModal .modal-footer").empty();
                     if (data.hasOwnProperty("modal") && data["modal"].hasOwnProperty("name") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
                         $("#mainModal").attr("data-name", data["modal"]["name"]);
-                        if (data["modal"].hasOwnProperty("size") && ["sm", "lg", "xl"].includes(data["modal"]["size"])) {
+                        if (data["modal"].hasOwnProperty("size") && ["sm", "lg", "xl", "fullscreen"].includes(data["modal"]["size"])) {
                             $("#mainModal > div:first-of-type").addClass("modal-" + data["modal"]["size"]);
                         }
                         if (data["modal"].hasOwnProperty("static") && data["modal"]["static"]) {
@@ -1696,7 +1702,7 @@
             $(document).on("DOMContentLoaded", function() {
                 //dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
                 calendar = new FullCalendar.Calendar($("#calendar")[0], {
-                    initialView: "timeGridWeek",
+                    initialView: "dayGridMonth",
                     locale: "de",
                     events: "calendar.php",
                     nowIndicator: true,

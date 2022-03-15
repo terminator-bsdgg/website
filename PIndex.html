@@ -153,6 +153,9 @@
             #reservationDescription {
                 overflow-wrap: anywhere;
             }
+            #todaysReservationsList > h2:not(:first-of-type, :only-of-type) {
+                margin-top: 1.5rem
+            }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
                 font-style: normal;
@@ -290,21 +293,30 @@
             }
         </style>
         <script>
-            const currentReservations = [];
+            const room = 1007;
+            var currentReservations = {};
+            // Da IDs einzigartig sind, wird immer nur ein Element zurückgegeben und nicht als Array!
             const $ = query => document.querySelectorAll(query);
             const monthNames = ["Januar", "Februar", "März", "April", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-            function showReservationDetails(id) {
-                let index = currentReservations.findIndex(key => key["id"] === id);
-                if (index >= 0) {
-                    $("#reservationDescription")[0].innerHTML = currentReservations[index]["description"];
-                    $("#reservationOrganiser")[0].innerHTML = currentReservations[index]["roomBooker"];
-                    $("#reservationStart")[0].innerHTML = currentReservations[index]["start"];
-                    $("#reservationEnd")[0].innerHTML = currentReservations[index]["end"];
-                    new bootstrap.Modal($("#reservationDetailsModal")[0]).show();
+            function showReservationDetails(date, id) {
+                if (currentReservations.hasOwnProperty(date)) {
+                    let index = currentReservations[date].findIndex(key => key["id"] === id);
+                    console.log(index, date);
+                    if (index >= 0) {
+                        let timeStart = new Date(Number.parseInt(currentReservations[date][index]["timeStart"]));
+                        let timeEnd  = new Date(Number.parseInt(currentReservations[date][index]["timeEnd"]));
+                        $("#reservationDescription")[0].innerHTML = currentReservations[date][index]["description"];
+                        $("#reservationOrganiser")[0].innerHTML = currentReservations[date][index]["roomBooker"];
+                        $("#reservationStart")[0].innerHTML = ("00" + timeStart.getHours().toString()).substr(-2, 2) + ":" + ("00" + timeStart.getMinutes().toString()).substr(-2, 2) + " Uhr";
+                        $("#reservationEnd")[0].innerHTML = ("00" + timeEnd.getHours().toString()).substr(-2, 2) + ":" + ("00" + timeEnd.getMinutes().toString()).substr(-2, 2) + " Uhr";
+                        new bootstrap.Modal($("#reservationDetailsModal")[0]).show();
+                    }
                 }
             }
             function getReservations() {
-                currentReservations.clear();
+                //$(...) ist im DOMContendLoaded-Ereignis noch nicht verfügbar (weil es CSS-Selektoren nutzt), daher document.getElement<...>
+                currentReservations = {};
+                document.getElementById("todaysReservationsList").replaceChildren();
                 let element = $("#reservationDetailsModal")[0];
                 if (element.classList.contains("show")) {
                     bootstrap.Modal.getInstance(element).hide();
@@ -315,36 +327,90 @@
                         if (xhttp["status"] === 0 || (xhttp["status"] >= 200 && xhttp["status"] < 400)) {
                             let reservations = JSON.parse(this["responseText"]);
                             if (reservations.length >= 1) {
-                                Object.assign(currentReservations, reservations);
-                                let header;
+                                let headerElement;
                                 let date;
-                                let lol;
-                                let wtf;
+                                let datePortions;
+                                let dateString;
+                                let listItem;
+                                let listItemContent;
+                                let listElement;
+                                let currentDateTime = new Date();
+                                let currentDateString = currentDateTime.toISOString().slice(0, 10);
+                                let timeIndicator;
+                                let timeIndicatorBackground;
+                                let timeIndicatorIcon;
+                                let timeIndicatorText;
+                                let timeIndicatorTimeLeft;
+                                let timeIndicatorStart;
+                                let timeIndicatorString;
+                                let timeIndicatorEnd;
                                 for (reservation of reservations) {
-                                    date = new Date(reservation["timeStart"]).toISOString().slice(0, 10).split("-");
-                                    lol = date[2] + ". " + monthNames[Number.parseInt(date[1]) -1] + " " + date[0];
-                                    header = document.createElement("h2");
-                                    header.classList.add("col-md-12", "p-0", "mb-3");
-                                    //items = document.createElement("div");
-                                    //items.classList.add("list-group");
-                                    //items.style["overflow-wrap"] = "anywhere";
-                                    header.setAttribute("data-date", wtf);
-                                    header.innerHTML = lol;
-                                    $("#todaysReservationsList")[0].after(header);
+                                    date = new Date(Number.parseInt(reservation["timeStart"])).toISOString().slice(0, 10);
+                                    if (!currentReservations.hasOwnProperty(date)) {
+                                        currentReservations[date] = [];
+                                    }
+                                    currentReservations[date].push({
+                                        id: reservation["id"],
+                                        timeStart: reservation["timeStart"],
+                                        timeEnd: reservation["timeEnd"],
+                                        description: reservation["description"],
+                                        roomBooker: reservation["roomBooker"],
+                                        accepted: reservation["accepted"],
+                                        acceptedBy: reservation["acceptedBy"],
+                                        color: reservation["color"]
+                                    });
+                                    headerElement = document.getElementById(date + "-header");
+                                    if ([null, undefined, "undefined"].includes(headerElement)) {
+                                        datePortions = date.split("-");
+                                        dateString = datePortions[2] + ". " + monthNames[Number.parseInt(datePortions[1]) -1] + " " + datePortions[0];
+                                        headerElement = document.createElement("h2");
+                                        headerElement.classList.add("col-md-12", "p-0", "mb-3");
+                                        headerElement.setAttribute("id", date + "-header");
+                                        headerElement.innerHTML = "Reservierungen am " + dateString;
+                                        document.getElementById("todaysReservationsList").append(headerElement);
+                                    }
+                                    listElement = document.getElementById(date + "-reservations");
+                                    if ([null, undefined, "undefined"].includes(listElement)) {
+                                        listElement = document.createElement("div");
+                                        listElement.classList.add("list-group");
+                                        listElement.style["overflow-wrap"] = "anywhere";
+                                        listElement.setAttribute("id", date + "-reservations");
+                                    }
+                                    listItem = document.createElement("button");
+                                    listItem.setAttribute("type", "button");
+                                    listItem.classList.add("list-group-item", "list-group-item-action");
+                                    listItem.addEventListener("click", showReservationDetails.bind(this, date, reservation["id"]));
+                                    timeIndicatorStart = new Date(Number.parseInt(reservation["timeStart"]));
+                                    timeIndicatorEnd = new Date(Number.parseInt(reservation["timeEnd"]));
+                                    timeIndicatorString = timeIndicatorStart.toISOString().slice(0, 10);
+                                    console.log(currentDateString === timeIndicatorString);
+                                    if ((timeIndicatorStart.getTime() >= currentDateTime.getTime() && currentDateTime.getTime() < timeIndicatorEnd.getTime()) && currentDateString === timeIndicatorString) {
+                                        timeIndicatorIcon = "fas fa-circle";
+                                        timeIndicatorBackground = "bg-success";
+                                        timeIndicatorText = "lol";
+                                        timeIndicatorTimeLeft = timeIndicatorEnd.getTime() - currentDateTime.getTime();
+                                        // Wenn verbleibende Dauer < 1 Tag
+                                        if (timeIndicatorTimeLeft < 86400) {
+                                        }
+                                        // Wenn verbleibende Dauer < 1 Stunde
+                                        else if (timeIndicatorTimeLeft < 3600) {
+                                        }
+                                        // Wenn verbleibende Dauer < 1 Minute
+                                        else if (timeIndicatorTimeLeft < 60) {
+                                        }
+                                    }
+                                    else {
+                                        timeIndicatorIcon = "far fa-clock'";
+                                        timeIndicatorBackground = "bg-primary";
+                                        timeIndicatorText = ("00" + timeIndicatorStart.getHours().toString()).substr(-2, 2) + ":" + ("00" + timeIndicatorEnd.getMinutes().toString()).substr(-2, 2) + " Uhr";
+                                    }
+                                    listItemContent = "<div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + reservation["description"] + "</h5>";
+                                    listItemContent += "<span class='badge " + timeIndicatorBackground + " rounded-pill align-self-start'><i class='" + timeIndicatorIcon + "'></i> " + timeIndicatorText + "</span></div>";
+                                    listItemContent += "<p class='m-0 text-secondary'>" + reservation["roomBooker"] + "</p></button>";
+                                    listItem.innerHTML = listItemContent;
+                                    listElement.append(listItem);
+                                    document.getElementById(date + "-header").after(listElement);
                                 }
-                                /*
-                                let items = "<div class='list-group' style='overflow-wrap: anywhere'>";
-                                $("#todaysReservationDate")[0].innerHTML = data["date"];
-                                for (reservation of data["reservations"]) {
-                                    items += "<button type='button' class='list-group-item list-group-item-action' onclick='showReservationDetails(" + reservation["id"] + ")'><div class='d-flex w-100 justify-content-between'>";
-                                    items += "<h5 class='mb-1'>" + reservation["description"] + "</h5>";
-                                    items += "<span class='badge bg-primary rounded-pill align-self-start'><i class='far fa-clock'></i> 10:00 Uhr</span></div>";
-                                    items += "<p class='m-0 text-secondary'>" + reservation["organiser"] + "</p></button>";
-                                    //fas fa-circle für laufende konferenzen
-                                }
-                                items += "</div>";
-                                $("#todaysReservationsList")[0].innerHTML = items;
-                                */
                             }
                             else {
                                 $("#todaysReservationsList")[0].innerHTML = Alert.create("primary", "Es sind derzeit keine Reservierungen geplant.", false);
@@ -355,9 +421,9 @@
                         }
                     }
                 }
-                xhttp.open("POST", "http://s-terminator.it.gla:5500/user/room");
+                xhttp.open("POST", "http://127.0.0.1:5500/user/room");
                 xhttp.setRequestHeader("Content-Type", "application/json");
-                xhttp.send(JSON.stringify({roomId: 1007}));
+                xhttp.send(JSON.stringify({roomId: room}));
             }
             class Alert {
                 static create(type, message, closeable = true, classes = "", id = null) {
@@ -423,8 +489,9 @@
         </header>
         <main>
             <div class="row mt-4" id="reservationsContainer">
-                <h2 class="col-md-12 p-0 mb-3">Reservierungen für den <span id="todaysReservationDate">29. Juli 1991</span></h2>
-                <div class="list-group col-md-12" id="todaysReservationsList"></div>
+                <div class="list-group col-md-12" id="todaysReservationsList">
+                    <h2 class="col-md-12 p-0 mb-3">Reservierungen für den 29. Juli 1991</h2>
+                </div>
             </div>
         </main>
         <footer></footer>
