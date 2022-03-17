@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Reservierung von individuellen Räumen für Konferenzen">
-        <meta name="keywords" content="Terminator, Reservierung, Konferenz, Raum, Räume">
-        <meta name="copyright" content="IN20">
+        <meta name="description" content="Kompakte Ansicht von Reservierungen individueller Räumen für Konferenzen">
+        <meta name="keywords" content="Terminator, Reservierung, Konferenz, Raum, Räume, Raspberry, kompakt, Pi">
+        <meta name="copyright" content="BSDGG/IN20/FIAE">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>STARTSEITE || TERMINATOR</title>
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -20,7 +20,7 @@
                 min-height: 100vh; 
                 background-color: #fffefd;
                 align-content: flex-start;
-                background-image: url("img/hmm.png");
+                background-image: url("img/hmm.png")
             }
             #body-overlay {
                 position: absolute;
@@ -155,6 +155,15 @@
             }
             #todaysReservationsList > h2:not(:first-of-type, :only-of-type) {
                 margin-top: 1.5rem
+            }
+            .on-air-indicator {
+                opacity: 1;
+                animation: on-air-flashing 2s linear 0s infinite;
+            }
+            @keyframes on-air-flashing {
+                0% { opacity: 1 }
+                50%  { opacity: 0.15 }
+                100% { opacity: 1; }
             }
             @font-face {
                 font-family: "Font Awesome 5 Brands";
@@ -295,13 +304,13 @@
         <script>
             const room = 1007;
             var currentReservations = {};
+            var scrollPosition = 0;
             // Da IDs einzigartig sind, wird immer nur ein Element zurückgegeben und nicht als Array!
             const $ = query => document.querySelectorAll(query);
             const monthNames = ["Januar", "Februar", "März", "April", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
             function showReservationDetails(date, id) {
                 if (currentReservations.hasOwnProperty(date)) {
                     let index = currentReservations[date].findIndex(key => key["id"] === id);
-                    console.log(index, date);
                     if (index >= 0) {
                         let timeStart = new Date(Number.parseInt(currentReservations[date][index]["timeStart"]));
                         let timeEnd  = new Date(Number.parseInt(currentReservations[date][index]["timeEnd"]));
@@ -313,9 +322,35 @@
                     }
                 }
             }
+            Number.prototype.duration = function(units = []) {
+                let sec_num = parseInt(this, 10);
+                let weeks = Math.floor((sec_num / 3600 / 24) / 7);
+                let days = Math.floor((sec_num / 3600 / 24) % 7);
+                let hours = Math.floor((sec_num / 3600) % 24);
+                let minutes = Math.floor((sec_num / 60) % 60);
+                let seconds = sec_num % 60;
+                let duration;
+                if (weeks >= 1) {
+                    duration = weeks + " Wo., " + (days >= 1 ? days + " Tge." : "");
+                }
+                else if (weeks === 0 && days >= 1) {
+                    duration = days + " Tg., " + (hours >= 1 ? hours + " Std." : "");
+                }
+                else if (days === 0 && hours >= 1) {
+                    duration = hours + " Std., " + (minutes >= 1 ? minutes + " Min." : "");
+                }
+                else if (hours === 0 && minutes >= 1) {
+                    duration = minutes + " Min.";
+                }
+                else if (minutes === 0 && seconds >= 1) {
+                    duration = "< 1 Min.";
+                }
+                return duration;
+            }
             function getReservations() {
                 //$(...) ist im DOMContendLoaded-Ereignis noch nicht verfügbar (weil es CSS-Selektoren nutzt), daher document.getElement<...>
                 currentReservations = {};
+                scrollPosition = Math.round(window.scrollY);
                 document.getElementById("todaysReservationsList").replaceChildren();
                 let element = $("#reservationDetailsModal")[0];
                 if (element.classList.contains("show")) {
@@ -342,7 +377,7 @@
                                 let timeIndicatorText;
                                 let timeIndicatorTimeLeft;
                                 let timeIndicatorStart;
-                                let timeIndicatorString;
+                                let timeIndicatorDateString;
                                 let timeIndicatorEnd;
                                 for (reservation of reservations) {
                                     date = new Date(Number.parseInt(reservation["timeStart"])).toISOString().slice(0, 10);
@@ -382,29 +417,19 @@
                                     listItem.addEventListener("click", showReservationDetails.bind(this, date, reservation["id"]));
                                     timeIndicatorStart = new Date(Number.parseInt(reservation["timeStart"]));
                                     timeIndicatorEnd = new Date(Number.parseInt(reservation["timeEnd"]));
-                                    timeIndicatorString = timeIndicatorStart.toISOString().slice(0, 10);
-                                    console.log(currentDateString === timeIndicatorString);
-                                    if ((timeIndicatorStart.getTime() >= currentDateTime.getTime() && currentDateTime.getTime() < timeIndicatorEnd.getTime()) && currentDateString === timeIndicatorString) {
-                                        timeIndicatorIcon = "fas fa-circle";
+                                    timeIndicatorDateString = timeIndicatorStart.toISOString().slice(0, 10);
+                                    if ((timeIndicatorStart.getTime() <= currentDateTime.getTime() && currentDateTime.getTime() < timeIndicatorEnd.getTime()) && currentDateString === timeIndicatorDateString) {
+                                        timeIndicatorIcon = "fas fa-circle on-air-indicator";
                                         timeIndicatorBackground = "bg-success";
-                                        timeIndicatorText = "lol";
-                                        timeIndicatorTimeLeft = timeIndicatorEnd.getTime() - currentDateTime.getTime();
-                                        // Wenn verbleibende Dauer < 1 Tag
-                                        if (timeIndicatorTimeLeft < 86400) {
-                                        }
-                                        // Wenn verbleibende Dauer < 1 Stunde
-                                        else if (timeIndicatorTimeLeft < 3600) {
-                                        }
-                                        // Wenn verbleibende Dauer < 1 Minute
-                                        else if (timeIndicatorTimeLeft < 60) {
-                                        }
+                                        timeIndicatorTimeLeft = Math.trunc((timeIndicatorEnd.getTime() - currentDateTime.getTime()) /1000);
+                                        timeIndicatorText = timeIndicatorTimeLeft.duration();
                                     }
                                     else {
-                                        timeIndicatorIcon = "far fa-clock'";
+                                        timeIndicatorIcon = "far fa-clock";
                                         timeIndicatorBackground = "bg-primary";
                                         timeIndicatorText = ("00" + timeIndicatorStart.getHours().toString()).substr(-2, 2) + ":" + ("00" + timeIndicatorEnd.getMinutes().toString()).substr(-2, 2) + " Uhr";
                                     }
-                                    listItemContent = "<div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + reservation["description"] + "</h5>";
+                                    listItemContent = "<div class='d-flex w-100 justify-content-between'><h5 class='mb-1 me-2'>" + reservation["description"] + "</h5>";
                                     listItemContent += "<span class='badge " + timeIndicatorBackground + " rounded-pill align-self-start'><i class='" + timeIndicatorIcon + "'></i> " + timeIndicatorText + "</span></div>";
                                     listItemContent += "<p class='m-0 text-secondary'>" + reservation["roomBooker"] + "</p></button>";
                                     listItem.innerHTML = listItemContent;
@@ -420,6 +445,9 @@
                             $("#todaysReservationsList")[0].innerHTML = Alert.create("danger", this["status"] + " " + this["statusText"] + ": " + this["responseURL"], false);
                         }
                     }
+                }
+                xhttp.onloadend = function() {
+                    scrollTo(0, (Number.isSafeInteger(scrollPosition) ? scrollPosition : 0));
                 }
                 xhttp.open("POST", "http://127.0.0.1:5500/user/room");
                 xhttp.setRequestHeader("Content-Type", "application/json");
@@ -459,7 +487,7 @@
             }
             document.addEventListener("DOMContentLoaded", function() {
                 getReservations();
-                setInterval(getReservations, 300*1000);
+                setInterval(getReservations, 30*1000);
                 let date = new Date();
                 let elements = $("footer");
                 for (element of elements) {
