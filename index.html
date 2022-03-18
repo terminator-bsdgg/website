@@ -121,47 +121,52 @@
             .nav-tabs > .nav-item {
                 position: relative
             }
-            .nav-tabs > .nav-item > .nav-link.active::after {
+            /* langer block unter erstem tab */
+            .nav-tabs > .nav-item:first-of-type > .nav-link.active::after {
                 content: "";
                 position: absolute;
                 width: 100%;
-                height: 15px;
-                left: 0;
-                bottom: -12px;
+                height: 10px;
+                left: -1px;
+                bottom: -10px;
                 z-index: 10;
                 background-color: #fffefd;
-                display: block
+                border-left: 1px solid #e2e5e8;
             }
-            .nav-tabs > .nav-item:first-of-type::after {
+            /* kleine blöcke VOR erstem tab */
+            .nav-tabs > .nav-item:not(:first-of-type)::before {
                 content: "";
                 position: absolute;
-                width: 6px;
-                height: 5px;
-                right: -3px;
-                bottom: -6px;
+                width: 10px;
+                height: 10px;
+                left: -5px;
+                bottom: -10px;
+                z-index: 11;
+                background-color: #fffefd;
+            }
+            /* langer block unter nicht erstem tab */
+            .nav-tabs > .nav-item:not(:first-of-type) > .nav-link.active::after {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 10px;
+                left: -1px;
+                bottom: -10px;
                 z-index: 10;
                 background-color: #fffefd;
             }
+            /* kleiner block HINTER letztem tab */
             .nav-tabs > .nav-item:last-of-type::after {
                 content: "";
                 position: absolute;
-                width: 6px;
-                height: 5px;
-                right: -3px;
-                bottom: -6px;
-                z-index: 10;
+                width: 10px;
+                height: 10px;
+                right: -5px;
+                bottom: -10px;
+                z-index: 11;
                 background-color: #fffefd;
             }
-            .nav-tabs > .nav-item:first-of-type > .nav-link.active::before {
-                content: "";
-                position: absolute;
-                width: 1px;
-                height: 40px;
-                left: -1px;
-                bottom: -20px;
-                z-index: 10;
-                background-color: var(--bs-gray-300, #dee2e6);
-            }
+            /* */
             .nav-tabs > .nav-item > .nav-link.active {
                 box-shadow: 0 2px 5px 0px #00000057;
                 background-color: white;
@@ -176,18 +181,6 @@
                 border: 1px solid var(--bs-gray-300, #dee2e6) !important;
                 border-bottom: 1px solid transparent !important
             }
-            /*
-            .nav-tabs > .nav-item > .nav-link:not(.active)::after {
-                content: "";
-                position: absolute;
-                width: 1px;
-                height: 40px;
-                right: -1px;
-                bottom: -20px;
-                z-index: 10;
-                background-color: var(--bs-gray-300, #dee2e6);
-            }
-            */
             table:not(.table-borderless) > thead > tr > th:first-of-type {
                 border-top-left-radius: 2px;
             }
