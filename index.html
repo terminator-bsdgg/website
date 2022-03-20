@@ -421,7 +421,7 @@
                 table.dataTable thead > tr > th {
                     font-weight: 600;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 main {
@@ -442,16 +442,9 @@
                 .formContainer {
                     flex-direction: column;
                 }
-                .formContainer > label {
-                    margin-right: 0;
+                .formContainer > label + select:not(:last-child), .formContainer > label + input:not(:last-child), .formContainer > button:not(:last-child) {
+                    margin-bottom: 0.5rem;
                 }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0;
-                }
-                /*
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0.5rem;
-                }*/
                 .dataTables_filter {
                     margin-top: 0.5rem;
                 }
@@ -467,8 +460,11 @@
                 table.dataTable thead > tr > th {
                     font-weight: 600;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
+                }
+                main {
+                    padding: 0 2%
                 }
                 #second-navbar, #mobile-navbar {
                     margin-right: 2%;
@@ -485,15 +481,9 @@
                 .formContainer {
                     flex-direction: column;
                 }
-                .formContainer > label {
-                    margin-right: 0;
+                .formContainer > label + select:not(:last-child), .formContainer > label + input:not(:last-child), .formContainer > button:not(:last-child) {
+                    margin-bottom: 0.5rem;
                 }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0;
-                }/*
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0.5rem;
-                }*/
                 .dataTables_filter {
                     margin-top: 0.5rem;
                 }
@@ -506,22 +496,19 @@
                 }
             }
             @media only screen and (min-width: 768px) {
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
+                }
+                main {
+                    padding: 0 2%
                 }
                 .formContainer {
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }/*
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }*/
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
                 }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
-                    margin-top: 0;
+                .formContainer > label + select:not(:last-child), .formContainer > button:not(:last-child) {
+                    margin-bottom: 0.5rem;
                 }
                 .row > label {
                     align-self: center;
@@ -558,15 +545,16 @@
                     flex-direction: row;
                     align-content: center;
                     align-items: center;
-                }/*
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }*/
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
                 }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                .formContainer > * {
                     margin-top: 0;
+                    margin-bottom: 0 !important;
+                }
+                .formContainer label:not(:first-of-type) {
+                    margin-left: 1rem;
+                }
+                .formContainer button:not(:only-child) {
+                    margin-left: 0.5rem;
                 }
                 #mobile-navbar {
                     display: none;
@@ -574,7 +562,7 @@
                 table.dataTable thead > tr > th {
                     font-weight: bold;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 16px !important;
                 }
                 main {
@@ -607,17 +595,21 @@
                     align-content: center;
                     align-items: center;
                 }
-                .formContainer > label {
-                    margin-right: 0.5rem;
-                }
-                .formContainer > label:not(:first-child), .formContainer > select:not(:first-child), .formContainer > input:not(:first-child), .formContainer > button:not(:first-child) {
-                    margin-left: 0.5rem;
-                }
-                .formContainer > label, .formContainer > select, .formContainer > input, .formContainer > button {
+                .formContainer > * {
                     margin-top: 0;
+                    margin-bottom: 0;
+                }
+                .formContainer label:not(:first-of-type) {
+                    margin-left: 1rem;
+                }
+                .formContainer button:not(:only-child) {
+                    margin-left: 0.5rem;
                 }
                 table.dataTable thead > tr > th {
                     font-weight: bold;
+                }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                    font-size: 16px !important;
                 }
                 main {
                     padding: 0 5%
@@ -685,9 +677,6 @@
             };
             var systemInfosEventSource = null;
             var viewportWidth = visualViewport["width"];
-            var authToken = null;
-            var currentUser = null;
-            var userRole = "user";
             var buildings = [];
             var rooms = [];
             var calendar = null;
@@ -804,7 +793,7 @@
                     ],
                     ajax: {
                         url: "dataTables.php",
-                        type: "GET",
+                        type: "POST",
                         data: {
                             type: "roles"
                         },
@@ -814,6 +803,51 @@
                     },
                     drawCallback: function(settings) {
                         $("#rolesAdminTable").parent().addClass("table-container");
+                    }
+                },
+                buildings: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            width: "15%"
+                        },
+                        {
+                            name: "name",
+                            data: "name",
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + "," + row["name"] + ")'><i class='fas fa-times'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "20%"
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "POST",
+                        //contentType: "application/x-www-form-urlencoded",
+                        contentType: "application/json",
+                        data: function(data, settings) {
+                            data["type"] = "buildings";
+                            return JSON.stringify(data);
+                            //data = "type=buildings";
+                            //return encodeURIComponent(data);
+                        },
+                        dataSrc: function(response) {
+                            return response["data"];
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#buildingsAdminTable").parent().addClass("table-container");
                     }
                 },
                 rooms: {
@@ -849,7 +883,7 @@
                     ],
                     ajax: {
                         url: "dataTables.php",
-                        type: "GET",
+                        type: "POST",
                         data: {
                             type: "rooms"
                         },
@@ -907,26 +941,18 @@
                 //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
             }
             function getBuildings() {
-                $.get("dataTables.php", {
-                        type: "buildings"
-                    }).done(function(response) {
-                        let data = JSON.parse(response);
-                        Object.assign(buildings, data["data"]);
-                    }).fail(function(response) {
-                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                    });
-            }
-            function getRooms() {
-                $.get("dataTables.php", {
-                        type: "rooms"
-                    }).done(function(response) {
-                        let data = JSON.parse(response);
-                        Object.assign(rooms, data["data"]);
-                    }).fail(function(response) {
-                        $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                    });
+                $.post({
+                    url:  "dataTables.php",
+                    contentType: "application/js",
+                    data: JSON.stringify({type: "buildings"})
+                }).done(function(response) {
+                    let data = JSON.parse(response);
+                    console.log(data);
+                    Object.assign(buildings, data);
+                }).fail(function(response) {
+                    $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                }).always(function() {
+                });
             }
             function updateSystemInfos() {
                 if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
@@ -1022,7 +1048,7 @@
                     });
                 }
             }
-            async function confirmRoomDeletion(room, building) {
+            function confirmRoomDeletion(room, building) {
                 let prompt = new Promise(function(resolve) {
                     confirmation({
                         title: "Raum entfernen bestätigen",
@@ -1700,13 +1726,28 @@
                     events: "calendar.php",
                     nowIndicator: true,
                     selectable: true,
+                    selectAllow: function(selectInfo) {
+                        let currentDate = new Date();
+                        currentDate.setHours(0, 0, 0);
+                        return Math.trunc(selectInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000);
+                    },
                     dateClick: function(info) {
                         //console.log(info);
                     },
+                    //
                     select: function(selectionInfo) {
-                        $("#createNewReservationButton").attr("data-selected-date", selectionInfo["startStr"]).removeAttr("disabled");
-                        console.log(selectionInfo);
+                        let currentDate = new Date();
+                        currentDate.setHours(0, 0, 0);
+                        if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
+                            $("#createNewReservationButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]});
+                        }
+                        else {
+                            $("#createNewReservationButton").attr("disabled", "disabled");
+                        }
                     },
+                    /*unselect: function(jsEvent, view) {
+                        $("#createNewReservationButton").attr("disabled", "disabled").removeAttr("data-start data-end");
+                    },*/
                     eventClick: function(info) {
                         let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
                         //"2022-02-08T10:10:00+01:00"
@@ -1741,7 +1782,6 @@
                 });
                 calendar.render();
                 getBuildings();
-                getRooms();
                 // Anhand von authToken soll ein Schlüssel (im Sinne eines Datenfeldes, nicht irgendetwas "Verschlüsseltes" zurückgesendet werden,
                 // der den aktuellen Benutzer als Administrator oder normalen Benutzer identifiziert (oder auch als gar nichts, wenn man nicht angemeldet ist)
                 /*setInterval(function() {
@@ -1808,9 +1848,11 @@
                     Modal.create(data);
                 });
                 $("#createNewReservationButton").click(function() {
-                    let selectedDate = $(this).attr("data-selected-date");
-                    if (typeof(selectedDate) !== "undefined") {
-                        dateArray = selectedDate.slice(0, 10).split("-");
+                    let startDate = $(this).attr("data-start");
+                    let endDate = $(this).attr("data-end");
+                    console.log(startDate, endDate);
+                    if (![null, undefined, "undefined"].includes(startDate) && ![null, undefined, "undefined"].includes(endDate)) {
+                        dateArray = startDate.slice(0, 10).split("-");
                         let content = "<form><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
                         content += "<select class='col-md-9 w-auto form-control fritz' id='newReservationBuildingSelect'></select></div>";
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
@@ -1818,8 +1860,8 @@
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label>";
                         content += "<input type='text' class='col-md-9 w-auto form-control fritz' id='newReservationDescription'></div>";
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFromHours'>Start:</label>";
-                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + selectedDate.slice(11, 13) + "'>";
-                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + selectedDate.slice(14, 16) + "'></div>";
+                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + startDate.slice(11, 13) + "'>";
+                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + startDate.slice(14, 16) + "'></div>";
                         content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
                         content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>";
                         content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
@@ -1920,6 +1962,17 @@
                     }
                     if ($("[href='#collapse-roles']").attr("aria-expanded") === "true" && DataTable.isDataTable("#rolesAdminTable")) {
                         adminDataTables["roles"].columns.adjust().draw();
+                    }
+                    if ($("[href='#collapse-buildings']").attr("aria-expanded") === "true" && DataTable.isDataTable("#buildingsAdminTable")) {
+                        adminDataTables["roles"].columns.adjust().draw();
+                    }
+                });
+                $("#buildings-accordion").on("shown.bs.collapse", function() {
+                    if (!DataTable.isDataTable("#buildingsAdminTable")) {
+                        adminDataTables["users"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]);
+                    }
+                    else {
+                        $("#buildingsAdminTable").DataTable().ajax.reload();
                     }
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
@@ -2114,8 +2167,9 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="moderation">
+                        <h3>Reservierungen genehmigen oder ablehnen</h3>
                         <div class="d-flex formContainer mb-3">
-                            <label for="moderationRoomSelect">Gebäude:</label>
+                            <label for="moderationRoomSelect" class="col-form-label me-2">Gebäude:</label>
                             <select class="form-select w-auto d-inline-block" id="moderationRoomSelect" data-old="0">
                                 <option value="0">Alle</option>
                             </select>
@@ -2135,6 +2189,31 @@
                         </table>
                     </div>
                     <div class="tab-pane fade" id="administration">
+                        <section id="buildings-accordion" class="mb-3">
+                            <div class="card">
+                                <div class="card-header p-0">
+                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-buildings" data-admin-table="buildings">
+                                        <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fas fa-building"></i> Gebäude</h4>
+                                        <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
+                                    </a>
+                                </div>
+                                <div id="collapse-buildings" class="collapse hide" data-bs-parent="#buildings-accordion">
+                                    <div class="card-body">
+                                        <table class="table table-sm w-100 mt-3" id="buildingsAdminTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Beschreibung</th>
+                                                    <th>Optionen</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                         <section id="rooms-accordion" class="mb-3">
                             <div class="card">
                                 <div class="card-header p-0">
@@ -2146,7 +2225,7 @@
                                 <div id="collapse-rooms" class="collapse hide" data-bs-parent="#rooms-accordion">
                                     <div class="card-body">
                                         <div class="d-flex formContainer mb-3">
-                                            <label for="roomsBuildingSelect">Gebäude:</label>
+                                            <label for="roomsBuildingSelect" class="col-form-label me-2">Gebäude:</label>
                                             <select class="form-select w-auto d-inline-block" id="roomsBuildingSelect" data-old="0">
                                                 <option value="0">Alle</option>
                                             </select>
@@ -2178,7 +2257,7 @@
                                 <div id="collapse-roles" class="collapse hide" data-bs-parent="#roles-accordion" data-admin-table="roles">
                                     <div class="card-body">
                                         <div class="d-flex formContainer mb-3">
-                                            <label for="rolesRoleSelect">Rolle:</label>
+                                            <label for="rolesRoleSelect" class="col-form-label me-2">Rolle:</label>
                                             <select class="form-select w-auto d-inline-block" id="rolesRoleSelect" data-old="0">
                                                 <option value="0">Alle</option>
                                                 <option value="1">Benutzer</option>

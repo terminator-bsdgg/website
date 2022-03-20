@@ -1,12 +1,8 @@
 <?php
     $data = [];
-    $isAdmin = false;
     date_default_timezone_set("Europe/Berlin");
-    //echo var_dump($_POST);
-    if (array_key_exists("_token", $_GET) && !is_null($_GET["_token"])) {
-        $isAdmin = true;
-    }
-    switch ($_POST["type"]) {
+    $type = json_decode(file_get_contents('php://input'), true)["type"];
+    switch ($type) {
         case "today":
             foreach (range(0, rand(2, 10)) as $lol) {
                 $data[] = [
@@ -31,24 +27,23 @@
             }
             break;
         case "buildings":
-            $buildings = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            $buildings = ["A","B","C","D","E","F","G"];
             foreach (range(1, rand(2, 10)) as $lol) {
+                $aso = [];
+                foreach (range(1, rand(2, 10)) as $lol_) {
+                    $aso[][] = [
+                        "id" => $lol_,
+                        "name" => "LOL",
+                        "description" => "Geisterzimmer " . $lol_, 
+                    ];
+                }
                 $data[] = [
                     "id" => $lol,
                     "name" => $buildings[array_rand($buildings)],
                     "description" => "Geisterhaus " . $lol,
+                    "rooms" => $aso
                 ];
-            }
-            break;
-        case "rooms":
-            $buildings = ["LOL", "WTF", "ROFL"];
-            foreach (range(1, rand(2, 10)) as $lol) {
-                $data[] = [
-                    "id" => $lol,
-                    "name" => $buildings[array_rand($buildings)],
-                    "description" => "Geisterzimmer" . $lol,
-                    "building" => rand(1, 10)
-                ];
+
             }
             break;
         case "roles":
@@ -75,6 +70,6 @@
             $data = null;
             break;
     }
-    echo json_encode(["reservations" => $data, "date" => date_format(date_create(), "d. F Y")]);
+    echo json_encode($data);
     return;
 ?>

@@ -305,7 +305,6 @@
             const room = 1007;
             var currentReservations = {};
             var scrollPosition = 0;
-            // Da IDs einzigartig sind, wird immer nur ein Element zurückgegeben und nicht als Array!
             const $ = query => document.querySelectorAll(query);
             const monthNames = ["Januar", "Februar", "März", "April", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
             function showReservationDetails(date, id) {
@@ -322,7 +321,7 @@
                     }
                 }
             }
-            Number.prototype.duration = function(units = []) {
+            Number.prototype.duration = function() {
                 let sec_num = parseInt(this, 10);
                 let weeks = Math.floor((sec_num / 3600 / 24) / 7);
                 let days = Math.floor((sec_num / 3600 / 24) % 7);
@@ -475,10 +474,7 @@
             }
             window.onload = function() {
                 let element = $("#body-overlay")[0];
-                let children = element.children;
-                for (let i = 0; i < children.length; i++) {
-                    children[i].remove();
-                }
+                element.replaceChildren();
                 element.style["opacity"] = 0;
                 element.ontransitionend = function() {
                     this.remove();
