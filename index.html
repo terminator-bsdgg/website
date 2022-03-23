@@ -78,7 +78,7 @@
                 display: flex;
                 align-items: flex-start;
                 justify-content: center;
-                padding: 0 5%;
+                padding: 0 2%;
             }
             main > div.row:first-of-type {
                 flex: 0 1 100%
@@ -566,7 +566,7 @@
                     font-size: 16px !important;
                 }
                 main {
-                    padding: 0 5%
+                    padding: 0 2%
                 }
                 #second-navbar, #mobile-navbar {
                     margin-right: 5%;
@@ -612,7 +612,7 @@
                     font-size: 16px !important;
                 }
                 main {
-                    padding: 0 5%
+                    padding: 0 2%
                 }
                 #second-navbar, #mobile-navbar {
                     margin-right: 5%;
@@ -680,6 +680,8 @@
             var buildings = [];
             var rooms = [];
             var calendar = null;
+            var isGettingReservations = false;
+            var firstRun = true;
             const rowGroupStrings = {
                 admin: {
                     roles: {
@@ -949,6 +951,10 @@
                     let data = JSON.parse(response);
                     console.log(data);
                     Object.assign(buildings, data);
+                    $("#buildingSelection").empty();
+                    for (building of data) {
+                        $("#buildingSelection").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
+                    }
                 }).fail(function(response) {
                     $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
@@ -1017,7 +1023,7 @@
                     },
                     resolve);
                 });
-                let result = await prompt;
+                let result = prompt;
                 if (result) {
                     if ($("#body-overlay").length == 0) {
                         $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
@@ -1056,7 +1062,7 @@
                     },
                     resolve);
                 });
-                let result = await prompt;
+                let result = prompt;
                 if (result) {
                     if ($("#body-overlay").length == 0) {
                         $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
@@ -1593,6 +1599,37 @@
                     }
                 }
             }
+            function lol() {
+                calendar.refetchEvents();
+            }
+            function getReservations(start, end, successCallback, failureCallback) {
+                $("#getReservationsButton").addClass("disabled").attr("disabled", "disabled");
+                $.post({
+                    url: "dataTables.php",
+                    data: {
+                        building: $("#buildingSelection").val(),
+                        room: $("#roomSelection").val(),
+                        start: start,
+                        end: end
+                    }
+                }).done(function(response) {
+                    successCallback(JSON.parse(response));
+                }).fail(function(response) {
+                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                }).always(function() {
+                    isGettingReservations = false;
+                    $("#getReservationsButton").removeClass("disabled").removeAttr("disabled");
+                });
+            }
+            function getRooms() {
+                $("#roomSelection").empty();
+                let index = buildings.findIndex(key => key["id"] === Number.parseInt($("#buildingSelection").val()));
+                if (index >= 0) {
+                    for (room of buildings[index]["rooms"]) {
+                        $("#roomSelection").append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
+                    }
+                }
+            }
             function createNewUser() {
                 // Moderatoren nur für einzelne Gebäude?
                 // Supermoderator für alle Gebäude, der wie lokaler Moderator Termine stornieren/bearbeiten kann?
@@ -1731,10 +1768,19 @@
                         currentDate.setHours(0, 0, 0);
                         return Math.trunc(selectInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000);
                     },
-                    dateClick: function(info) {
-                        //console.log(info);
+                    events: function(info, successCallback, failureCallback) {
+                        if (firstRun) {
+                            firstRun = false;
+                            successCallback({});
+                        }
+                        else {
+                            if (!isGettingReservations) {
+                                isGettingReservations = true;
+                                console.log(firstRun);
+                                setTimeout(getReservations, 500, info["startStr"], info["endStr"], successCallback, failureCallback);
+                            }
+                        }
                     },
-                    //
                     select: function(selectionInfo) {
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
@@ -1745,39 +1791,17 @@
                             $("#createNewReservationButton").attr("disabled", "disabled");
                         }
                     },
-                    /*unselect: function(jsEvent, view) {
-                        $("#createNewReservationButton").attr("disabled", "disabled").removeAttr("data-start data-end");
-                    },*/
                     eventClick: function(info) {
-                        let eventData = calendar.getEventById(info["event"]["_def"]["publicId"]);
-                        //"2022-02-08T10:10:00+01:00"
-                        // Datumsformat ist ISO-Format, daher können Teile daraus einfach mit String-Methoden extrahiert werden.
-                        // Beim Datum selber müssen zur Anzeige vielleicht verschiedene Formate benutzt werden.
-                        let dateArray = eventData["startStr"].slice(0, 10).split("-");
-                        let date = dateArray[2] + "." + dateArray[1] + "." + dateArray[0];
-                        let startTime = eventData["startStr"].slice(11, 16) + " Uhr";
-                        let endTime = (eventData["allDay"] ? "(Ganztägig)" : eventData["endStr"].slice(11, 16) + " Uhr");
-                        let content = "<div class='row'><div class='col-md-3'>Beschreibung:</div><div class='col-md-9'>" + (eventData["title"] !== "" ? eventData["title"] : "(Nicht angegeben)") + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Veranstalter:</div><div class='col-md-9'>" + (info["event"]["extendedProps"].hasOwnProperty("booker") ? info["event"]["extendedProps"]["booker"] : "(Nicht angegeben)") + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Datum:</div><div class='col-md-9'>" + date + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Start:</div><div class='col-md-9'>" + startTime + "</div></div>";
-                        content += "<div class='row mt-2'><div class='col-md-3'>Ende:</div><div class='col-md-9'>" + endTime + "</div></div>";
-                        content += "</div>";
-                        let data = {
-                        modal: {
-                            name: "eventInfos"
-                        },
-                        title: {
-                            text: "Termininformationen"
-                        },
-                        content: {
-                            text: content,
-                            options: {
-                                scroll: true
-                            }
-                        }
-                    };
-                    Modal.create(data);
+                        $("#selectedReservationDescription").html(info["event"]["_def"]["title"]);
+                        $("#selectedReservationBooker").html(info["event"]["_def"]["extendedProps"]["booker"]);
+                        $("#selectedReservationStart").html(info["event"]["_def"]["extendedProps"]["start"]);
+                        $("#selectedReservationEnd").html(info["event"]["_def"]["extendedProps"]["end"]);
+                        $("#selectedReservationFetchers").html(info["event"]["_def"]["extendedProps"]["passengers"]);
+                        //let dateArray = eventData["startStr"].slice(0, 10).split("-");
+                    },
+                    viewDidMount: function(args) {
+                        $("#reservation-details").css("margin-top", $(args["el"]).parent().offset()["top"] + "px");
+                        //$(args["el"]).addClass("row").find("table:first-of-type").addClass("col-md-9").after("<div class='col-md-3'>lol</div>");
                     }
                 });
                 calendar.render();
@@ -2161,13 +2185,58 @@
                 </ul>
                 <div class="tab-content p-3">
                     <div class="tab-pane fade active show" id="reservationsOverview">
-                        <div id="calendar"></div>
-                        <div class="d-flex mt-3 justify-content-end">
-                            <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neuer Termin</button>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <form enctype="text/plain" method="post" action="/" onsubmit="lol(); return false;" class="w-100 d-flex formContainer mb-4 justify-content-center mt-2">
+                                    <label for="buildingSelection" class="col-form-label me-2">Gebäude:</label>
+                                    <select class="form-select w-auto d-inline-block" id="buildingSelection" required onchange="getRooms()"></select>
+                                    <label for="roomSelection" class="col-form-label me-2">Raum:</label>
+                                    <select class="form-select w-auto d-inline-block" id="roomSelection" required></select>
+                                    <button type="submit" class="btn btn-primary align-baseline">Anzeigen</button>
+                                </form>
+                                <div id="calendar"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="rounded border p-2" style="margin-top: 8.25rem;" id="reservation-details">
+                                    <h5 class="col-md-12">Reservierungsdetails</h5>
+                                    <div class="row">
+                                        <div class="col-md-4">Beschreibung:</div>
+                                        <div class="col-md-8" id="selectedReservationDescription">LOL</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">Start:</div>
+                                        <div class="col-md-8" id="selectedReservationStart">LOL</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">Ende:</div>
+                                        <div class="col-md-8" id="selectedReservationEnd">LOL</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">Reservierer:</div>
+                                        <div class="col-md-8" id="selectedReservationBooker">LOL</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">Abholer:</div>
+                                        <div class="col-md-8" id="selectedReservationFetchers">LOL</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">Optionen:</div>
+                                        <div class="col-md-8" id="selectedReservationOptions">LOL</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3 justify-content-end">
+                                    <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neue Reservierung</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="moderation">
-                        <h3>Reservierungen genehmigen oder ablehnen</h3>
+                        <div class="alert-dismissible alert alert-primary messageboxContainer" role="alert">
+                            <div class="messageboxIcon primary">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="messageboxText">In diesem Bereich können eingehende Reservierungen genehmigt oder abgelehnt werden.</div>
+                        </div>
                         <div class="d-flex formContainer mb-3">
                             <label for="moderationRoomSelect" class="col-form-label me-2">Gebäude:</label>
                             <select class="form-select w-auto d-inline-block" id="moderationRoomSelect" data-old="0">

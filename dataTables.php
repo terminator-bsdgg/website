@@ -31,9 +31,9 @@
             foreach (range(1, rand(2, 10)) as $lol) {
                 $aso = [];
                 foreach (range(1, rand(2, 10)) as $lol_) {
-                    $aso[][] = [
+                    $aso[] = [
                         "id" => $lol_,
-                        "name" => "LOL",
+                        "name" => "LOL " . $lol_,
                         "description" => "Geisterzimmer " . $lol_, 
                     ];
                 }
