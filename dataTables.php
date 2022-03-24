@@ -34,14 +34,18 @@
                     $aso[] = [
                         "id" => $lol_,
                         "name" => "LOL " . $lol_,
-                        "description" => "Geisterzimmer " . $lol_, 
+                        "description" => "Geisterzimmer " . $lol_,
+                        "status" => rand(0, 2),
+                        "statusMessage" => ""
                     ];
                 }
                 $data[] = [
                     "id" => $lol,
                     "name" => $buildings[array_rand($buildings)],
                     "description" => "Geisterhaus " . $lol,
-                    "rooms" => $aso
+                    "status" => rand(0, 2),
+                    "statusMessage" => "",
+                    "rooms" => $aso,
                 ];
 
             }

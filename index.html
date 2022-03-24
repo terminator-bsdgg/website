@@ -13,6 +13,7 @@
         <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap4-toggle.min.css">
         <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/datatables.min.js"></script>
@@ -21,6 +22,7 @@
         <script src="js/fullcalendar.min.js"></script>
         <script src="js/fullcalendar-locales/de.js"></script>
         <script src="js/fullcalendar-locales/en-gb.js"></script>
+        <script src="js/bootstrap4-toggle.min.js"></script>
         <style>
             body {
                 display: grid;
@@ -825,9 +827,21 @@
                             data: "description",
                         },
                         {
+                            name: "status",
+                            data: "status",
+                            visible: false
+                        },
+                        {
+                            name: "statusMessage",
+                            data: "statusMessage"
+                        },
+                        {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px'><i class='fas fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + "," + row["name"] + ")'><i class='fas fa-times'></i></button></div>";
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fas fa-pen'></i></button>";
+                                buttons += "<button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + "," + row["name"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fas fa-times'></i></button>";
+                                buttons += "<button type='button' class='btn btn-sm " + (row["status"] === 1 ? "btn-success" : "btn-warning") + "' onclick='toggleBuildingStatus(this, " + row["id"] + ")' data-bs-toggle='tooltip' title='" + (row["status"] === 1 ? "Gebäude deaktivieren" : "Gebäude aktivieren") + "'><i class='" + (row["status"] === 1 ? "fas fa-lock-open" : "fas fa-lock") + "'></i></button>";
+                                return buttons;
                             },
                             sorting: false,
                             width: "20%"
@@ -845,11 +859,18 @@
                             //return encodeURIComponent(data);
                         },
                         dataSrc: function(response) {
-                            return response["data"];
+                            for (building of response) {
+                                delete building["rooms"];
+                            }
+                            return response;
                         }
                     },
                     drawCallback: function(settings) {
                         $("#buildingsAdminTable").parent().addClass("table-container");
+                        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                        tooltipTriggerList.map(function (tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
                     }
                 },
                 rooms: {
@@ -1993,24 +2014,25 @@
                 });
                 $("#buildings-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#buildingsAdminTable")) {
-                        adminDataTables["users"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]);
+                        adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]);
                     }
                     else {
                         $("#buildingsAdminTable").DataTable().ajax.reload();
                     }
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#usersAdminTable")) {
-                        adminDataTables["users"] = $("#usersAdminTable").DataTable(dataTablesAdminOptions["users"]);
+                    if (!DataTable.isDataTable("#roomsAdminTable")) {
+                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(dataTablesAdminOptions["rooms"]);
                     }
                     else {
                         $("#usersAdminTable").DataTable().ajax.reload();
                     }
-                    if (buildings.length >= 1) {
-                        $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
-                        for (building of buildings) {
-                            $("#roomsBuildingSelect").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
-                        }
+                    if (buildings.length === 0) {
+                        getBuildings();
+                    }
+                    $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
+                    for (building of buildings) {
+                        $("#roomsBuildingSelect").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
                     }
                 });
                 $("#roles-accordion").on("shown.bs.collapse", function() {
@@ -2187,17 +2209,17 @@
                     <div class="tab-pane fade active show" id="reservationsOverview">
                         <div class="row">
                             <div class="col-md-9">
-                                <form enctype="text/plain" method="post" action="/" onsubmit="lol(); return false;" class="w-100 d-flex formContainer mb-4 justify-content-center mt-2">
+                                <form enctype="text/plain" method="post" action="/" onsubmit="lol(); return false;" class="w-100 d-flex formContainer mb-4 justify-content-center">
                                     <label for="buildingSelection" class="col-form-label me-2">Gebäude:</label>
-                                    <select class="form-select w-auto d-inline-block" id="buildingSelection" required onchange="getRooms()"></select>
+                                    <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="getRooms()"></select>
                                     <label for="roomSelection" class="col-form-label me-2">Raum:</label>
-                                    <select class="form-select w-auto d-inline-block" id="roomSelection" required></select>
+                                    <select class="form-select w-auto d-inline-block" id="roomSelection" required="required"></select>
                                     <button type="submit" class="btn btn-primary align-baseline">Anzeigen</button>
                                 </form>
                                 <div id="calendar"></div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="rounded border p-2" style="margin-top: 8.25rem;" id="reservation-details">
+                            <div class="col-md-3 align-self-end">
+                                <div class="rounded border p-2" id="reservation-details">
                                     <h5 class="col-md-12">Reservierungsdetails</h5>
                                     <div class="row">
                                         <div class="col-md-4">Beschreibung:</div>
@@ -2235,7 +2257,7 @@
                             <div class="messageboxIcon primary">
                                 <i class="fas fa-info-circle"></i>
                             </div>
-                            <div class="messageboxText">In diesem Bereich können eingehende Reservierungen genehmigt oder abgelehnt werden.</div>
+                            <div class="messageboxText">In diesem Bereich werden eingehende Reservierungen genehmigt oder abgelehnt.</div>
                         </div>
                         <div class="d-flex formContainer mb-3">
                             <label for="moderationRoomSelect" class="col-form-label me-2">Gebäude:</label>
@@ -2274,6 +2296,8 @@
                                                     <th>ID</th>
                                                     <th>Name</th>
                                                     <th>Beschreibung</th>
+                                                    <th>Statustext</th>
+                                                    <th>Status</th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
