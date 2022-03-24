@@ -13,7 +13,6 @@
         <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap4-toggle.min.css">
         <script src="js/jquery-3.6.0.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/datatables.min.js"></script>
@@ -22,7 +21,6 @@
         <script src="js/fullcalendar.min.js"></script>
         <script src="js/fullcalendar-locales/de.js"></script>
         <script src="js/fullcalendar-locales/en-gb.js"></script>
-        <script src="js/bootstrap4-toggle.min.js"></script>
         <style>
             body {
                 display: grid;
@@ -838,9 +836,9 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fas fa-pen'></i></button>";
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='editRoom(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fas fa-pen'></i></button>";
                                 buttons += "<button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + "," + row["name"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fas fa-times'></i></button>";
-                                buttons += "<button type='button' class='btn btn-sm " + (row["status"] === 1 ? "btn-success" : "btn-warning") + "' onclick='toggleBuildingStatus(this, " + row["id"] + ")' data-bs-toggle='tooltip' title='" + (row["status"] === 1 ? "Gebäude deaktivieren" : "Gebäude aktivieren") + "'><i class='" + (row["status"] === 1 ? "fas fa-lock-open" : "fas fa-lock") + "'></i></button>";
+                                buttons += "<button type='button' class='btn btn-sm " + (row["status"] === 1 ? "btn-success" : "btn-warning") + "' onclick='" + (row["status"] === 1 ? "enableBuilding(" + row["id"] + ")" : "showBuildingDeactivationModal(" + row["id"] + ")") + "' data-bs-toggle='tooltip' title='" + (row["status"] === 1 ? "Gebäude deaktivieren" : "Gebäude aktivieren") + "'><i class='" + (row["status"] === 1 ? "fas fa-lock-open" : "fas fa-lock") + "'></i></button>";
                                 return buttons;
                             },
                             sorting: false,
@@ -930,31 +928,44 @@
                 clear: "fas fa-trash-alt",
                 close: "fas fa-times"
             };
-            function login(wtf) {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") == "login") {
+            function login() {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "login") {
                     if ($("#body-overlay").length == 0) {
                         $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                     }
-                    if ($(wtf).find("[data-processing='true']").length == 0) {
-                        $(wtf).prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    if ($("#loginButton").find("[data-processing='true']").length === 0) {
+                        $("#loginButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                     }
                     $("#mainModal .modal-footer > button").attr("disabled", "disabled");
                     $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
                     $("#mainModal .modal-body > .alert").remove();
-                    $.post("lol", {
-                        username: $("#username").val(),
-                        password: $("#password").val()
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/user/login",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            email: $("#mail").val(),
+                            password: $("#password").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
                     }).done(function(response) {
-                        //cookies setzen
-                        //anmeldeknopf durch abmeldeknopf ersetzen
-                        //userRole auf moderator/administrator/user setzen
+                        let date = new Date();
+                        date.setHours(date.getHours() + 168); // = 1 Woche
+                        document.cookie = "authToken=" + encodeURIComponent(response["authentification"]) + "; expires=" + date.toUTCString() + "; path=/; SameSite=None; Secure";
+                        document.cookie = "username=" + encodeURIComponent(response["username"]) + "; expires=" + date.toUTCString() + "; path=/; SameSite=None; Secure";
+                        $("a[href='#login']").addClass("d-none");
+                        $("a[href='#logout']").removeClass("d-none");
+                        $("[data-current-user]").removeClass("d-none").html("<i class='fas fa-user-injured'></i> " + response["username"]);
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
                     }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", (Number.parseInt(response["status"]) === 401 ? "Ungültige Anmeldedaten" : response["status"] + ": " + response["statusText"])));
                     }).always(function() {
-                        $(wtf).find("[data-processing='true']").remove();
-                        $(wtf).removeAttr("disabled");
+                        $("#loginButton").find("[data-processing='true']").remove();
+                        $("#loginButton").removeAttr("disabled");
                         $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > button").removeAttr("disabled");
+                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
                         $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                     });
                 }
@@ -1156,7 +1167,7 @@
                 Modal.create(data);
             }
             class Alert {
-                static create(type, message, closeable = true, classes = "") {
+                static create(type, message, closeable = true, classes = "", id = null) {
                     type = type.toLowerCase();
                     let icons = {
                         danger: "fas fa-exclamation-circle",
@@ -1167,7 +1178,7 @@
                     if (!["primary", "success", "danger", "warning"].includes(type)) {
                         type = "primary";
                     }
-                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div>";
+                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'" + (id !== null ? " id='" + id + "'" : "") + "><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
                 }
             }
             // Wird verwendet, um Funktionen innerhalb von Objekten auszuführen
@@ -1608,6 +1619,64 @@
                 };
                 Modal.create(data);
             }
+            function editRoom(lol) {
+                let index = buildings.findIndex(key => key["id"] === lol);
+                if (index >= 0) {
+                    let content = "<form enctype='text/plain' method='post' action='/' onsubmit='saveEditedBuilding(); return false;' class='w-100'><label for='editBuildingName' class='form-label'>Name:</label>";
+                    content += "<input type='text' class='form-control' id='editBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
+                    content += "<div class='mt-3'><label for='editBuildingDescription' class='form-label'>Beschreibung:</label>";
+                    content += "<input type='text' class='form-control' id='editBuildingDescription' placeholder='Beschreibung eingeben' required='required' value='" + buildings[index]["description"] + "'></div>";
+                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedBuildingButton'>Speichern</button></form>";
+                    let data = {
+                        modal: {
+                            name: "editBuilding"
+                        },
+                        title: {
+                            text: "Gebäude " + buildings[index]["name"] + " bearbeiten"
+                        },
+                        content: {
+                            text: content
+                        }
+                    };
+                    Modal.create(data);
+                }
+            }
+            function saveEditedBuilding(id) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "editBuilding") {
+                    if ($("#body-overlay").length == 0) {
+                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                    }
+                    if ($("#saveEditedBuildingButton").find("[data-processing='true']").length === 0) {
+                        $("#saveEditedBuildingButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    }
+                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-body > .alert").remove();
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            id: id,
+                            name: $("#editBuildingName").val(),
+                            description: $("#editBuildingDescription").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        $("#saveEditedBuildingButton").find("[data-processing='true']").remove();
+                        $("#saveEditedBuildingButton").removeAttr("disabled");
+                        $("#body-overlay").remove();
+                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                    });
+                }
+            }
             function toggleNewReservationTimes(element) {
                 if ($("#mainModal").attr("data-name") === "newReservation") {
                     if ($(element).prop("checked")) {
@@ -1619,6 +1688,80 @@
                         $("#newReservationTimeToMinutes").removeAttr("disabled");
                     }
                 }
+            }
+            function enableBuilding(lol) {
+                let index = buildings.findIndex(key => key["id"] === lol);
+                if (index >= 0) {
+                    let prompt = new Promise(function(resolve) {
+                        confirmation({
+                            title: "Gebäude aktivieren",
+                            content: "Soll das Gebäude " + buildings[index]["name"] + " wirklich aktiviert werden?"
+                        }, resolve);
+                    });
+                    //value kann bei resolve nur true sein
+                    prompt.then(function(value) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    });
+                }
+            }
+            function showBuildingDeactivationModal(lol) {
+                let index = buildings.findIndex(key => key["id"] === lol);
+                if (index >= 0) {
+                    let content = "<form enctype='text/plain' method='post' action='/' onsubmit='disableBuilding(); return false;' class='w-100'>";
+                    content += Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume des Gebäudes bleiben dabei erhalten." , false);
+                    content += "<label for='disableBuildingMessage' class='form-label'>Grund:</label>";
+                    content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div>";
+                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveDisabledBuildingButton'>Speichern</button></form>";
+                    let data = {
+                        modal: {
+                            name: "disableBuilding",
+                            size: "lg"
+                        },
+                        title: {
+                            text: "Gebäude " + buildings[index]["name"] + " deaktivieren"
+                        },
+                        content: {
+                            text: content
+                        }
+                    };
+                    Modal.create(data);
+                }
+            }
+            function disableBuilding() {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "disableBuilding") {
+                    if ($("#body-overlay").length == 0) {
+                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                    }
+                    if ($("#saveDisabledBuildingButton").find("[data-processing='true']").length === 0) {
+                        $("#saveDisabledBuildingButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                    }
+                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                    $("#mainModal .modal-body > .alert").remove();
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            id: id,
+                            message: $("#disableBuildingMessage").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        $("#saveDisabledBuildingButton").find("[data-processing='true']").remove();
+                        $("#saveDisabledBuildingButton").removeAttr("disabled");
+                        $("#body-overlay").remove();
+                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                    });
+                }
+                return false;
             }
             function lol() {
                 calendar.refetchEvents();
@@ -1812,6 +1955,7 @@
                             $("#createNewReservationButton").attr("disabled", "disabled");
                         }
                     },
+                    eventDisplay: "block",
                     eventClick: function(info) {
                         $("#selectedReservationDescription").html(info["event"]["_def"]["title"]);
                         $("#selectedReservationBooker").html(info["event"]["_def"]["extendedProps"]["booker"]);
@@ -2219,36 +2363,32 @@
                                 <div id="calendar"></div>
                             </div>
                             <div class="col-md-3 align-self-end">
-                                <div class="rounded border p-2" id="reservation-details">
-                                    <h5 class="col-md-12">Reservierungsdetails</h5>
-                                    <div class="row">
-                                        <div class="col-md-4">Beschreibung:</div>
-                                        <div class="col-md-8" id="selectedReservationDescription">LOL</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">Start:</div>
-                                        <div class="col-md-8" id="selectedReservationStart">LOL</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">Ende:</div>
-                                        <div class="col-md-8" id="selectedReservationEnd">LOL</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">Reservierer:</div>
-                                        <div class="col-md-8" id="selectedReservationBooker">LOL</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">Abholer:</div>
-                                        <div class="col-md-8" id="selectedReservationFetchers">LOL</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">Optionen:</div>
-                                        <div class="col-md-8" id="selectedReservationOptions">LOL</div>
-                                    </div>
+                                <h2 class="col-md-12">Reservierungsdetails</h2>
+                                <div class="row">
+                                    <div class="col-md-4">Beschreibung:</div>
+                                    <div class="col-md-8" id="selectedReservationDescription">LOL</div>
                                 </div>
-                                <div class="d-flex mt-3 justify-content-end">
-                                    <button type="button" class="btn btn-success" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neue Reservierung</button>
+                                <div class="row">
+                                    <div class="col-md-4">Start:</div>
+                                    <div class="col-md-8" id="selectedReservationStart">LOL</div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-4">Ende:</div>
+                                    <div class="col-md-8" id="selectedReservationEnd">LOL</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">Reservierer:</div>
+                                    <div class="col-md-8" id="selectedReservationBooker">LOL</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">Abholer:</div>
+                                    <div class="col-md-8" id="selectedReservationFetchers">LOL</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">Optionen:</div>
+                                    <div class="col-md-8" id="selectedReservationOptions">LOL</div>
+                                </div>
+                                <button type="button" class="btn btn-success mt-3" id="createNewReservationButton" disabled="disabled"><i class="fas fa-plus"></i> Neue Reservierung</button>
                             </div>
                         </div>
                     </div>
