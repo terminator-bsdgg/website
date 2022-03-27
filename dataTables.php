@@ -1,8 +1,8 @@
 <?php
     $data = [];
     date_default_timezone_set("Europe/Berlin");
-    $type = json_decode(file_get_contents('php://input'), true)["type"];
-    switch ($type) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    switch ($input["type"]) {
         case "today":
             foreach (range(0, rand(2, 10)) as $lol) {
                 $data[] = [
@@ -54,18 +54,18 @@
             $names = ["Ali Fikdusimir", "Peter Goge", "Achmed Ach Lachnet"];
             $groups = [1, 2, 3];
             foreach (range(1, rand(2, 10)) as $lol) {
-                if (array_key_exists("category", $_GET) && in_array($_GET["category"], $groups)) {
+                if (array_key_exists("category", $input) && in_array($input["category"], $groups)) {
                     $data[] = [
                         "id" => $lol,
                         "name" => $names[array_rand($names)],
-                        "group" => $_GET["category"]
+                        "role" => $input["category"]
                     ];
                 }
                 else {
                     $data[] = [
                         "id" => $lol,
                         "name" => $names[array_rand($names)],
-                        "group" => $groups[array_rand($groups)]
+                        "role" => $groups[array_rand($groups)]
                     ];
                 }
             }
