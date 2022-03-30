@@ -9,7 +9,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>STARTSEITE || TERMINATOR</title>
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/fontawesome.css">
+        <link rel="stylesheet" type="text/css" href="css/fontawesome.min.css">
+        <link rel="stylesheet" type="text/css" href="css/solid.min.css">
+        <link rel="stylesheet" type="text/css" href="css/regular.min.css">
         <script src="js/bootstrap.bundle.min.js"></script>
         <style>
             body {
@@ -164,41 +166,6 @@
                 0% { opacity: 1 }
                 50%  { opacity: 0.15 }
                 100% { opacity: 1; }
-            }
-            @font-face {
-                font-family: "Font Awesome 5 Brands";
-                font-style: normal;
-                font-weight: 400;
-                font-display: block;
-                src: url("font/free-fa-brands-400.woff") format("woff")
-            }
-            @font-face {
-                font-family: "Font Awesome 5 Free";
-                font-style: normal;
-                font-weight: 400;
-                font-display: block;
-                src: url("font/free-fa-regular-400.woff") format("woff")
-            }
-            @font-face {
-                font-family: "Font Awesome 5 Pro";
-                font-style: normal;
-                font-weight: 400;
-                font-display: block;
-                src: url("font/free-fa-regular-400.woff") format("woff")
-            }
-            @font-face {
-                font-family: "Font Awesome 5 Free";
-                font-style: normal;
-                font-weight: 900;
-                font-display: block;
-                src: url("font/free-fa-solid-900.woff") format("woff")
-            }
-            @font-face {
-                font-family: "Font Awesome 5 Pro";
-                font-style: normal;
-                font-weight: 900;
-                font-display: block;
-                src: url("font/free-fa-solid-900.woff") format("woff")
             }
             @media only screen and (max-width: 600px) {
                 *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
@@ -418,13 +385,13 @@
                                     timeIndicatorEnd = new Date(Number.parseInt(reservation["timeEnd"]));
                                     timeIndicatorDateString = timeIndicatorStart.toISOString().slice(0, 10);
                                     if ((timeIndicatorStart.getTime() <= currentDateTime.getTime() && currentDateTime.getTime() < timeIndicatorEnd.getTime()) && currentDateString === timeIndicatorDateString) {
-                                        timeIndicatorIcon = "fas fa-circle on-air-indicator";
+                                        timeIndicatorIcon = "fa-solid fa-circle on-air-indicator";
                                         timeIndicatorBackground = "bg-success";
                                         timeIndicatorTimeLeft = Math.trunc((timeIndicatorEnd.getTime() - currentDateTime.getTime()) /1000);
                                         timeIndicatorText = timeIndicatorTimeLeft.duration();
                                     }
                                     else {
-                                        timeIndicatorIcon = "far fa-clock";
+                                        timeIndicatorIcon = "fa-regular fa-clock";
                                         timeIndicatorBackground = "bg-primary";
                                         timeIndicatorText = ("00" + timeIndicatorStart.getHours().toString()).substr(-2, 2) + ":" + ("00" + timeIndicatorEnd.getMinutes().toString()).substr(-2, 2) + " Uhr";
                                     }
@@ -456,20 +423,15 @@
                 static create(type, message, closeable = true, classes = "", id = null) {
                     type = type.toLowerCase();
                     let icons = {
-                        danger: "fas fa-exclamation-circle",
-                        primary: "fas fa-info-circle",
-                        warning: "fas fa-exclamation-triangle",
-                        success: "fas fa-check-circle"
+                        danger: "fa-solid fa-exclamation-circle",
+                        primary: "fa-solid fa-info-circle",
+                        warning: "fa-solid fa-exclamation-triangle",
+                        success: "fa-solid fa-check-circle"
                     };
                     if (!["primary", "success", "danger", "warning"].includes(type)) {
                         type = "primary";
                     }
                     return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'" + (id !== null ? " id='" + id + "'" : "") + "><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
-                }
-            }
-            Array.prototype.clear = function() {
-                while (this.length >= 1) {
-                    this.pop();
                 }
             }
             window.onload = function() {
@@ -497,7 +459,7 @@
             <noscript>
                 <div class="alert alert-danger messageboxContainer" role="alert">
                     <div class="messageboxIcon danger">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <i class="fa-solid fa-exclamation-circle"></i>
                     </div>
                     <div class="messageboxText">Um diese Seite nutzen zu können, muss JavaScript aktiviert sein.</div>
                 </div>

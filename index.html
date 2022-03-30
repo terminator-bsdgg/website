@@ -273,10 +273,6 @@
                 text-decoration: none;
                 color: #ffffff;
             }
-            .fritz {
-                margin-right: calc(var(--bs-gutter-x) * 0.5);
-                flex: 1 0 auto
-            }
             /* Vorladen von Sortierungssymbolen in Tabellen */
             body::after {
                 position: absolute;
@@ -393,29 +389,24 @@
                 z-index: 9;
             }*/
             @media only screen and (max-width: 600px) {
-                .fritz {
-                    margin-left: calc(var(--bs-gutter-x) * 0.5);
-                }
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
-                    font-size: 14px !important;
+                .alert > i {
+                    vertical-align: baseline !important;
                 }
                 main {
                     padding: 0 2%
                 }
-                #second-navbar, #mobile-navbar {
-                    margin-right: 2%;
+                .tab-content {
+                    padding: 1rem !important;
                 }
-                #first-navbar {
-                    margin-left: 2%;
+                table.dataTable thead > tr > th {
+                    font-weight: 600;
+                }
+                #first-navbar, #second-navbar {
+                    display: none;
                 }
                 #mobile-navbar {
                     display: block;
-                }
-                #second-navbar {
-                    display: none;
+                    margin: auto 20px auto auto;
                 }
                 .formContainer {
                     flex-direction: column;
@@ -423,38 +414,42 @@
                 .formContainer > label + select:not(:last-child), .formContainer > label + input:not(:last-child), .formContainer > button:not(:last-child) {
                     margin-bottom: 0.5rem;
                 }
+                table.dataTable:not(.table-borderless) > tbody > tr:first-of-type > td:first-of-type {
+                    border-top-left-radius: 1px;
+                    border-top-right-radius: 1px;
+                    overflow: hidden;
+                }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                    font-size: 14px !important;
+                }
                 .dataTables_filter {
                     margin-top: 0.5rem;
                 }
-                .peter {
-                    max-width: 40%;
-                }
-                .konrad {
-                    margin-left: calc(0.5 * var(--bs-gutter-x));
-                    margin-top: 0.25rem;
+                .table-container {
+                    width: 0;
+                    flex: 1 0 auto;
+                    overflow-y: auto
                 }
             }
             @media only screen and (min-width: 600px) {
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
-                    font-size: 14px !important;
+                .alert > i {
+                    vertical-align: baseline !important;
                 }
                 main {
                     padding: 0 2%
                 }
-                #second-navbar, #mobile-navbar {
-                    margin-right: 2%;
+                .tab-content {
+                    padding: 1rem !important;
                 }
-                #first-navbar {
-                    margin-left: 2%;
+                table.dataTable thead > tr > th {
+                    font-weight: 600;
+                }
+                #first-navbar, #second-navbar {
+                    display: none;
                 }
                 #mobile-navbar {
                     display: block;
-                }
-                #second-navbar {
-                    display: none;
+                    margin: auto 20px auto auto;
                 }
                 .formContainer {
                     flex-direction: column;
@@ -462,63 +457,41 @@
                 .formContainer > label + select:not(:last-child), .formContainer > label + input:not(:last-child), .formContainer > button:not(:last-child) {
                     margin-bottom: 0.5rem;
                 }
-                .dataTables_filter {
-                    margin-top: 0.5rem;
+                table.dataTable:not(.table-borderless) > tbody > tr:first-of-type > td:first-of-type {
+                    border-top-left-radius: 1px;
+                    border-top-right-radius: 1px;
+                    overflow: hidden;
                 }
-                .peter {
-                    max-width: 40%;
-                }
-                .konrad {
-                    margin-left: calc(0.5 * var(--bs-gutter-x));
-                    margin-top: 0.25rem;
-                }
-            }
-            @media only screen and (min-width: 768px) {
                 *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
-                main {
-                    padding: 0 2%
+                .dataTables_filter {
+                    margin-top: 0.5rem;
                 }
-                .formContainer {
-                    flex-direction: row;
-                    align-content: center;
-                    align-items: center;
+                .table-container {
+                    width: 0;
+                    flex: 1 0 auto;
+                    overflow-y: auto
+                }
+            }
+            @media only screen and (min-width: 768px) {
+                #first-navbar, #second-navbar {
+                    display: flex;
+                }
+                #mobile-navbar {
+                    display: none;
+                }
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                    font-size: 14px !important;
                 }
                 .formContainer > label + select:not(:last-child), .formContainer > button:not(:last-child) {
                     margin-bottom: 0.5rem;
                 }
-                .row > label {
-                    align-self: center;
-                }
-                table.dataTable thead > tr > th {
-                    font-weight: 600;
-                }
-                main {
-                    padding: 0 2%
-                }
-                #second-navbar, #mobile-navbar {
-                    margin-right: 2%;
-                }
-                #first-navbar {
-                    margin-left: 2%;
-                }
-                #mobile-navbar {
-                    display: none;
-                }
-                #second-navbar {
-                    display: block;
-                }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
-                }
             }
             @media only screen and (min-width: 992px) {
+                #first-navbar, #second-navbar {
+                    display: flex;
+                }
                 .formContainer {
                     flex-direction: row;
                     align-content: center;
@@ -537,41 +510,19 @@
                 #mobile-navbar {
                     display: none;
                 }
-                table.dataTable thead > tr > th {
-                    font-weight: bold;
-                }
                 *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 16px !important;
                 }
-                main {
-                    padding: 0 2%
-                }
-                #second-navbar, #mobile-navbar {
-                    margin-right: 5%;
-                }
-                #first-navbar {
-                    margin-left: 5%;
+            }
+            @media only screen and (min-width: 1200px) {
+                #first-navbar, #second-navbar {
+                    display: flex;
                 }
                 #mobile-navbar {
                     display: none;
                 }
-                #second-navbar {
-                    display: block;
-                }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
-                }
-            }
-            @media only screen and (min-width: 1200px) {
-                .formContainer {
-                    flex-direction: row;
-                    align-content: center;
-                    align-items: center;
+                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                    font-size: 16px !important;
                 }
                 .formContainer > * {
                     margin-top: 0;
@@ -582,35 +533,6 @@
                 }
                 .formContainer button:not(:only-child) {
                     margin-left: 0.5rem;
-                }
-                table.dataTable thead > tr > th {
-                    font-weight: bold;
-                }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
-                    font-size: 16px !important;
-                }
-                main {
-                    padding: 0 2%
-                }
-                #second-navbar, #mobile-navbar {
-                    margin-right: 5%;
-                }
-                #first-navbar {
-                    margin-left: 5%;
-                }
-                #mobile-navbar {
-                    display: none;
-                }
-                #second-navbar {
-                    display: block;
-                }
-                .peter {
-                    max-width: unset;
-                    margin-left: calc(-0.5 * var(--bs-gutter-x)) !important;
-                }
-                .konrad {
-                    margin-left: 0;
-                    margin-top: 0;
                 }
             }
         </style>
@@ -670,7 +592,7 @@
                     }
                 }
             }
-            //const dataTables = {};
+            const moderatorDataTables = {};
             const adminDataTables = {};
             const dataTablesLocalisation = {
                 sEmptyTable: "Keine Daten vorhanden",
@@ -745,6 +667,65 @@
             };
             */
             const dataTablesAdminOptions = {
+                reservations: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            width: "15%"
+                        },
+                        {
+                            name: "booker",
+                            data: function(row, type, set, meta) {
+                                return;
+                            }
+                        },
+                        {
+                            name: "room",
+                            data: "room",
+                        },
+                        {
+                            name: "building",
+                            data: "building"
+                        },
+                        {
+                            name: "timespan",
+                            // TimeStart und TimeEnd kombinieren 
+                            data: function(row, type, set, meta) {
+                                return;
+                            }
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showRoleEditingModal(" + row["id"] + ")'><i class='fa-solid fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoleDeletion(" + row["id"] + ")'><i class='fa-solid fa-times'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "20%"
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: function(data, settings) {
+                            data["type"] = "reservations";
+                            return JSON.stringify(data);
+                        },
+                        dataSrc: function(response) {
+                            return response;
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#reservationsAdminTable").parent().addClass("table-container");
+                    }
+                },
                 roles: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
@@ -760,8 +741,7 @@
                         },
                         {
                             name: "role",
-                            data: "role",
-                            visible: false
+                            data: "role"
                         },
                         {
                             name: "options",
@@ -807,8 +787,7 @@
                         },
                         {
                             name: "status",
-                            data: "status",
-                            visible: false
+                            data: "status"
                         },
                         {
                             name: "statusMessage",
@@ -818,8 +797,13 @@
                             name: "options",
                             data: function(row, type, set, meta) {
                                 let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showBuildingEditingModal(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fa-solid fa-pen'></i></button>";
-                                buttons += "<button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fa-solid fa-times'></i></button>";
-                                buttons += "<button type='button' class='btn btn-sm " + (row["status"] === 1 ? "btn-success" : "btn-warning") + "' onclick='" + (row["status"] === 1 ? "showBuildingDeactivationModal(" + row["id"] + ")" : "confirmBuildingActivation(" + row["id"] + ")") + "' data-bs-toggle='tooltip' title='" + (row["status"] === 1 ? "Gebäude deaktivieren" : "Gebäude aktivieren") + "'><i class='" + (row["status"] === 1 ? "fa-solid fa-lock-open" : "fa-solid fa-lock") + "'></i></button>";
+                                buttons += "<button type='button' class='btn btn-sm btn-danger' onclick='confirmBuildingDeletion(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fa-solid fa-times'></i></button>";
+                                if (row["status"] === 1) {
+                                    buttons += "<button type='button' class='btn btn-sm btn-warning' onclick='showBuildingDeactivationModal(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude deaktivieren'><i class='fa-solid fa-lock'></i></button>";
+                                }
+                                else {
+                                    buttons += "<button type='button' class='btn btn-sm btn-success' onclick='confirmBuildingActivation(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude aktivieren'><i class='fa-solid fa-lock-open'></i></button>";
+                                }
                                 return buttons;
                             },
                             sorting: false,
@@ -860,8 +844,7 @@
                         },
                         {
                             name: "building",
-                            data: "building",
-                            visible: false
+                            data: "building"
                         },
                         {
                             name: "name",
@@ -888,6 +871,7 @@
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
+                            Object.assign(rooms, response);
                             return response;
                         }
                     },
@@ -1016,13 +1000,13 @@
                 }
             }
             function readjustTables() {
-                let collapses = ["#collapse-rooms", "#collapse-roles"];
+                let collapses = ["#collapse-rooms", "#collapse-roles", "#collapse-reservations", "#collapse-buildings"];
                 let element = null;
                 let tableName = null;
                 for (collapse of collapses) {
                     element = $("a[href='" + collapse + "']");
                     tableName = $(element).attr("data-admin-table");
-                    if ($(element).attr("aria-expanded") === "true") {
+                    if (DataTable.isDataTable(tableName) && $(element).attr("aria-expanded") === "true") {
                         adminDataTables[tableName].columns.adjust().draw();
                     }
                 }
@@ -1032,51 +1016,66 @@
                 bootstrap.Popover.getInstance($(element).parents(".popover")[0]).hide();
             }
             */
-            function confirmRoomDeletion(room, building) {
-                let prompt = new Promise(function(resolve) {
-                    confirmation({
-                        title: "Raum entfernen bestätigen",
-                        content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
-                    },
-                    resolve);
-                });
-                let result = prompt;
-                if (result) {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+            function confirmRoomDeletion(lol) {
+                if (DataTable.isDataTable("#roomsAdminTable")) {
+                    let rooms = adminDataTables["rooms"].data().toArray();
+                    let index = rooms.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Raum entfernen bestätigen",
+                                content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                            }, resolve);
+                        });
+                        prompt.then(function(value) {
+                            if ($("#body-overlay").length == 0) {
+                                $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                            }
+                            if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
+                                $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                            }
+                            $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                            $("#mainModal .modal-body > .alert").remove();
+                            let data = {
+                                room: room,
+                                building: building
+                            }
+                            $.post("lol", {
+                                _token: authToken,
+                                data: JSON.stringify(data)
+                            }).done(function(response) {
+                                bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                            }).fail(function(response) {
+                                $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                            }).always(function() {
+                                $("#confirmationButton").find("[data-processing='true']").remove();
+                                $("#body-overlay").remove();
+                                $("#mainModal .modal-footer > button").removeAttr("disabled");
+                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                            });
+                        });
                     }
-                    if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
-                        $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
-                    let data = {
-                        room: room,
-                        building: building
-                    }
-                    $.post("lol", {
-                        _token: authToken,
-                        data: JSON.stringify(data)
-                    }).done(function(response) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        $("#confirmationButton").find("[data-processing='true']").remove();
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > button").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                    });
                 }
             }
             function confirmRoleDeletion(lol) {
+                if (DataTable.isDataTable("#roomsAdminTable")) {
+                    let rooms = adminDataTables["rooms"].data().toArray();
+                    let index = rooms.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Raum entfernen bestätigen",
+                                content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                            }, resolve);
+                        });
+                        prompt.then(function(value) {});
+                    }
+                }
             }
             function confirmation(options = {}, resolve) {
                 let data = {
-                    modal: {
-                        name: "confirmation"
-                    },
+                    name: "confirmation",
                     title: {
                         text: (options.hasOwnProperty("title") ? options["title"] : "Bestätigung")
                     },
@@ -1136,18 +1135,15 @@
             class Modal {
                 /*
                 data: {
-                    modal: {
-                        size?: sm|default|lg|xl|fullscreen,
-                        static?: bool,
-                        name: string,
-                        events?: [
-                            {
-                                hide: {
-                                    function: function() { },
-                                    args?: []
-                                }
+                     size?: sm|default|lg|xl|fullscreen,
+                    static?: bool,
+                    name: string,
+                    events?: {
+                        hide: {
+                                function: function() { },
+                                args?: []
                             }
-                        ]
+                        }
                     },
                     title: {
                         text: string
@@ -1198,15 +1194,16 @@
                     $("#mainModal .modal-header > h4").empty();
                     $("#mainModal .modal-body").empty();
                     $("#mainModal .modal-footer").empty();
-                    if (data.hasOwnProperty("modal") && data["modal"].hasOwnProperty("name") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
-                        $("#mainModal").attr("data-name", data["modal"]["name"]);
-                        if (data["modal"].hasOwnProperty("size") && ["sm", "lg", "xl", "fullscreen"].includes(data["modal"]["size"])) {
-                            $("#mainModal > div:first-of-type").addClass("modal-" + data["modal"]["size"]);
+                    if (data.hasOwnProperty("name")) {
+                        $("#mainModal").attr("data-name", data["name"]);
+                        if (data.hasOwnProperty("size") && ["sm", "lg", "xl", "fullscreen"].includes(data["size"])) {
+                            $("#mainModal > div:first-of-type").addClass("modal-" + data["size"]);
                         }
-                        if (data["modal"].hasOwnProperty("static") && data["modal"]["static"]) {
+                        if (data.hasOwnProperty("static") && data["static"]) {
                             $("#mainModal").attr({"data-bs-backdrop":"static", "data-bs-keyboard":"false"});
                         }
                         if (data.hasOwnProperty("title")) {
+                            console.log(data.title);
                             if (data["title"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
                                 $("#mainModal .modal-header > h4").html(data["title"]["text"]);
                             }
@@ -1299,19 +1296,19 @@
                         else {
                             $("#mainModal .modal-footer").append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Schließen</button>");
                         }
-                        if (data["modal"].hasOwnProperty("events")) {
+                        if (data.hasOwnProperty("events")) {
                             let eventNames = {hide: "hide.bs.modal", hidden: "hidden.bs.modal", show: "show.bs.modal", shown: "shown.bs.modal", hidePrevented: "hidePrevented.bs.modal"};
-                            let events_ = Object.getOwnPropertyNames(data["modal"]["events"]);
+                            let events_ = Object.getOwnPropertyNames(data["events"]);
                             for (let event_ of events_) {
                                 if (eventNames.hasOwnProperty(event_)) {
-                                    if (data["modal"]["events"][event_].hasOwnProperty("args") && typeof(data["modal"]["events"][event_]["function"]) === "object") {
+                                    if (data["events"][event_].hasOwnProperty("args") && typeof(data["events"][event_]["function"]) === "object") {
                                         $("#mainModal").one(eventNames[event_], function() {
-                                            achso(data["modal"]["events"][event_]["function"], data["modal"]["events"][event_]["args"]);
+                                            achso(data["events"][event_]["function"], data["events"][event_]["args"]);
                                         });
                                     }
-                                    else if (typeof(data["modal"]["events"][event_]["function"]) === "function") {
+                                    else if (typeof(data["events"][event_]["function"]) === "function") {
                                         $("#mainModal").one(eventNames[event_], function() {
-                                            achso(data["modal"]["events"][event_]["function"]);
+                                            achso(data["events"][event_]["function"]);
                                         });
                                     }
                                 }
@@ -1502,12 +1499,11 @@
                 content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewRoomButton'>Speichern</button></form>";            
                 content += "</div></form>";
                 let data = {
-                    modal: {
-                        name: "createNewRoom",
-                        static: true,
-                        events: {
+                    name: "roomCreation",
+                    static: true,
+                    events: {
                             shown: {
-                                function() {
+                                function: function() {
                                     $("#roomCreationForm").submit(function() {
                                         saveNewRoom();
                                         return false;
@@ -1515,17 +1511,16 @@
                                 }
                             },
                             hidden: {
-                                function() {
+                                function: function() {
                                     $("#roomCreationForm").off("submit");
                                 }
                             }
                         },
-                        title: {
-                            text: "Neuen Raum erstellen"
-                        },
-                        content: {
-                            text: content
-                        }
+                    title: {
+                        text: "Neuen Raum erstellen"
+                    },
+                    content: {
+                        text: content
                     }/*,
                     footer: {
                         buttons: {
@@ -1585,20 +1580,21 @@
                 Modal.create(data);
             }
             function showRoleEditingModal(lol) {
-                let index = roles.findIndex(key => key["id"] === lol);
-                if (index >= 0) {
-                    let content = "<form enctype='text/plain' id='roleEditingForm' method='post' action='/' class='w-100'><label for='editBuildingName' class='form-label'>Name:</label>";
-                    content += "<input type='text' class='form-control' id='editBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
-                    content += "<div class='mt-3'><label for='editBuildingDescription' class='form-label'>Beschreibung:</label>";
-                    content += "<input type='text' class='form-control' id='editBuildingDescription' placeholder='Beschreibung eingeben' required='required' value='" + buildings[index]["description"] + "'></div>";
-                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedBuildingButton'>Speichern</button></form>";
-                    let data = {
-                        modal: {
-                            name: "saveEditedRole",
+                if (DataTable.isDataTable("#rolesAdminTable")) {
+                    let roles = adminDataTables["roles"].data().toArray();
+                    let index = roles.findIndex(key => key["id"] === lol);
+                    if (index >= 0) {
+                        let content = "<form enctype='text/plain' id='roleEditingForm' method='post' action='/' class='w-100'>";
+                        content += "<div><label class='col-md-3 col-form-label me-2' for='editRoleSelect'>Rolle:</label>";
+                        content += "<select class='col-md-9 form-select' id='editRoleSelect'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
+                        content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div>";
+                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedRoleButton'>Speichern</button></div></form>";
+                        let data = {
+                            name: "roleEditing",
                             static: true,
                             events: {
                                 shown: {
-                                    function() {
+                                    function: function() {
                                         $("#roleEditingForm").submit(function() {
                                             saveEditedRole();
                                             return false;
@@ -1606,37 +1602,41 @@
                                     }
                                 },
                                 hidden: {
-                                    function() {
+                                    function: function() {
                                         $("#roleEditingForm").off("submit");
                                     }
                                 }
+                            },
+                            title: {
+                                text: "Rolle des Benutzers &quot;" + roles[index]["name"] + "&quot; bearbeiten"
+                            },
+                            content: {
+                                text: content
                             }
-                        },
-                        title: {
-                            text: "Rolle des Benutzers " + roles[index]["name"] + " bearbeiten"
-                        },
-                        content: {
-                            text: content
-                        }
-                    };
-                    Modal.create(data);
+                        };
+                        Modal.create(data);
+                    }
+                }
+                else {
+                    alert("Fehler: Es sind keine Daten vorhanden.")
                 }
             }
             function showRoomEditingModal(lol) {
-                let index = buildings.findIndex(key => key["id"] === lol);
-                if (index >= 0) {
-                    let content = "<form enctype='text/plain' id='roomEditingForm' method='post' action='/' class='w-100'><label for='editBuildingName' class='form-label'>Name:</label>";
-                    content += "<input type='text' class='form-control' id='editBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
-                    content += "<div class='mt-3'><label for='editBuildingDescription' class='form-label'>Beschreibung:</label>";
-                    content += "<input type='text' class='form-control' id='editBuildingDescription' placeholder='Beschreibung eingeben' required='required' value='" + buildings[index]["description"] + "'></div>";
-                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedBuildingButton'>Speichern</button></form>";
-                    let data = {
-                        modal: {
-                            name: "editBuilding",
+                if (DataTable.isDataTable("#roomsAdminTable")) {
+                    let rooms = adminDataTables["rooms"].data().toArray();
+                    let index = buildings.findIndex(key => key["id"] === lol);
+                    if (index >= 0) {
+                        let content = "<form enctype='text/plain' id='roomEditingForm' method='post' action='/' class='w-100'><label for='editBuildingName' class='form-label'>Name:</label>";
+                        content += "<input type='text' class='form-control' id='editBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
+                        content += "<div class='mt-3'><label for='editBuildingDescription' class='form-label'>Beschreibung:</label>";
+                        content += "<input type='text' class='form-control' id='editBuildingDescription' placeholder='Beschreibung eingeben' required='required' value='" + buildings[index]["description"] + "'></div>";
+                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedBuildingButton'>Speichern</button></form>";
+                        let data = {
+                            name: "buildingEditing",
                             static: true,
                             events: {
                                 shown: {
-                                    function() {
+                                    function: function() {
                                         $("#roomEditingForm").submit(function() {
                                             saveEditiedRoom();
                                             return false;
@@ -1644,46 +1644,44 @@
                                     }
                                 },
                                 hidden: {
-                                    function() {
+                                    function: function() {
                                         $("#roomEditingForm").off("submit");
                                     }
                                 }
+                            },
+                            title: {
+                                text: "Gebäude " + buildings[index]["name"] + " bearbeiten"
+                            },
+                            content: {
+                                text: content
                             }
-                        },
-                        title: {
-                            text: "Gebäude " + buildings[index]["name"] + " bearbeiten"
-                        },
-                        content: {
-                            text: content
-                        }
-                    };
-                    Modal.create(data);
+                        };
+                        Modal.create(data);
+                    }
                 }
             }
             function showBuildingCreationModal() {
                 let content = "<form enctype='text/plain' id='buildingCreationForm' method='post' action='/' class='w-100'>";
                 content += "<div><label for='newBuildingName' class='col-form-label'>Name:</label>";
                 content += "<input type='text' class='form-control' id='newBuildingName' placeholder='Name eingeben' required='required'></div>";
-                content += "<div class='mt-3'><label for='newBuildingDescription' class='col-form-label'>Beschreibung:</label>";
-                content += "<input type='text' class='form-control' id='newBuildingDescription' placeholder='Beschreibung eingeben' required='required'></div>";
+                content += "<div class='mt-3'><label for='newBuildingDescription' class='col-form-label'>Beschreibung (optional):</label>";
+                content += "<input type='text' class='form-control' id='newBuildingDescription' placeholder='Beschreibung eingeben'></div>";
                 content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewBuildingButton'>Speichern</button></form>";
                 let data = {
-                    modal: {
-                        name: "newBuilding",
-                        static: true,
-                        events: {
-                            shown: {
-                                function() {
-                                    $("#buildingCreationForm").submit(function() {
-                                        saveNewBuilding();
-                                        return false;
-                                    });
-                                }
-                            },
-                            hidden: {
-                                function() {
-                                    $("#buildingCreationForm").off("submit");
-                                }
+                    name: "buildingCreation",
+                    static: true,
+                    events: {
+                        shown: {
+                            function: function() {
+                                $("#buildingCreationForm").submit(function() {
+                                    saveNewBuilding();
+                                    return false;
+                                });
+                            }
+                        },
+                        hidden: {
+                            function: function() {
+                                $("#buildingCreationForm").off("submit");
                             }
                         }
                     },
@@ -1695,6 +1693,49 @@
                     }
                 };
                 Modal.create(data);
+            }
+            function showBuildingEditingModal(lol) {
+                if (DataTable.isDataTable("#buildingsAdminTable")) {
+                    let buildings = adminDataTables["buildings"].data().toArray();
+                    let index = buildings.findIndex(key => key["id"] === lol);
+                    if (index >= 0) {
+                        let content = "<form enctype='text/plain' id='buildingCreationForm' method='post' action='/' class='w-100'>";
+                        content += "<div><label for='newBuildingName' class='col-form-label'>Name:</label>";
+                        content += "<input type='text' class='form-control' id='newBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
+                        content += "<div class='mt-3'><label for='newBuildingDescription' class='col-form-label'>Beschreibung (optional):</label>";
+                        content += "<input type='text' class='form-control' id='newBuildingDescription' placeholder='Beschreibung eingeben' value='" + (!["undefined", "", undefined, null].includes(buildings[index]["description"]) ? buildings[index]["description"] : "") + "'></div>";
+                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewBuildingButton'>Speichern</button></form>";
+                        let data = {
+                            name: "buildingEditing",
+                            static: true,
+                            events: {
+                                shown: {
+                                    function: function() {
+                                        $("#buildingCreationForm").submit(function() {
+                                            saveEditedBuilding(lol);
+                                            return false;
+                                        });
+                                    }
+                                },
+                                hidden: {
+                                    function: function() {
+                                        $("#buildingCreationForm").off("submit");
+                                    }
+                                }
+                            },
+                            title: {
+                                text: "Gebäude &quot;" + buildings[index]["name"] + "&quot; bearbeiten"
+                            },
+                            content: {
+                                text: content
+                            }
+                        };
+                        Modal.create(data);
+                    }
+                }
+                else {
+                    alert("Fehler: Es sind keine Daten vorhanden.");
+                }
             }
             function saveEditedBuilding(id) {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "editBuilding") {
@@ -1745,50 +1786,55 @@
                 }
             }
             function confirmBuildingDeletion(lol) {
-                let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
-                if (index >= 0) {
-                    let prompt = new Promise(function(resolve) {
-                        confirmation({
-                            title: "Gebäude entfernen",
-                            content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich gelöscht werden?"
-                        }, resolve);
-                    });
-                    //value kann bei resolve nur true sein
-                    prompt.then(function(value) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    });
+                if (DataTable.isDataTable("#buildingsAdminTable")) {
+                    let buildings = adminDataTables["buildings"].data().toArray();
+                    let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Gebäude entfernen",
+                                content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich gelöscht werden?"
+                            }, resolve);
+                        });
+                        prompt.then(function(value) {
+                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        });
+                    }
                 }
             }
             function confirmBuildingActivation(lol) {
-                let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
-                if (index >= 0) {
-                    let prompt = new Promise(function(resolve) {
-                        confirmation({
-                            title: "Gebäude aktivieren",
-                            content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich aktiviert werden?"
-                        }, resolve);
-                    });
-                    //value kann bei resolve nur true sein
-                    prompt.then(function(value) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    });
+                if (DataTable.isDataTable("#buildingsAdminTable")) {
+                    let buildings = adminDataTables["buildings"].data().toArray();
+                    let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Reservierung genehmigen",
+                                content: "Soll die Reservierung &quot;" + buildings[index]["name"] + "&quot; wirklich aktiviert werden?"
+                            }, resolve);
+                        });
+                        prompt.then(function(value) {
+                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        });
+                    }
                 }
             }
             function showBuildingDeactivationModal(lol) {
-                let index = buildings.findIndex(key => key["id"] === lol);
-                if (index >= 0) {
-                    let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'>";
-                    content += Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten. Wird ein Grund angegeben, wird dieser den Benutzern angezeigt, wenn sie einen Raum des jeweiligen gesperrten Gebäudes reservieren möchten." , false);
-                    content += "<label for='disableBuildingMessage' class='form-label'>Grund:</label>";
-                    content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div>";
-                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveDisabledBuildingButton'>Speichern</button></form>";
-                    let data = {
-                        modal: {
-                            name: "disableBuilding",
+                if (DataTable.isDataTable("#buildingsAdminTable")) {
+                    let buildings= adminDataTables["buildings"].data().toArray();
+                    let index = buildings.findIndex(key => key["id"] === lol);
+                    if (index >= 0) {
+                        let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'>";
+                        content += Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten. Wird ein Grund angegeben, wird dieser den Benutzern angezeigt, wenn sie einen Raum des jeweiligen gesperrten Gebäudes reservieren möchten." , false);
+                        content += "<label for='disableBuildingMessage' class='form-label'>Grund:</label>";
+                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div>";
+                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveDisabledBuildingButton'>Speichern</button></form>";
+                        let data = {
+                            name: "buildingDeactivation",
                             size: "lg",
                             events: {
                                 shown: {
-                                    function() {
+                                    function: function() {
                                         $("#buildingDeactivationForm").submit(function() {
                                             disableBuilding();
                                             return false;
@@ -1796,7 +1842,7 @@
                                     }
                                 },
                                 hidden: {
-                                    function() {
+                                    function: function() {
                                         $("#buildingDeactivationForm").off("submit");
                                     }
                                 }
@@ -1807,9 +1853,9 @@
                             content: {
                                 text: content
                             }
-                        }
-                    };
-                    Modal.create(data);
+                        };
+                        Modal.create(data);
+                    }
                 }
             }
             function disableBuilding() {
@@ -1846,8 +1892,42 @@
                         $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
                     });
                 }
-                event.preventDefault();
                 return false;
+            }
+            function confirmReservationApproval(lol) {
+                if (DataTable.isDataTable("#reservationsModeratorTable")) {
+                    let reservations = moderatorDataTables["reservations"].data().toArray();
+                    let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Reservierung genehmigen",
+                                content: "Soll die Reservierung &quot;" + reservations[index]["description"] + "&quot; wirklich genehmigt werden?"
+                            }, resolve);
+                        });
+                        prompt.then(function(value) {
+                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        });
+                    }
+                }
+            }
+            function confirmReservationRejection(lol) {
+                if (DataTable.isDataTable("#reservationsModeratorTable")) {
+                    let reservations = moderatorDataTables["reservations"].data().toArray();
+                    let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
+                    if (index >= 0) {
+                        let prompt = new Promise(function(resolve) {
+                            confirmation({
+                                title: "Reservierung ablehnen",
+                                content: "Soll die Reservierung &quot;" + reservations[index]["description"] + "&quot; wirklich abgelehnt werden?"
+                            }, resolve);
+                        });
+                        //value kann bei resolve nur true sein
+                        prompt.then(function(value) {
+                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        });
+                    }
+                }
             }
             function saveNewBuilding() {
             }
@@ -1883,46 +1963,31 @@
             }
             // Benutzer werden aus AD geladen, daher ist keine Benutzerregistrierung nötig!
             function showRoleCreationModal() {
-                // Moderatoren nur für einzelne Gebäude?
-                // Supermoderator für alle Gebäude, der wie lokaler Moderator Termine stornieren/bearbeiten kann?
                 let content = "<form enctype='text/plain' id='roleCreationForm' method='post' action='/' class='w-100'>";
                 content += "<div><label class='col-md-3 col-form-label me-2' for='newUserRoleSelect'>Rolle:</label>";
-                content += "<select class='col-md-9 form-select' id='newUserRoleSelect'>";
-                content += "<option value='1'>Benutzer</option><option value='2'>Moderator</option><option value='2'>Administrator</option></select></div>";
-                content += "<div class='mt-3'><article class='col-md-9 offset-md-3 ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='newUserRoleDescrption'></article></div>";
-                content += "<div class='mt-3'><label class='col-md-3 col-form-label me-2' for='newUserBuildingSelect'>Gebäude:</label>";
-                content += "<select class='col-md-9 form-select' id='newRoomBuildingSelect'>";
-                if (buildings.length >= 1) {
-                    for (building of buildings) {
-                        content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
-                    }
-                }
-                content += "</select></div>";
-                content += "<div class='mt-3'><label class='col-md-3 col-form-label me-2' for='newUserName'>Benutzername:</label>";
-                content += "<input type='text' class='col-md-9 form-control' id='newUserName'></div>";
-                content += "</form>";
+                content += "<select class='col-md-9 form-select' id='newUserRoleSelect'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
+                content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div>";
+                content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewRoleButton'>Speichern</button></div></form>";
                 let data = {
-                    modal: {
-                        name: "createNewUser",
-                        static: true,
-                        events: {
-                            shown: {
-                                function() {
-                                    $("#roleCreationForm").submit(function() {
-                                        saveNewRole();
-                                        return false;
-                                    });
-                                }
-                            },
-                            hidden: {
-                                function() {
-                                    $("#roleCreationForm").off("submit");
-                                }
+                    name: "roleCreation",
+                    static: true,
+                    events: {
+                        shown: {
+                            function: function() {
+                                $("#roleCreationForm").submit(function() {
+                                    saveNewRole();
+                                    return false;
+                                });
+                            }
+                        },
+                        hidden: {
+                            function: function() {
+                                $("#roleCreationForm").off("submit");
                             }
                         }
                     },
                     title: {
-                        text: "Neuen Benutzerrolle erstellen"
+                        text: "Neue Benutzerrolle erstellen"
                     },
                     content: {
                         text: content
@@ -2041,12 +2106,12 @@
                         else {
                             if (!isGettingReservations) {
                                 isGettingReservations = true;
-                                console.log(firstRun);
                                 setTimeout(getReservations, 500, info["startStr"], info["endStr"], successCallback, failureCallback);
                             }
                         }
                     },
                     select: function(selectionInfo) {
+                        console.log(selectionInfo);
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
                         if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
@@ -2065,6 +2130,12 @@
                         $("#selectedReservationFetchers").html(info["event"]["_def"]["extendedProps"]["passengers"]);
                         //let dateArray = eventData["startStr"].slice(0, 10).split("-");
                     },
+                    eventsSet: function(events) {
+                    },
+                    unselect: function(jsEvent, view) {
+                        console.log(jsEvent, view);
+                    },
+                    unselectAuto: false,
                     viewDidMount: function(args) {
                         //$("#reservation-details").css("margin-top", $(args["el"]).parent().offset()["top"] + "px");
                         //$(args["el"]).addClass("row").find("table:first-of-type").addClass("col-md-9").after("<div class='col-md-3'>lol</div>");
@@ -2090,9 +2161,7 @@
                     content += "</tbody>";
                     content += "</table>";
                     let data = {
-                        modal: {
-                            name: "systemInfos"
-                        },
+                        name: "systemInfos",
                         title: {
                             text: "Systeminformationen"
                         },
@@ -2106,25 +2175,7 @@
                     Modal.create(data);
                     updateSystemInfos();
                 });
-                $("a[href='#login']").click(function() {
-                    let content = "<div><label for='username' class='form-label'>Benutzername:</label>";
-                    content += "<input type='text' class='form-control' id='username' placeholder='Benutzernamen eingeben'></div>";
-                    content += "<div class='mt-3'><label for='password' class='form-label'>Passwort:</label>";
-                    content += "<input type='password' class='form-control' id='password' placeholder='Passwort eingeben'></div>";
-                    content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button onclick='login(this)' class='btn btn-primary'>Anmelden";
-                    content += "</button><a href='#'>Ich habe mein Passwort vergessen!</a></div>";
-                    let data = {
-                        modal: {
-                            name: "login"
-                        },
-                        title: {
-                            text: "Anmelden"
-                        },
-                        content: {
-                            text: content
-                        }
-                    };
-                    Modal.create(data);
+                $("a[href='#logout']").click(function() {
                 });
                 $("#createReservationButton").click(function() {
                     let startDate = $(this).attr("data-start");
@@ -2147,10 +2198,8 @@
                         content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0 col-md-4 konrad'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'><label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
                         content += "</div></div></form>";
                         let data = {
-                            modal: {
-                                name: "newReservation",
-                                static: true
-                            },
+                            name: "reservationCreation",
+                            static: true,
                             title: {
                                 text: "Neuen Termin erstellen am " + dateArray[2] + "." + dateArray[1] + "." + dateArray[0]
                             },
@@ -2229,19 +2278,15 @@
                     }
                 });
                 $("a[href='#administration']").on("shown.bs.tab", function() {
-                    if ($("[href='#collapse-rooms']").attr("aria-expanded") === "true" && DataTable.isDataTable("#roomsAdminTable")) {
-                        adminDataTables["rooms"].columns.adjust().draw();
-                    }
-                    if ($("[href='#collapse-roles']").attr("aria-expanded") === "true" && DataTable.isDataTable("#rolesAdminTable")) {
-                        adminDataTables["roles"].columns.adjust().draw();
-                    }
-                    if ($("[href='#collapse-buildings']").attr("aria-expanded") === "true" && DataTable.isDataTable("#buildingsAdminTable")) {
-                        adminDataTables["roles"].columns.adjust().draw();
-                    }
+                    readjustTables();
                 });
                 $("#buildings-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#buildingsAdminTable")) {
-                        adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]);
+                        adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]).on("draw", function(settings) {
+                            if ($("#showBuildingCreationModalButton").length == 0) {
+                                $("#buildingsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showBuildingCreationModal()' id='showBuildingCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                            }
+                        });
                     }
                     else {
                         $("#buildingsAdminTable").DataTable().ajax.reload();
@@ -2249,10 +2294,34 @@
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
-                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(dataTablesAdminOptions["rooms"]);
+                        let options = {};
+                        let value = Number.parseInt($("#roomsBuildingSelect").val());
+                        Object.assign(options, dataTablesAdminOptions["rooms"]);
+                        if (value <= 0) {
+                            options["rowGroup"] = {
+                                dataSrc: "building",
+                                className: "bg-gray-200",
+                                endRender: null,
+                                startRender: function(rows, group) {
+                                    return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                                }
+                            };
+                            options["orderFixed"] = [0, "asc"];
+                            options["columns"][1]["visible"] = false;
+                        }
+                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
+                            if (!adminDataTables["rooms"].rowGroup().enabled()) {
+                                if ($("#showRoomCreationModalButton").length == 0) {
+                                    $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                }
+                            }
+                            else {
+                                $("#showRoomCreationModalButton").remove();
+                            }
+                        });
                     }
                     else {
-                        $("#usersAdminTable").DataTable().ajax.reload();
+                        $("#roomsAdminTable").DataTable().ajax.reload();
                     }
                     if (buildings.length === 0) {
                         getBuildings();
@@ -2265,51 +2334,34 @@
                 $("#roles-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#rolesAdminTable")) {
                         let options = {};
+                        let value = Number.parseInt($("#rolesRoleSelect").val());
                         Object.assign(options, dataTablesAdminOptions["roles"]);
-                        options["rowGroup"] = {
-                            dataSrc: "group",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                        if (value <= 0) {
+                            options["rowGroup"] = {
+                                dataSrc: "role",
+                                className: "bg-gray-200",
+                                endRender: null,
+                                startRender: function(rows, group) {
+                                    return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                                }
+                            };
+                            options["orderFixed"] = [0, "asc"];
+                            options["columns"][2]["visible"] = false;
+                        }
+                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
+                            if (!adminDataTables["roles"].rowGroup().enabled()) {
+                                if ($("#showRoleCreationModalButton").length == 0) {
+                                    $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                }
                             }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options);
+                            else {
+                                $("#showRoleCreationModalButton").remove();
+                            }
+                        });
                     }
                     else {
                         $("#rolesAdminTable").DataTable().ajax.reload();
                     }
-                });
-                $("#rolesRoleSelect").change(function() {
-                    let options = {};
-                    let value = Number.parseInt($(this).val());
-                    Object.assign(options, dataTablesAdminOptions["roles"]);
-                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
-                        options["rowGroup"] = {
-                            dataSrc: "group",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='createNewUser(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                    }
-                    options["destroy"] = true;
-                    $(this).attr("data-old", value);
-                    adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
-                        if (!adminDataTables["roles"].rowGroup().enabled()) {
-                            if ($("#createRoleButton").length == 0) {
-                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='createRoleButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
-                            }
-                        }
-                        else {
-                            $("#createUserButton").remove();
-                        }
-                    });
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
@@ -2319,18 +2371,61 @@
                             dataSrc: "building",
                             className: "bg-gray-200",
                             endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
                                 let index = buildings.findIndex(key => key["id"] === group);
                                 return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
-                        options["orderFixed"] = [1, "asc"];
-                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options);
+                        options["orderFixed"] = [0, "asc"];
+                        options["columns"][1]["visible"] = false;
+                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
+                            if (!adminDataTables["rooms"].rowGroup().enabled()) {
+                                if ($("#showRoomCreationModalButton").length == 0) {
+                                    $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                }
+                            }
+                            else {
+                                $("#createRoomButton").remove();
+                            }
+                        });
                     }
                     else {
                         $("#roomsAdminTable").DataTable().ajax.reload();
                     }
+                });
+                $("#rolesRoleSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesAdminOptions["roles"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "role",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [0, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
+                    $(this).attr("data-old", value);
+                    adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
+                        if (!adminDataTables["roles"].rowGroup().enabled()) {
+                            if ($("#showRoleCreationModalButton").length == 0) {
+                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                            }
+                        }
+                        else {
+                            $("#createUserButton").remove();
+                        }
+                    });
                 });
                 $("#roomsBuildingSelect").change(function() {
                     let options = {};
@@ -2347,20 +2442,54 @@
                                 return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
-                        options["orderFixed"] = [1, "asc"];
+                        options["orderFixed"] = [0, "asc"];
                     }
                     options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
                     $(this).attr("data-old", value);
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                            if ($("#createRoomButton").length == 0) {
-                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='createRoomButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                            if ($("#showRoomCreationModalButton").length == 0) {
+                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
-                            $("#createRoomButton").remove();
+                            $("#showRoomCreationModalButton").remove();
                         }
                     });
+                });
+                $("#reservationBuildingSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesAdminOptions["reservations"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "building",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            // Wird nach Erzeugung ausgelöst!
+                            startRender: function(rows, group) {
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [0, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
+                    $(this).attr("data-old", value);
+                    //adminDataTables["reservationsAdminTable"] = $("#reservationsAdminTable").DataTable(options).on("draw", function(settings) {
+                    //});
                 });
                 /*
                 const dateRangePicker = new Litepicker({
@@ -2522,7 +2651,7 @@
                                         <i class="fa-solid fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
                                     </a>
                                 </div>
-                                <div id="collapse-reservations" class="collapse hide" data-bs-parent="#reservation-accordion" data-admin-table="roles">
+                                <div id="collapse-reservations" class="collapse hide" data-bs-parent="#reservation-accordion" data-admin-table="reservations">
                                     <div class="card-body">
                                         <div class="d-flex formContainer mb-3">
                                             <label for="reservationBuildingSelect" class="col-form-label me-2">Gebäude:</label>
@@ -2532,10 +2661,11 @@
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
+                                                    <th>Bucher</th>
                                                     <th>Raum</th>
+                                                    <th>Gebäude</th>
                                                     <th>Zeitraum</th>
                                                     <th>Beschreibung</th>
-                                                    <th>Bucher</th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
@@ -2568,7 +2698,6 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        <button type="button" class="btn btn-success mt-3" id="createBuildingButton" onclick="showBuildingCreationModal()"><i class="fa-solid fa-plus"></i> Gebäude hinzufügen</button>
                                     </div>
                                 </div>
                             </div>
@@ -2618,7 +2747,7 @@
                                         <div class="d-flex formContainer mb-3">
                                             <label for="rolesRoleSelect" class="col-form-label me-2">Rolle:</label>
                                             <select class="form-select w-auto d-inline-block" id="rolesRoleSelect" data-old="0">
-                                                <option value="0">Alle</option>
+                                                <option value="0" selected="selected">Alle</option>
                                                 <option value="1">Moderatoren</option>
                                                 <option value="2">Administratoren</option>
                                             </select>
