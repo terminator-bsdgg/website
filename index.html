@@ -1053,23 +1053,26 @@
                                 $("#body-overlay").remove();
                                 $("#mainModal .modal-footer > button").removeAttr("disabled");
                                 $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
                             });
                         });
                     }
                 }
             }
             function confirmRoleDeletion(lol) {
-                if (DataTable.isDataTable("#roomsAdminTable")) {
-                    let rooms = adminDataTables["rooms"].data().toArray();
-                    let index = rooms.findIndex(key => key["id"] === Number.parseInt(lol));
+                if (DataTable.isDataTable("#rolesAdminTable")) {
+                    let roles = adminDataTables["roles"].data().toArray();
+                    let index = roles.findIndex(key => key["id"] === Number.parseInt(lol));
                     if (index >= 0) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
                                 title: "Raum entfernen bestätigen",
-                                content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                                content: "Soll die Benutzerrolle &quot;"  + roles["id"] + "&quot; wirklich entfernt werden?"
                             }, resolve);
                         });
-                        prompt.then(function(value) {});
+                        prompt.then(function(value) {
+                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        });
                     }
                 }
             }
@@ -1095,17 +1098,13 @@
                                     attributes: {
                                         id: "confirmationButton"
                                     },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        resolve(true);
-                                                    }
-                                                }
-                                            ]
+                                    actions: {
+                                        click: {
+                                            function: function() {
+                                                resolve(true);
+                                            }
                                         }
-                                    ]
+                                    }
                                 }
                             ]
                         }
@@ -1261,21 +1260,17 @@
                                             else {
                                                 $(currentButton).addClass("btn-primary");
                                             }
-                                            for (let action of customButton["actions"]) {
-                                                let events = Object.getOwnPropertyNames(action);
-                                                for (event of events) {
-                                                    for (let func of action[event]) {
-                                                        if (func.hasOwnProperty("args") && typeof(func["function"]) === "object") {
-                                                            $(currentButton).on(event, function() {
-                                                                achso(func["function"], func["args"]);
-                                                            });
-                                                        }
-                                                        else if (typeof(func["function"]) === "function") {
-                                                            $(currentButton).on(event, function() {
-                                                                achso(func["function"]);
-                                                            });
-                                                        }
-                                                    }
+                                            let actions = Object.getOwnPropertyNames(customButton["actions"]);
+                                            for (let action of actions) {
+                                                if (customButton["actions"][action].hasOwnProperty("args") && typeof(customButton["actions"][action]["function"]) === "object") {
+                                                    $(currentButton).on(action, function() {
+                                                        achso(customButton["actions"][action]["function"], customButton["actions"][action]["args"]);
+                                                    });
+                                                }
+                                                else if (typeof(customButton["actions"][action]["function"]) === "function") {
+                                                    $(currentButton).on(action, function() {
+                                                        achso(customButton["actions"][action]["function"]);
+                                                    });
                                                 }
                                             }
                                             if (customButton.hasOwnProperty("attributes")) {
@@ -1922,7 +1917,6 @@
                                 content: "Soll die Reservierung &quot;" + reservations[index]["description"] + "&quot; wirklich abgelehnt werden?"
                             }, resolve);
                         });
-                        //value kann bei resolve nur true sein
                         prompt.then(function(value) {
                             bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
                         });
@@ -2219,46 +2213,42 @@
                                             attributes: {
                                                 id: "saveNewReservationButton"
                                             },
-                                            actions: [
-                                                {
-                                                    click: [
-                                                        {
-                                                            function: function() {
-                                                                if ($("#body-overlay").length == 0) {
-                                                                    $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                                }
-                                                                if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
-                                                                    $("#saveNewReservationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                                }
-                                                                $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                                $("#mainModal .modal-body > .alert").remove();
-                                                                let data = {
-                                                                    building: $("#newReservationBuildingSelect").val(),
-                                                                    description: $("#newReservationDescription").val(),
-                                                                    room: $("#newReservationRoomSelect").val(),
-                                                                    from: [$("#newReservationTimeFromHours").val(), $("#newReservationTimeFromMinutes").val()],
-                                                                    to: [$("#newReservationTimeToHours").val(), $("#newReservationTimeToMinutes").val()]
-                                                                }
-                                                                $.post("lol", {
-                                                                    _token: authToken,
-                                                                    data: JSON.stringify(data)
-                                                                    //user: currentUser datenbank soll den nutzer selber anhand des tokens erkennen
-                                                                }).done(function(response) {
-                                                                }).fail(function(response) {
-                                                                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                                }).always(function() {
-                                                                    $("#saveNewReservationButton").find("[data-processing='true']").remove();
-                                                                    $("#saveNewReservationButton").removeAttr("disabled");
-                                                                    $("#body-overlay").remove();
-                                                                    $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                                });
-                                                            }
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        if ($("#body-overlay").length == 0) {
+                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
                                                         }
-                                                    ]
+                                                       if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
+                                                            $("#saveNewReservationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                                                        }
+                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                                                        $("#mainModal .modal-body > .alert").remove();
+                                                        let data = {
+                                                            building: $("#newReservationBuildingSelect").val(),
+                                                            description: $("#newReservationDescription").val(),
+                                                            room: $("#newReservationRoomSelect").val(),
+                                                            from: [$("#newReservationTimeFromHours").val(), $("#newReservationTimeFromMinutes").val()],
+                                                            to: [$("#newReservationTimeToHours").val(), $("#newReservationTimeToMinutes").val()]
+                                                        }
+                                                        $.post("lol", {
+                                                            _token: authToken,
+                                                            data: JSON.stringify(data)
+                                                            //user: currentUser datenbank soll den nutzer selber anhand des tokens erkennen
+                                                        }).done(function(response) {
+                                                        }).fail(function(response) {
+                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                                                        }).always(function() {
+                                                            $("#saveNewReservationButton").find("[data-processing='true']").remove();
+                                                            $("#saveNewReservationButton").removeAttr("disabled");
+                                                            $("#body-overlay").remove();
+                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
+                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                                        });
+                                                    }
                                                 }
-                                            ]
+                                            }
                                         }
                                     ]
                                 }
