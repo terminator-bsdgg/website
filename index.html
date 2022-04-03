@@ -264,10 +264,6 @@
             table.dataTable > thead > tr > th {
                 box-sizing: border-box;
             }
-            /*
-            div.dataTables_wrapper > .row:last-of-type {
-                margin-top: 24px
-            }*/
             footer a, footer a:hover {
                 border-bottom: 1px dotted #ffffff;
                 text-decoration: none;
@@ -375,6 +371,10 @@
                 z-index: 0;
                 filter: drop-shadow(0px 0px 3px #0000006e)
             }
+            .kreiselchen {
+                width: 20px;
+                height: 20px
+            }
             /*
             .time-picker::after {
                 content: "";
@@ -394,9 +394,6 @@
                 }
                 main {
                     padding: 0 2%
-                }
-                .tab-content {
-                    padding: 1rem !important;
                 }
                 table.dataTable thead > tr > th {
                     font-weight: 600;
@@ -437,9 +434,6 @@
                 }
                 main {
                     padding: 0 2%
-                }
-                .tab-content {
-                    padding: 1rem !important;
                 }
                 table.dataTable thead > tr > th {
                     font-weight: 600;
@@ -578,9 +572,7 @@
             var systemInfosEventSource = null;
             var viewportWidth = visualViewport["width"];
             var buildings = [];
-            var rooms = [];
             var calendar = null;
-            var roles = [];
             var isGettingReservations = false;
             var firstRun = true;
             const rowGroupStrings = {
@@ -899,15 +891,7 @@
             */
             function login() {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "login") {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($("#loginButton").find("[data-processing='true']").length === 0) {
-                        $("#loginButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
+                    disableMainModal("#loginButton");
                     $.post({
                         url: "http://127.0.0.1:3000/api/user/login",
                         //url: "http://192.168.100.187:3000/api/user/login",
@@ -922,8 +906,8 @@
                     }).done(function(response) {
                         let date = new Date();
                         date.setHours(date.getHours() + 168); // = 1 Woche
-                        document.cookie = "authToken=" + encodeURIComponent(response["authentification"]) + "; expires=" + date.toUTCString() + "; path=/; SameSite=None; Secure";
-                        document.cookie = "username=" + encodeURIComponent(response["username"]) + "; expires=" + date.toUTCString() + "; path=/; SameSite=None; Secure";
+                        document.cookie = "authToken=" + encodeURIComponent(response["authentification"]) + "; expires=" + date.toUTCString() + "; path=/";
+                        document.cookie = "username=" + encodeURIComponent(response["username"]) + "; expires=" + date.toUTCString() + "; path=/";
                         $("a[href='#login']").addClass("d-none");
                         $("a[href='#logout']").removeClass("d-none");
                         $("[data-current-user]").removeClass("d-none").html("<i class='fa-solid fa-user-injured'></i> " + response["username"]);
@@ -931,11 +915,7 @@
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", (Number.parseInt(response["status"]) === 401 ? "Ungültige Anmeldedaten" : response["status"] + ": " + response["statusText"])));
                     }).always(function() {
-                        $("#loginButton").find("[data-processing='true']").remove();
-                        $("#loginButton").removeAttr("disabled");
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        enableMainModal("#loginButton");
                     });
                 }
             }
@@ -944,17 +924,22 @@
                 //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
             }
             function getBuildings() {
+                $("#buildingSelection").empty();
                 $.post({
-                    url:  "dataTables.php",
+                    url: "dataTables.php",
                     contentType: "application/js",
                     data: JSON.stringify({type: "buildings"})
                 }).done(function(response) {
                     let data = JSON.parse(response);
-                    console.log(data);
                     Object.assign(buildings, data);
-                    $("#buildingSelection").empty();
-                    for (building of data) {
-                        $("#buildingSelection").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
+                    if (data.length === 0 && $("#calendar #noBuildingsFoundWarning").length === 0) {
+                        $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", false, "", "noBuildingsFoundWarning"));
+                    }
+                    else {
+                        for (building of data) {
+                            $("#buildingSelection").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
+                        }
+                        $("#buildingSelection").change();
                     }
                 }).fail(function(response) {
                     $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
@@ -962,10 +947,10 @@
                 });
             }
             function updateSystemInfos() {
-                if (systemInfosEventSource === null || systemInfosEventSource["readyState"] == 2) {
+                if (systemInfosEventSource === null || systemInfosEventSource["readyState"] === 2) {
                     systemInfosEventSource = new EventSource("sse_test.php");
                     systemInfosEventSource.onmessage = function(event) {
-                        if ($("#mainModal").attr("data-name") == "systemInfos") {
+                        if ($("#mainModal").attr("data-name") === "systemInfos") {
                             let data = JSON.parse(event["data"]);
                             let statsText = "";
                             if (data.hasOwnProperty("osname")) {
@@ -999,6 +984,20 @@
                     };
                 }
             }
+            function getCookie(cname) {
+                let name = cname + "=";
+                let ca = document.cookie.split(";");
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == " ") {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
             function readjustTables() {
                 let collapses = ["#collapse-rooms", "#collapse-roles", "#collapse-reservations", "#collapse-buildings"];
                 let element = null;
@@ -1028,15 +1027,7 @@
                             }, resolve);
                         });
                         prompt.then(function(value) {
-                            if ($("#body-overlay").length == 0) {
-                                $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                            }
-                            if ($("#confirmationButton").find("[data-processing='true']").length == 0) {
-                                $("#confirmationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                            }
-                            $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                            $("#mainModal .modal-body > .alert").remove();
+                            disableMainModal("#confirmationButton");
                             let data = {
                                 room: room,
                                 building: building
@@ -1049,10 +1040,7 @@
                             }).fail(function(response) {
                                 $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                             }).always(function() {
-                                $("#confirmationButton").find("[data-processing='true']").remove();
-                                $("#body-overlay").remove();
-                                $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                                enableMainModal("#confirmationButton");
                                 bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
                             });
                         });
@@ -1066,8 +1054,8 @@
                     if (index >= 0) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
-                                title: "Raum entfernen bestätigen",
-                                content: "Soll die Benutzerrolle &quot;"  + roles["id"] + "&quot; wirklich entfernt werden?"
+                                title: "Benutzerrolle &quot;" + roles["name"] + "&quot; entfernen",
+                                content: "Soll die Benutzerrolle &quot;"  + roles["name"] + "&quot; wirklich entfernt werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
@@ -1170,14 +1158,13 @@
                                     text: string,
                                     class?: string,
                                     attributes?: {},
-                                    actions: [{
-                                        click: [
-                                            {
+                                    actions: {
+                                        click: {
                                                 function: (string|function() {}),
                                                 args?: []
                                             }
-                                        ]
-                                    }]
+                                        }
+                                    }
                                 }]
                             }
                         }
@@ -1478,7 +1465,7 @@
             }
             // lol = id aus "rowGroup"
             function showRoomCreationModal(lol = null) {
-                let content = "<form enctype='text/plain' id='roomCreationForm' method='post' action='/' class='w-100'>";
+                let content = "<form enctype='text/plain' id='roomCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newRoomSubmit'>";
                 content += "<div><label class='col-form-label me-2' for='newRoomBuildingSelect'>Gebäude:</label>";
                 content += "<select class='form-select' id='newRoomBuildingSelect' required='required'>";
                 if (buildings.length >= 1) {
@@ -1487,36 +1474,34 @@
                     }
                 }
                 content += "</select></div>";
-                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomRoomName'>Name:</label>";
-                content += "<input type='text' class='form-control' id='newRoomName' required='required'></div>";
-                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomDescription'>Beschreibung (optional):</label>";
-                content += "<input type='text' class='form-control' id='newRoomDescription'></div>";
-                content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewRoomButton'>Speichern</button></form>";            
-                content += "</div></form>";
+                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomRoomNameInput'>Name:</label>";
+                content += "<input type='text' class='form-control' id='newRoomNameInput' required='required'></div>";
+                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomDescriptionInput'>Beschreibung (optional):</label>";
+                content += "<input type='text' class='form-control' id='newRoomDescriptionInput'></div></form>";
                 let data = {
                     name: "roomCreation",
                     static: true,
                     events: {
-                            shown: {
-                                function: function() {
-                                    $("#roomCreationForm").submit(function() {
-                                        saveNewRoom();
-                                        return false;
-                                    });
-                                }
-                            },
-                            hidden: {
-                                function: function() {
-                                    $("#roomCreationForm").off("submit");
-                                }
+                        shown: {
+                            function: function() {
+                                $("#roomCreationForm").submit(function() {
+                                    saveNewRoom();
+                                    return false;
+                                });
                             }
                         },
+                        hidden: {
+                            function: function() {
+                                $("#roomCreationForm").off("submit");
+                            }
+                        }
+                    },
                     title: {
                         text: "Neuen Raum erstellen"
                     },
                     content: {
                         text: content
-                    }/*,
+                    },
                     footer: {
                         buttons: {
                             default: {
@@ -1530,60 +1515,47 @@
                                     attributes: {
                                         id: "saveNewRoomButton"
                                     },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        if ($("#body-overlay").length == 0) {
-                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                        }
-                                                        if ($("#saveNewRoomButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewRoomButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                        }
-                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-body > .alert").remove();
-                                                        let data = {
-                                                            building: $("#newRoomBuildingSelect").val(),
-                                                            name: $("#newRoomName").val(),
-                                                            description: $("#newRoomDescription").val()
-                                                        }
-                                                        $.post("lol", {
-                                                            _token: authToken,
-                                                            data: JSON.stringify(data)
-                                                        }).done(function(response) {
-                                                        }).fail(function(response) {
-                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                        }).always(function() {
-                                                            $("#saveNewRoomButton").find("[data-processing='true']").remove();
-                                                            $("#saveNewRoomButton").removeAttr("disabled");
-                                                            $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                        });
-                                                    }
-                                                }
-                                            ]
+                                    actions: {
+                                        click: {
+                                            function: function() {
+                                                $("#newRoomSubmit").click();
+                                            }
                                         }
-                                    ]
+                                    }
                                 }
                             ]
                         }
-                    }*/
+                    }
                 };
                 Modal.create(data);
+            }
+            function disableMainModal(mainButton) {
+                if ($("#body-overlay").length === 0) {
+                    $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
+                }
+                if ($(mainButton).find("[data-processing='true']").length === 0) {
+                    $(mainButton).prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
+                }
+                $("#mainModal .modal-footer > button").attr("disabled", "disabled");
+                $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
+                $("#mainModal .modal-body > .alert").remove();
+            }
+            function enableMainModal(mainButton) {
+                $(mainButton).find("[data-processing='true']").remove();
+                $(mainButton).removeAttr("disabled");
+                $("#body-overlay").remove();
+                $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
+                $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
             }
             function showRoleEditingModal(lol) {
                 if (DataTable.isDataTable("#rolesAdminTable")) {
                     let roles = adminDataTables["roles"].data().toArray();
                     let index = roles.findIndex(key => key["id"] === lol);
                     if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='roleEditingForm' method='post' action='/' class='w-100'>";
+                        let content = "<form enctype='text/plain' id='roleEditingForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='editRoleSubmit'>";
                         content += "<div><label class='col-md-3 col-form-label me-2' for='editRoleSelect'>Rolle:</label>";
                         content += "<select class='col-md-9 form-select' id='editRoleSelect'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
-                        content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div>";
-                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedRoleButton'>Speichern</button></div></form>";
+                        content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div></form>";
                         let data = {
                             name: "roleEditing",
                             static: true,
@@ -1607,6 +1579,30 @@
                             },
                             content: {
                                 text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveEditedRoleButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#editedRoleSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         };
                         Modal.create(data);
@@ -1619,13 +1615,12 @@
             function showRoomEditingModal(lol) {
                 if (DataTable.isDataTable("#roomsAdminTable")) {
                     let rooms = adminDataTables["rooms"].data().toArray();
-                    let index = buildings.findIndex(key => key["id"] === lol);
+                    let index = rooms.findIndex(key => key["id"] === lol);
                     if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='roomEditingForm' method='post' action='/' class='w-100'><label for='editBuildingName' class='form-label'>Name:</label>";
-                        content += "<input type='text' class='form-control' id='editBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
-                        content += "<div class='mt-3'><label for='editBuildingDescription' class='form-label'>Beschreibung:</label>";
-                        content += "<input type='text' class='form-control' id='editBuildingDescription' placeholder='Beschreibung eingeben' required='required' value='" + buildings[index]["description"] + "'></div>";
-                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveEditedBuildingButton'>Speichern</button></form>";
+                        let content = "<form enctype='text/plain' id='roomEditingForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='editRoomSubmit'><label for='editRoomNameInput' class='form-label'>Name:</label>";
+                        content += "<input type='text' class='form-control' id='editRoomNameInput' placeholder='Name eingeben' required='required' value='" + rooms[index]["name"] + "'></div>";
+                        content += "<div class='mt-3'><label for='editRoomDescriptionInput' class='form-label'>Beschreibung:</label>";
+                        content += "<input type='text' class='form-control' id='editRoomDescriptionInput' placeholder='Beschreibung eingeben' required='required' value='" + rooms[index]["description"] + "'></div></form>";
                         let data = {
                             name: "buildingEditing",
                             static: true,
@@ -1645,10 +1640,34 @@
                                 }
                             },
                             title: {
-                                text: "Gebäude " + buildings[index]["name"] + " bearbeiten"
+                                text: "Raum " + rooms[index]["name"] + " bearbeiten"
                             },
                             content: {
                                 text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveEditedRoomButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#editRoomSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         };
                         Modal.create(data);
@@ -1656,12 +1675,11 @@
                 }
             }
             function showBuildingCreationModal() {
-                let content = "<form enctype='text/plain' id='buildingCreationForm' method='post' action='/' class='w-100'>";
-                content += "<div><label for='newBuildingName' class='col-form-label'>Name:</label>";
-                content += "<input type='text' class='form-control' id='newBuildingName' placeholder='Name eingeben' required='required'></div>";
-                content += "<div class='mt-3'><label for='newBuildingDescription' class='col-form-label'>Beschreibung (optional):</label>";
-                content += "<input type='text' class='form-control' id='newBuildingDescription' placeholder='Beschreibung eingeben'></div>";
-                content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewBuildingButton'>Speichern</button></form>";
+                let content = "<form enctype='text/plain' id='buildingCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newBuildingSubmit'>";
+                content += "<div><label for='newBuildingNameInput' class='col-form-label'>Name:</label>";
+                content += "<input type='text' class='form-control' id='newBuildingNameInput' placeholder='Name eingeben' required='required'></div>";
+                content += "<div class='mt-3'><label for='newBuildingDescriptionInput' class='col-form-label'>Beschreibung (optional):</label>";
+                content += "<input type='text' class='form-control' id='newBuildingDescriptionInput' placeholder='Beschreibung eingeben'></div></form>";
                 let data = {
                     name: "buildingCreation",
                     static: true,
@@ -1685,6 +1703,30 @@
                     },
                     content: {
                         text: content
+                    },
+                    footer: {
+                        buttons: {
+                            default: {
+                                text: "Abbrechen",
+                                class: "btn-danger"
+                            },
+                            custom: [
+                                {
+                                    text: "Speichern",
+                                    class: "btn-primary",
+                                    attributes: {
+                                        id: "saveNewBuildingButton"
+                                    },
+                                    actions: {
+                                        click: {
+                                            function: function() {
+                                                $("#newBuildingSubmit").click();
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
                 };
                 Modal.create(data);
@@ -1694,19 +1736,18 @@
                     let buildings = adminDataTables["buildings"].data().toArray();
                     let index = buildings.findIndex(key => key["id"] === lol);
                     if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='buildingCreationForm' method='post' action='/' class='w-100'>";
-                        content += "<div><label for='newBuildingName' class='col-form-label'>Name:</label>";
-                        content += "<input type='text' class='form-control' id='newBuildingName' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
-                        content += "<div class='mt-3'><label for='newBuildingDescription' class='col-form-label'>Beschreibung (optional):</label>";
-                        content += "<input type='text' class='form-control' id='newBuildingDescription' placeholder='Beschreibung eingeben' value='" + (!["undefined", "", undefined, null].includes(buildings[index]["description"]) ? buildings[index]["description"] : "") + "'></div>";
-                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewBuildingButton'>Speichern</button></form>";
+                        let content = "<form enctype='text/plain' id='buildingEditingForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='editBuildingSubmit'>";
+                        content += "<div><label for='editBuildingNameInput' class='col-form-label'>Name:</label>";
+                        content += "<input type='text' class='form-control' id='editBuildingNameInput' placeholder='Name eingeben' required='required' value='" + buildings[index]["name"] + "'></div>";
+                        content += "<div class='mt-3'><label for='editBuildingDescriptionInput' class='col-form-label'>Beschreibung (optional):</label>";
+                        content += "<input type='text' class='form-control' id='editBuildingDescriptionInput' placeholder='Beschreibung eingeben' value='" + (!["undefined", "", undefined, null].includes(buildings[index]["description"]) ? buildings[index]["description"] : "") + "'></div></form>";
                         let data = {
                             name: "buildingEditing",
                             static: true,
                             events: {
                                 shown: {
                                     function: function() {
-                                        $("#buildingCreationForm").submit(function() {
+                                        $("#buildingEditingForm").submit(function() {
                                             saveEditedBuilding(lol);
                                             return false;
                                         });
@@ -1723,6 +1764,30 @@
                             },
                             content: {
                                 text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveEditedBuildingButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#editBuildingSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         };
                         Modal.create(data);
@@ -1733,23 +1798,16 @@
                 }
             }
             function saveEditedBuilding(id) {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "editBuilding") {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($("#saveEditedBuildingButton").find("[data-processing='true']").length === 0) {
-                        $("#saveEditedBuildingButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingEditing") {
+                    disableMainModal("#saveEditedBuildingButton");
                     $.post({
                         url: "http://127.0.0.1:3000/api/",
                         //url: "http://192.168.100.187:3000/api/user/login",
                         data: JSON.stringify({
+                            authentification: decodeURIComponent(getCookie("authToken")),
                             id: id,
-                            name: $("#editBuildingName").val(),
-                            description: $("#editBuildingDescription").val()
+                            name: $("#editBuildingNameInput").val(),
+                            description: $("#editBuildingDescriptionInput").val()
                         }),
                         processData: false,
                         contentType: "application/json",
@@ -1760,11 +1818,7 @@
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
-                        $("#saveEditedBuildingButton").find("[data-processing='true']").remove();
-                        $("#saveEditedBuildingButton").removeAttr("disabled");
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        enableMainModal("#saveEditedBuildingButton");
                     });
                 }
             }
@@ -1804,8 +1858,8 @@
                     if (index >= 0) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
-                                title: "Reservierung genehmigen",
-                                content: "Soll die Reservierung &quot;" + buildings[index]["name"] + "&quot; wirklich aktiviert werden?"
+                                title: "Gebäude &quot;" + buildings[index]["name"] + "&quot; aktivieren",
+                                content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich aktiviert werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
@@ -1819,13 +1873,13 @@
                     let buildings= adminDataTables["buildings"].data().toArray();
                     let index = buildings.findIndex(key => key["id"] === lol);
                     if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'>";
+                        let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='disableBuildingSubmit'>";
                         content += Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten. Wird ein Grund angegeben, wird dieser den Benutzern angezeigt, wenn sie einen Raum des jeweiligen gesperrten Gebäudes reservieren möchten." , false);
                         content += "<label for='disableBuildingMessage' class='form-label'>Grund:</label>";
-                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div>";
-                        content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveDisabledBuildingButton'>Speichern</button></form>";
+                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div></form>";
                         let data = {
                             name: "buildingDeactivation",
+                            static: true,
                             size: "lg",
                             events: {
                                 shown: {
@@ -1843,10 +1897,34 @@
                                 }
                             },
                             title: {
-                                text: "Gebäude " + buildings[index]["name"] + " deaktivieren"
+                                text: "Gebäude &quot;" + buildings[index]["name"] + "&quot; deaktivieren"
                             },
                             content: {
                                 text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveDisabledBuildingButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#disableBuildingSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         };
                         Modal.create(data);
@@ -1855,19 +1933,12 @@
             }
             function disableBuilding() {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "disableBuilding") {
-                    if ($("#body-overlay").length == 0) {
-                        $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                    }
-                    if ($("#saveDisabledBuildingButton").find("[data-processing='true']").length === 0) {
-                        $("#saveDisabledBuildingButton").attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                    }
-                    $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                    $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                    $("#mainModal .modal-body > .alert").remove();
+                    disableMainModal("#saveDisabledBuildingButton");
                     $.post({
                         url: "http://127.0.0.1:3000/api/",
                         //url: "http://192.168.100.187:3000/api/user/login",
                         data: JSON.stringify({
+                            authentification: decodeURIComponent(getCookie("authToken")),
                             id: id,
                             message: $("#disableBuildingMessage").val()
                         }),
@@ -1880,11 +1951,7 @@
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
-                        $("#saveDisabledBuildingButton").find("[data-processing='true']").remove();
-                        $("#saveDisabledBuildingButton").removeAttr("disabled");
-                        $("#body-overlay").remove();
-                        $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
-                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
+                        enableMainModal("#saveDisabledBuildingButton");
                     });
                 }
                 return false;
@@ -1924,44 +1991,96 @@
                 }
             }
             function saveNewBuilding() {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingCreation") {
+                    disableMainModal("#saveNewBuildingButton");
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            authentification: decodeURIComponent(getCookie("authToken")),
+                            name: $("#newBuildingNameInput").val(),
+                            description: $("#newBuildingDescriptionInput").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveNewBuildingButton");
+                    });
+                }
             }
-            function saveNewReservation() {
+            function saveNewReservation(startDate, endDate) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "reservationCreation") {
+                    disableMainModal("#saveNewReservationButton");
+                    // datumsprüfung ist sache des servers
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            authentification: decodeURIComponent(getCookie("authToken")),
+                            start: startDate + "T" + $("#newReservationTimeFromHours").val() + ":" + $("#newReservationTimeFromMinutes").val() + ":00.000Z",
+                            end: endDate + "T" + $("#newReservationTimeToHours").val() + ":" + $("#newReservationTimeToMinutes").val() + ":00.000Z",
+                            building: $("#newReservationBuildingSelect").val(),
+                            room: $("#newReservationRoomSelect").val(),
+                            description: $("#newReservationDescriptionInput").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveNewReservationButton");
+                    });
+                }
             }
             function getReservations(start, end, successCallback, failureCallback) {
                 $("#getReservationsButton").addClass("disabled").attr("disabled", "disabled");
                 $.post({
-                    url: "dataTables.php",
-                    data: {
+                    url: "calendar.php",
+                    data: JSON.stringify({
                         building: $("#buildingSelection").val(),
                         room: $("#roomSelection").val(),
                         start: start,
                         end: end
-                    }
+                    }),
+                    processData: false,
+                    contentType: "application/json",
+                    crossDomain: true,
+                    timeout: 10000
                 }).done(function(response) {
                     successCallback(JSON.parse(response));
                 }).fail(function(response) {
-                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    failureCallback(response["status"] + ": " + response["statusText"]);
+                    $("#calendarLocationForm").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
                     isGettingReservations = false;
                     $("#getReservationsButton").removeClass("disabled").removeAttr("disabled");
                 });
             }
-            function getRooms() {
-                $("#roomSelection").empty();
-                let index = buildings.findIndex(key => key["id"] === Number.parseInt($("#buildingSelection").val()));
+            function getRooms(source, target) {
+                $(target).empty();
+                let index = buildings.findIndex(key => key["id"] === Number.parseInt($(source).val()));
                 if (index >= 0) {
                     for (room of buildings[index]["rooms"]) {
-                        $("#roomSelection").append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
+                        $(target).append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
                     }
                 }
             }
             // Benutzer werden aus AD geladen, daher ist keine Benutzerregistrierung nötig!
             function showRoleCreationModal() {
-                let content = "<form enctype='text/plain' id='roleCreationForm' method='post' action='/' class='w-100'>";
-                content += "<div><label class='col-md-3 col-form-label me-2' for='newUserRoleSelect'>Rolle:</label>";
-                content += "<select class='col-md-9 form-select' id='newUserRoleSelect'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
-                content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div>";
-                content += "<div class='d-flex mt-3 justify-content-between align-items-center'><button type='submit' class='btn btn-primary' id='saveNewRoleButton'>Speichern</button></div></form>";
+                let content = "<form enctype='text/plain' id='roleCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newRoleSubmit'>";
+                content += "<div><label class='col-form-label me-2' for='newRoleName'>Benutzername:</label><input type='text' id='newRoleNameInput' class='form-control' required='required' value='' aria-label='Benutzername' aria-describedby='newRoleNameInput'></div>";
+                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoleSelect'>Rolle:</label><select class='form-select' id='newRoleSelect' required='required'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
+                content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div></form>";
                 let data = {
                     name: "roleCreation",
                     static: true,
@@ -1985,7 +2104,7 @@
                     },
                     content: {
                         text: content
-                    }/*,
+                    },
                     footer: {
                         buttons: {
                             default: {
@@ -1997,51 +2116,145 @@
                                     text: "Speichern",
                                     class: "btn-primary",
                                     attributes: {
-                                        id: "saveNewUserButton"
+                                        id: "saveNewRoleButton"
                                     },
-                                    actions: [
-                                        {
-                                            click: [
-                                                {
-                                                    function: function() {
-                                                        if ($("#body-overlay").length == 0) {
-                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                        }
-                                                        if ($("#saveNewUserButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewUserButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                        }
-                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-body > .alert").remove();
-                                                        let data = {
-                                                            building: $("#newRoomBuildingSelect").val(),
-                                                            name: $("#newRoomName").val(),
-                                                            description: $("#newRoomDescription").val()
-                                                        }
-                                                        $.post("lol", {
-                                                            _token: authToken,
-                                                            data: JSON.stringify(data)
-                                                        }).done(function(response) {
-                                                        }).fail(function(response) {
-                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                        }).always(function() {
-                                                            $("#saveNewUserButton").find("[data-processing='true']").remove();
-                                                            $("#saveNewUserButton").removeAttr("disabled");
-                                                            $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                        });
-                                                    }
-                                                }
-                                            ]
+                                    actions: {
+                                        click: {
+                                            function: function() {
+                                                $("#newRoleSubmit").click();
+                                            }
                                         }
-                                    ]
+                                    }
                                 }
                             ]
                         }
-                    }*/
+                    }
                 };
                 Modal.create(data);
+            }
+            function saveNewRole() {
+                disableMainModal("#saveNewRoleButton");
+                let data = {
+                    user: $("#newUserRoleName").val(),
+                    role: $("#newUserRoleSelect").val()
+                };
+                $.post({
+                    url: "4",
+                    data: JSON.stringify(data),
+                    processData: false,
+                    contentType: "application/json",
+                    crossDomain: true,
+                    timeout: 10000
+                }).done(function(response) {
+                }).fail(function(response) {
+                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                }).always(function() {
+                    enableMainModal("#saveNewRoleButton");
+                });
+            }
+            function saveEditedRole(lol) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "roleEditing") {
+                    disableMainModal("#saveEditedRoleButton");
+                    $.post({
+                        url: "http://127.0.0.1:3000/api/",
+                        //url: "http://192.168.100.187:3000/api/user/login",
+                        data: JSON.stringify({
+                            authentification: decodeURIComponent(getCookie("authToken")),
+                            user: lol,
+                            role: $("").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveEditedRoleButton");
+                    });
+                }
+            }
+            function showReservationCreationModal() {
+                let startDate = $("#showReservationCreationModalButton").attr("data-start");
+                let endDate = $("#showReservationCreationModalButton").attr("data-end");
+                if (![null, undefined, "undefined"].includes(startDate) && ![null, undefined, "undefined"].includes(endDate)) {
+                    startDateArray = startDate.slice(0, 10).split("-");
+                    let content = "<form enctype='text/plain' id='reservationCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newReservationSubmit'>";
+                    content += "<div><label class='col-form-label' for='newReservationBuildingSelect'>Gebäude:</label>";
+                    content += "<select class='form-select' id='newReservationBuildingSelect' onchange='getRooms(this, &quot;#newReservationRoomSelect&quot;)' required='required'>";
+                    for (building of buildings) {
+                        content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
+                    }
+                    content += "</select></div>";
+                    content += "<div class='mt-3'><label class='col-form-label' for='newReservationRoomSelect'>Raum:</label>";
+                    content += "<select class='form-select' id='newReservationRoomSelect' required='required'></select></div>";
+                    content += "<div class='mt-3'><label class='col-form-label' for='newReservationDescriptionInput'>Beschreibung:</label>";
+                    content += "<div class='input-group'><input type='text' class='form-control' id='newReservationDescriptionInput' required='required'>";
+                    content += "<div class='d-flex align-items-center align-content-center input-group-text'><input class='form-check-input mt-0' type='checkbox' id='newReservationDescriptionHiddenCheckbox' value='1'>";
+                    content += "<label class='form-check-label ps-1' for='newReservationDescriptionHiddenCheckbox'>Ausblenden</label></div></div></div>";
+                    content += "<div class='mt-3'><label class='col-form-label' for='newReservationTimeFromHours'>Start:</label>";
+                    content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + startDate.slice(11, 13) + "' required='required'>";
+                    content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + startDate.slice(14, 16) + "' required='required'></div>";
+                    content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
+                    content += "<div class='mt-3'><label class='col-form-label' for='newReservationTimeToHours'>Ende:</label>";
+                    content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours' required='required'>";
+                    content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes' required='required'></div>";
+                    content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'>";
+                    content += "<label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
+                    content += "</div></div></form>";
+                    let data = {
+                        name: "reservationCreation",
+                        static: true,
+                        events: {
+                            shown: {
+                                function: function() {
+                                    $("#reservationCreationForm").submit(function() {
+                                        saveNewReservation(startDate, endDate);
+                                        return false;
+                                    });
+                                }
+                            },
+                            hidden: {
+                                function: function() {
+                                    $("#reservationCreationForm").off("submit");
+                                }
+                            }
+                        },
+                        title: {
+                            text: "Neuen Termin erstellen am " + startDateArray[2] + "." + startDateArray[1] + "." + startDateArray[0]
+                        },
+                        content: {
+                            text: content
+                        },
+                        footer: {
+                            buttons: {
+                                default: {
+                                    text: "Abbrechen",
+                                    class: "btn-danger"
+                                },
+                                custom: [
+                                    {
+                                        text: "Speichern",
+                                        class: "btn-primary",
+                                        attributes: {
+                                            id: "saveNewReservationButton"
+                                        },
+                                        actions: {
+                                            click: {
+                                                function: function() {
+                                                    $("#newReservationSubmit").click();
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    };
+                    Modal.create(data);
+                }
             }
             Number.prototype.duration = function() {
                 let sec_num = parseInt(this, 10);
@@ -2080,12 +2293,11 @@
                 }
             });
             $(document).on("DOMContentLoaded", function() {
-                //dataTables["currentReservations"] = $("#currentReservationsTable").DataTable(dataTablesOptions["currentReservations"]);
                 calendar = new FullCalendar.Calendar($("#reservationCalendar")[0], {
                     initialView: "dayGridMonth",
                     locale: "de",
                     events: "calendar.php",
-                    nowIndicator: true,
+                    //nowIndicator: true,
                     selectable: true,
                     selectAllow: function(selectInfo) {
                         let currentDate = new Date();
@@ -2108,11 +2320,13 @@
                         console.log(selectionInfo);
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
-                        if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
-                            $("#createNewReservationButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]});
-                        }
-                        else {
-                            $("#createNewReservationButton").attr("disabled", "disabled");
+                        if (buildings.length >= 1) {
+                            if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
+                                $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]}).removeClass("disabled");
+                            }
+                            else {
+                                $("#showReservationCreationModalButton").attr("disabled", "disabled").addClass("disabled");
+                            }
                         }
                     },
                     eventDisplay: "block",
@@ -2125,6 +2339,7 @@
                         //let dateArray = eventData["startStr"].slice(0, 10).split("-");
                     },
                     eventsSet: function(events) {
+                        // wenn monat geändert wurde
                     },
                     unselect: function(jsEvent, view) {
                         console.log(jsEvent, view);
@@ -2171,92 +2386,7 @@
                 });
                 $("a[href='#logout']").click(function() {
                 });
-                $("#createReservationButton").click(function() {
-                    let startDate = $(this).attr("data-start");
-                    let endDate = $(this).attr("data-end");
-                    if (![null, undefined, "undefined"].includes(startDate) && ![null, undefined, "undefined"].includes(endDate)) {
-                        dateArray = startDate.slice(0, 10).split("-");
-                        let content = "<form enctype='text/plain' method='post' action='/' class='w-100'><div class='row'><label class='col-md-3' for='newReservationBuildingSelect'>Gebäude:</label>";
-                        content += "<select class='col-md-9 w-auto form-control' id='newReservationBuildingSelect'></select></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationRoomSelect'>Raum:</label>";
-                        content += "<select class='col-md-9 w-auto form-control' id='newReservationRoomSelect'></select></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationDescription'>Beschreibung:</label>";
-                        content += "<input type='text' class='col-md-9 w-auto form-control' id='newReservationDescription'></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeFromHours'>Start:</label>";
-                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + startDate.slice(11, 13) + "'>";
-                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + startDate.slice(14, 16) + "'></div>";
-                        content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
-                        content += "<div class='row mt-3'><label class='col-md-3' for='newReservationTimeToHours'>Ende:</label>";
-                        content += "<div class='col-md-5 d-flex align-items-center align-content-center'><div class='input-group peter'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours'>";
-                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes'></div>";
-                        content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0 col-md-4 konrad'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'><label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
-                        content += "</div></div></form>";
-                        let data = {
-                            name: "reservationCreation",
-                            static: true,
-                            title: {
-                                text: "Neuen Termin erstellen am " + dateArray[2] + "." + dateArray[1] + "." + dateArray[0]
-                            },
-                            content: {
-                                text: content
-                            },
-                            footer: {
-                                buttons: {
-                                    default: {
-                                        text: "Abbrechen",
-                                        class: "btn-danger"
-                                    },
-                                    custom: [
-                                        {
-                                            text: "Speichern",
-                                            class: "btn-primary",
-                                            attributes: {
-                                                id: "saveNewReservationButton"
-                                            },
-                                            actions: {
-                                                click: {
-                                                    function: function() {
-                                                        if ($("#body-overlay").length == 0) {
-                                                            $("body").prepend("<div id='body-overlay' style='background-color: transparent'></div>");
-                                                        }
-                                                       if ($("#saveNewReservationButton").find("[data-processing='true']").length == 0) {
-                                                            $("#saveNewReservationButton").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
-                                                        }
-                                                        $("#mainModal .modal-footer > button").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-header > [data-bs-dismiss='modal']").attr("disabled", "disabled");
-                                                        $("#mainModal .modal-body > .alert").remove();
-                                                        let data = {
-                                                            building: $("#newReservationBuildingSelect").val(),
-                                                            description: $("#newReservationDescription").val(),
-                                                            room: $("#newReservationRoomSelect").val(),
-                                                            from: [$("#newReservationTimeFromHours").val(), $("#newReservationTimeFromMinutes").val()],
-                                                            to: [$("#newReservationTimeToHours").val(), $("#newReservationTimeToMinutes").val()]
-                                                        }
-                                                        $.post("lol", {
-                                                            _token: authToken,
-                                                            data: JSON.stringify(data)
-                                                            //user: currentUser datenbank soll den nutzer selber anhand des tokens erkennen
-                                                        }).done(function(response) {
-                                                        }).fail(function(response) {
-                                                            $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                                                        }).always(function() {
-                                                            $("#saveNewReservationButton").find("[data-processing='true']").remove();
-                                                            $("#saveNewReservationButton").removeAttr("disabled");
-                                                            $("#body-overlay").remove();
-                                                            $("#mainModal .modal-footer > button").removeAttr("disabled");
-                                                            $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
-                                                        });
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        };
-                        Modal.create(data);
-                    }
-                });
+
                 $("a[href='#reservationsOverview']").on("shown.bs.tab", function() {
                     if (calendar !== null) {
                         calendar.updateSize();
@@ -2273,7 +2403,7 @@
                 $("#buildings-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#buildingsAdminTable")) {
                         adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]).on("draw", function(settings) {
-                            if ($("#showBuildingCreationModalButton").length == 0) {
+                            if ($("#showBuildingCreationModalButton").length === 0) {
                                 $("#buildingsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showBuildingCreationModal()' id='showBuildingCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                             }
                         });
@@ -2301,7 +2431,7 @@
                         }
                         adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                                if ($("#showRoomCreationModalButton").length == 0) {
+                                if ($("#showRoomCreationModalButton").length === 0) {
                                     $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                                 }
                             }
@@ -2335,12 +2465,12 @@
                                     return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                                 }
                             };
-                            options["orderFixed"] = [0, "asc"];
+                            options["orderFixed"] = [2, "asc"];
                             options["columns"][2]["visible"] = false;
                         }
                         adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["roles"].rowGroup().enabled()) {
-                                if ($("#showRoleCreationModalButton").length == 0) {
+                                if ($("#showRoleCreationModalButton").length === 0) {
                                     $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                                 }
                             }
@@ -2370,7 +2500,7 @@
                         options["columns"][1]["visible"] = false;
                         adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                                if ($("#showRoomCreationModalButton").length == 0) {
+                                if ($("#showRoomCreationModalButton").length === 0) {
                                     $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                                 }
                             }
@@ -2408,7 +2538,7 @@
                     $(this).attr("data-old", value);
                     adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["roles"].rowGroup().enabled()) {
-                            if ($("#showRoleCreationModalButton").length == 0) {
+                            if ($("#showRoleCreationModalButton").length === 0) {
                                 $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
@@ -2426,7 +2556,6 @@
                             dataSrc: "building",
                             className: "bg-gray-200",
                             endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
                                 let index = buildings.findIndex(key => key["id"] === group);
                                 return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
@@ -2444,7 +2573,7 @@
                     $(this).attr("data-old", value);
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                            if ($("#showRoomCreationModalButton").length == 0) {
+                            if ($("#showRoomCreationModalButton").length === 0) {
                                 $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
@@ -2462,7 +2591,6 @@
                             dataSrc: "building",
                             className: "bg-gray-200",
                             endRender: null,
-                            // Wird nach Erzeugung ausgelöst!
                             startRender: function(rows, group) {
                                 let index = buildings.findIndex(key => key["id"] === group);
                                 return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
@@ -2550,7 +2678,7 @@
                                     <div class="col-md-9">
                                         <form enctype="text/plain" id="calendarLocationForm" method="post" action="/" class="w-100 d-flex formContainer mb-4 justify-content-center">
                                             <label for="buildingSelection" class="col-form-label me-2">Gebäude:</label>
-                                            <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="getRooms()"></select>
+                                            <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="getRooms(this, '#roomSelection')"></select>
                                             <label for="roomSelection" class="col-form-label me-2">Raum:</label>
                                             <select class="form-select w-auto d-inline-block" id="roomSelection" required="required"></select>
                                             <button type="submit" class="btn btn-primary align-baseline">Anzeigen</button>
@@ -2579,7 +2707,7 @@
                                             <div class="col-md-4">Optionen:</div>
                                             <div class="col-md-8" id="selectedReservationOptions">LOL</div>
                                         </div>
-                                        <button type="button" class="btn btn-success mt-3" id="createNewReservationButton" disabled="disabled"><i class="fa-solid fa-plus"></i> Neue Reservierung</button>
+                                        <button type="button" class="btn btn-success mt-3 disabled" id="showReservationCreationModalButton" disabled="disabled" onclick="showReservationCreationModal()"><i class="fa-solid fa-plus"></i> Neue Reservierung</button>
                                     </div>
                                 </div>
                             </div>

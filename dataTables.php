@@ -47,7 +47,6 @@
                     "statusMessage" => "",
                     "rooms" => $aso,
                 ];
-
             }
             break;
         case "roles":
