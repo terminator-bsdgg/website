@@ -11,10 +11,17 @@
         $data[] = [
             "id" => $i,
             "start" => date_format($date, "Y-m-d\TH:i:s"),
-            "end" => $end,
-            "title" => "LOL " . $i
+            "end" => date_format($date, "Y-m-d\TH:i:s"),
+            "title" => "LOL " . $i,
+            "classNames" => ["cursor-pointer"],
+            "extendedProps" => [
+                "organiser"=> "Hellmut Dunkelangst",
+                "start" => $start *1000,
+                "end" => $end *1000
+            ]
         ];
         date_modify($date, "+1 day");
+        //date_modify($endDate, "+1 day");
     }
     echo json_encode($data);
     return;

@@ -15,14 +15,31 @@
                 ];
             }
             break;
-        case "pastReservations":
+        case "moderator_reservations":
             foreach (range(1, rand(2, 10)) as $lol) {
+                $date = date_create();
                 $data[] = [
                     "id" => rand(1,10),
-                    "time" => date_format(date_create(), "d.m.Y, H:i:s"),
+                    "timeStart" => date_timestamp_get($date) *1000,
+                    "timeEnd" => date_timestamp_get(date_modify($date, "+1 hour")) *1000,
                     "description" => "Beim Jupiter!",
                     "room" => 1337,
+                    "building" => "A",
                     "organiser" => "Hellmut Dunkelangst"
+                ];
+            }
+            break;
+        case "my_reservations":
+            foreach (range(1, rand(2, 10)) as $lol) {
+                $date = date_create();
+                $data[] = [
+                    "id" => rand(1,10),
+                    "timeStart" => date_timestamp_get($date) *1000,
+                    "timeEnd" => date_timestamp_get(date_modify($date, "+1 hour")) *1000,
+                    "description" => "Beim Jupiter!",
+                    "room" => 1337,
+                    "building" => "A",
+                    "status" => rand(1, 3)
                 ];
             }
             break;

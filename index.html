@@ -171,7 +171,6 @@
                 z-index: 11;
                 background-color: #fffefd;
             }
-            /* */
             .nav-tabs > .nav-item > .nav-link.active {
                 box-shadow: 0 2px 5px 0px #00000057;
                 background-color: white;
@@ -278,45 +277,45 @@
                 overflow: hidden;
                 content: url("img/iconmonstr-sort-2.svg") url("img/iconmonstr-sort-3.svg") url("img/iconmonstr-sort-4.svg")
             }
-            .alert-primary.messageboxContainer {
+            .alert-primary.alertBoxContainer {
                 border-color: #b1cbf5
             }
-            .alert-warning.messageboxContainer {
+            .alert-warning.alertBoxContainer {
                 border-color: #f2e7c4
             }
-            .alert-danger.messageboxContainer {
+            .alert-danger.alertBoxContainer {
                 border-color: #e5babe
             }
-            .alert-success.messageboxContainer {
+            .alert-success.alertBoxContainer {
                 border-color: #b9dac1
             }
-            .messageboxIcon {
+            .alertBoxIcon {
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 padding: 0.714rem 0.357rem;
                 align-self: stretch;
             }
-            .messageboxIcon.primary {
+            .alertBoxIcon.primary {
                 background-color: #b1cbf5;
                 color: #437b95
             }
-            .messageboxIcon.danger {
+            .alertBoxIcon.danger {
                 background-color: #e5babe;
                 color: #911
             }
-            .messageboxIcon.success {
+            .alertBoxIcon.success {
                 background-color: #b9dac1;
                 color: #508d50
             }
-            .messageboxIcon.warning {
+            .alertBoxIcon.warning {
                 background-color: #f2e7c4;
                 color: #918130
             }
-            .messageboxIcon > i {
+            .alertBoxIcon > i {
                 font-size: 1.5625rem
             }
-            .messageboxText {
+            .alertBoxText {
                 padding: 0.5rem;
                 margin: 0.5rem;
                 width: 100%;
@@ -329,16 +328,16 @@
                 width: 41px;
                 height: 49px;
             }
-            .messageboxContainer {
+            .alertBoxContainer {
                 display: flex;
                 align-items: center;
                 padding: 0;
                 position: relative
             }
-            .messageboxText button.close {
+            .alertBoxText button.close {
                 margin: 0 0 auto auto;
             }
-            .messageboxText ul {
+            .alertBoxText ul {
                 list-style-position: inside;
                 margin: 0;
                 padding: 0;
@@ -372,8 +371,11 @@
                 filter: drop-shadow(0px 0px 3px #0000006e)
             }
             .kreiselchen {
-                width: 20px;
-                height: 20px
+                width: 1.25rem;
+                height: 1.25rem
+            }
+            .cursor-pointer:hover {
+                cursor: pointer
             }
             /*
             .time-picker::after {
@@ -416,7 +418,7 @@
                     border-top-right-radius: 1px;
                     overflow: hidden;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .alertBoxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 .dataTables_filter {
@@ -456,7 +458,7 @@
                     border-top-right-radius: 1px;
                     overflow: hidden;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .alertBoxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 .dataTables_filter {
@@ -467,6 +469,9 @@
                     flex: 1 0 auto;
                     overflow-y: auto
                 }
+                #reservationCalendar {
+                    margin-bottom: 1rem;
+                }
             }
             @media only screen and (min-width: 768px) {
                 #first-navbar, #second-navbar {
@@ -475,11 +480,14 @@
                 #mobile-navbar {
                     display: none;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .alertBoxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 14px !important;
                 }
                 .formContainer > label + select:not(:last-child), .formContainer > button:not(:last-child) {
                     margin-bottom: 0.5rem;
+                }
+                #reservationCalendar {
+                    margin-bottom: 0;
                 }
             }
             @media only screen and (min-width: 992px) {
@@ -504,8 +512,11 @@
                 #mobile-navbar {
                     display: none;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .alertBoxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 16px !important;
+                }
+                #reservationCalendar {
+                    margin-bottom: 0;
                 }
             }
             @media only screen and (min-width: 1200px) {
@@ -515,7 +526,7 @@
                 #mobile-navbar {
                     display: none;
                 }
-                *:not(h1, h2, h3, h4, h5, h6, .messageboxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
+                *:not(h1, h2, h3, h4, h5, h6, .alertBoxIcon > i, h1 > span, h2 > span, h3 > span, h4 > span, h5 > span, h6 > span, h1 > i, h2 > i, h3 > i, h4 > i, h5 > i, h6 > i) {
                     font-size: 16px !important;
                 }
                 .formContainer > * {
@@ -527,6 +538,9 @@
                 }
                 .formContainer button:not(:only-child) {
                     margin-left: 0.5rem;
+                }
+                #reservationCalendar {
+                    margin-bottom: 0;
                 }
             }
         </style>
@@ -586,6 +600,7 @@
             }
             const moderatorDataTables = {};
             const adminDataTables = {};
+            const dataTables = {};
             const dataTablesLocalisation = {
                 sEmptyTable: "Keine Daten vorhanden",
                 sInfo: "_START_ bis _END_ von _TOTAL_ Einträgen",
@@ -615,49 +630,154 @@
             bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
             bootstrap["Popover"]["Default"]["allowList"]["td"] = [];*/
-            /*const dataTablesOptions = {
-                pastReservations: {
+            const dataTablesOptions = {
+                myReservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
                     columns: [
                         {
                             name: "id",
-                            data: "id",
-                            visible: false
+                            data: "id"
                         },
                         {
                             name: "room",
                             data: "room",
                         },
                         {
-                            name: "time",
-                            data: "time",
+                            name: "start",
+                            data: "timeStart",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                }
+                                return data;
+                            }
                         },
                         {
-                            name: "booker",
-                            data: "booker",
+                            name: "end",
+                            data: "timeEnd",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                }
+                                return data;
+                            }
                         },
                         {
                             name: "description",
                             data: "description",
+                        },
+                        {
+                            name: "status",
+                            data: "status",
+                            visible: false
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-success' style='width: 32px' onclick='showReservationEditModal(" + row["id"] + ")'><i class='fa-solid fa-check'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmReservationRescission(" + row["id"] + ")'><i class='fa-solid fa-xmark'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "15%"
                         }
                     ],
                     ajax: {
                         url: "dataTables.php",
-                        type: "GET",
-                        data: {
-                            type: "pastReservations"
+                        type: "POST",
+                        contentType: "application/json",
+                        data: function(data, settings) {
+                            data["type"] = "my_reservations";
+                            return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
-                            return response["data"];
+                            return response;
                         }
                     },
                     drawCallback: function(settings) {
-                        $("#pastReservationsAdminTable").parent().addClass("table-container");
+                        $("#myReservationTable").parent().addClass("table-container");
                     }
                 }
             };
-            */
+            const dataTablesModeratorOptions = {
+                reservations: {
+                    order: [0, "asc"],
+                    language: dataTablesLocalisation,
+                    columns: [
+                        {
+                            name: "id",
+                            data: "id",
+                            width: "10%"
+                        },
+                        {
+                            name: "building",
+                            data: "building",
+                            visible: false,
+                            width: "10%"
+                        },
+                        {
+                            name: "room",
+                            data: "room",
+                        },
+                        {
+                            name: "start",
+                            data: "timeStart",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            name: "end",
+                            data: "timeEnd",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            name: "description",
+                            data: "description",
+                        },
+                        {
+                            name: "booker",
+                            data: function(row, type, set, meta) {
+                                return "LOLlll";
+                            }
+                        },
+                        {
+                            name: "options",
+                            data: function(row, type, set, meta) {
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-success' style='width: 32px' onclick='confirmReservationApproval(" + row["id"] + ")'><i class='fa-solid fa-check'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmReservationRejection(" + row["id"] + ")'><i class='fa-solid fa-xmark'></i></button></div>";
+                            },
+                            sorting: false,
+                            width: "15%"
+                        }
+                    ],
+                    ajax: {
+                        url: "dataTables.php",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: function(data, settings) {
+                            data["type"] = "moderator_reservations";
+                            return JSON.stringify(data);
+                        },
+                        dataSrc: function(response) {
+                            return response;
+                        }
+                    },
+                    drawCallback: function(settings) {
+                        $("#moderatorReservationTable").parent().addClass("table-container");
+                    }
+                }
+            };
             const dataTablesAdminOptions = {
                 reservations: {
                     order: [0, "asc"],
@@ -729,11 +849,12 @@
                         },
                         {
                             name: "name",
-                            data: "name",
+                            data: "name"
                         },
                         {
                             name: "role",
-                            data: "role"
+                            data: "role",
+                            visible: false
                         },
                         {
                             name: "options",
@@ -836,7 +957,8 @@
                         },
                         {
                             name: "building",
-                            data: "building"
+                            data: "building",
+                            visible: false
                         },
                         {
                             name: "name",
@@ -933,7 +1055,7 @@
                     let data = JSON.parse(response);
                     Object.assign(buildings, data);
                     if (data.length === 0 && $("#calendar #noBuildingsFoundWarning").length === 0) {
-                        $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", false, "", "noBuildingsFoundWarning"));
+                        $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "noBuildingsFoundWarning", closeable: false}));
                     }
                     else {
                         for (building of data) {
@@ -1101,18 +1223,112 @@
                 Modal.create(data);
             }
             class Alert {
-                static create(type, message, closeable = true, classes = "", id = null) {
-                    type = type.toLowerCase();
-                    let icons = {
-                        danger: "fa-solid fa-exclamation-circle",
-                        primary: "fa-solid fa-circle-info",
-                        warning: "fa-solid fa-exclamation-triangle",
-                        success: "fa-solid fa-check-circle"
-                    };
-                    if (!["primary", "success", "danger", "warning"].includes(type)) {
-                        type = "primary";
+                static icons = {
+                    danger: "fas fa-exclamation-circle",
+                    primary: "fas fa-info-circle",
+                    warning: "fas fa-exclamation-triangle",
+                    success: "fas fa-check-circle"
+                };
+                static types = ["primary", "success", "danger", "warning"];
+                static alerts = [];
+                constructor(type, message, options = {}) {
+                    // options = {class: "", id = "", closeable = true}
+                    type = (Alert.icons.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "info");
+                    let text = "";
+                    if (Array.isArray(message)) {
+                        text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
+                        for (let msg of message) {
+                            text += "<li>" + msg + "</li>";
+                        }
+                        text += "</ul>";
                     }
-                    return "<div class='" + (closeable ? "alert-dismissible " : "") + "alert alert-" + type + " messageboxContainer " + classes + "' role='alert'" + (id !== null ? " id='" + id + "'" : "") + "><div class='messageboxIcon " + type + "'><i class='" + icons[type] + "'></i></div><div class='messageboxText'>" + message + (closeable ? "</div><button type='button' class='btn-close position-static align-self-start' data-bs-dismiss='alert' aria-label='Schließen'></button>" : "") + "</div></div>";
+                    else {
+                        text = message;
+                    }
+                    let id;
+                    if (!options.hasOwnProperty("id") || ["undefined", undefined, null, ""].includes(options["id"])) {
+                        id = 'alert_' + type + '_' + (Date.now() + Number.parseInt(Math.random().toString().split(".")[1]));
+                        while (Alert.alerts.includes(id)) {
+                            id = 'alert_' + type + '_' + (Date.now() + Number.parseInt(Math.random().toString().split(".")[1]));
+                        }
+                    }
+                    else {
+                        if ($("#" + options["id"]).length >= 1) {
+                            alert("Die ID \"" + options["id"] + "\" ist bereits einem Element zugeordnet.");
+                            return;
+                        }
+                        id = options["id"];
+                    }
+                    let element;
+                    let closeable = ((options.hasOwnProperty("closeable") && options["closeable"]) || !options.hasOwnProperty("closeable") ? true : false);
+                    let classes = ((!options.hasOwnProperty("class") || ["undefined", undefined, null, ""].includes(options["class"])) ? true : false);
+                    element = '<div class="alert alert-' + type + ' alertBoxContainer' + (closeable ? " alert-dismissible" : "") + (classes ? " " + options["class"] : "") + '" id="' + id + '">';
+                    element += '<div class="alertBoxIcon ' + type + '">';
+                    element += '<i class="' + Alert.icons[type] + '"></i>';
+                    element += '</div><div class="alertBoxText d-flex align-items-center">';
+                    if (closeable) {
+                        element += '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                    }
+                    element += text + '</div></div>';
+                    Alert.alerts.push(id);
+                    this.id = id;
+                    this.type = type;
+                    this.message = text;
+                    this.options = options;
+                    this.element = $(element).one("close.bs.alert", function() {
+                        Alert.destroy($(this).attr("id"));
+                    });
+                }
+                destroy() {
+                    Alert.alerts.splice(Alert.alerts.indexOf(this.id), 1);
+                    $("#" + this.id).remove();
+                }
+                static create(type, message, options = {}) {
+                    type = (Alert.icons.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "info");
+                    let text = "";
+                    if (Array.isArray(message)) {
+                        text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
+                        for (let msg of message) {
+                            text += "<li>" + msg + "</li>";
+                        }
+                        text += "</ul>";
+                    }
+                    else {
+                        text = message;
+                    }
+                    let id;
+                    if (!options.hasOwnProperty("id") || ["undefined", undefined, null, ""].includes(options["id"])) {
+                        id = 'alert_' + type + '_' + (Date.now() + Number.parseInt(Math.random().toString().split(".")[1]));
+                        while (Alert.alerts.includes(id)) {
+                            id = 'alert_' + type + '_' + (Date.now() + Number.parseInt(Math.random().toString().split(".")[1]));
+                        }
+                    }
+                    else {
+                        if ($("#" + options["id"]).length >= 1) {
+                            alert("Die ID \"" + options["id"] + "\" ist bereits einem Element zugeordnet.");
+                            return;
+                        }
+                        id = options["id"];
+                    }
+                    let element;
+                    let closeable = ((options.hasOwnProperty("closeable") && options["closeable"]) || !options.hasOwnProperty("closeable") ? true : false);
+                    let classes = (options.hasOwnProperty("class") && !["undefined", undefined, null, ""].includes(options["class"]) ? true : false);
+                    element = '<div class="alert alert-' + type + ' alertBoxContainer' + (closeable ? " alert-dismissible" : "") + (classes ? " " + options["class"] : "") + '" id="' + id + '">';
+                    element += '<div class="alertBoxIcon ' + type + '">';
+                    element += '<i class="' + Alert.icons[type] + '"></i>';
+                    element += '</div><div class="alertBoxText d-flex align-items-center">';
+                    if (closeable) {
+                        element += '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                    }
+                    element += text + '</div></div>';
+                    Alert.alerts.push(id);
+                    return $(element).one("close.bs.alert", {id: id}, function(event) {
+                        Alert.destroy(event["data"]["id"]);
+                    });
+                } 
+                static destroy(id) {
+                    Alert.alerts.splice(Alert.alerts.indexOf(id), 1);
+                    $("#" + id).remove();
                 }
             }
             // Wird verwendet, um Funktionen innerhalb von Objekten auszuführen
@@ -1870,18 +2086,22 @@
             }
             function showBuildingDeactivationModal(lol) {
                 if (DataTable.isDataTable("#buildingsAdminTable")) {
-                    let buildings= adminDataTables["buildings"].data().toArray();
+                    let buildings = adminDataTables["buildings"].data().toArray();
                     let index = buildings.findIndex(key => key["id"] === lol);
                     if (index >= 0) {
                         let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='disableBuildingSubmit'>";
-                        content += Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten. Wird ein Grund angegeben, wird dieser den Benutzern angezeigt, wenn sie einen Raum des jeweiligen gesperrten Gebäudes reservieren möchten." , false);
-                        content += "<label for='disableBuildingMessage' class='form-label'>Grund:</label>";
-                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben (optional)'></div></form>";
+                        content += "<label for='disableBuildingMessage' class='form-label'>Grund (optional):</label>";
+                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben'></div></form>";
                         let data = {
                             name: "buildingDeactivation",
                             static: true,
                             size: "lg",
                             events: {
+                                show: {
+                                    function: function() {
+                                        $("#buildingDeactivationForm").prepend(Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten.", {closeable: false}));
+                                    }
+                                },
                                 shown: {
                                     function: function() {
                                         $("#buildingDeactivationForm").submit(function() {
@@ -1932,7 +2152,7 @@
                 }
             }
             function disableBuilding() {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "disableBuilding") {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingDeactivation") {
                     disableMainModal("#saveDisabledBuildingButton");
                     $.post({
                         url: "http://127.0.0.1:3000/api/",
@@ -1954,10 +2174,9 @@
                         enableMainModal("#saveDisabledBuildingButton");
                     });
                 }
-                return false;
             }
             function confirmReservationApproval(lol) {
-                if (DataTable.isDataTable("#reservationsModeratorTable")) {
+                if (DataTable.isDataTable("#moderatorReservationTable")) {
                     let reservations = moderatorDataTables["reservations"].data().toArray();
                     let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
                     if (index >= 0) {
@@ -1974,7 +2193,7 @@
                 }
             }
             function confirmReservationRejection(lol) {
-                if (DataTable.isDataTable("#reservationsModeratorTable")) {
+                if (DataTable.isDataTable("#moderatorReservationTable")) {
                     let reservations = moderatorDataTables["reservations"].data().toArray();
                     let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
                     if (index >= 0) {
@@ -2066,13 +2285,19 @@
                     $("#getReservationsButton").removeClass("disabled").removeAttr("disabled");
                 });
             }
-            function getRooms(source, target) {
+            function loadRooms(source, target) {
                 $(target).empty();
                 let index = buildings.findIndex(key => key["id"] === Number.parseInt($(source).val()));
                 if (index >= 0) {
                     for (room of buildings[index]["rooms"]) {
                         $(target).append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
                     }
+                }
+            }
+            function loadBuildings(target) {
+                $(target).empty();
+                for (building of buildings) {
+                    $(target).append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
                 }
             }
             // Benutzer werden aus AD geladen, daher ist keine Benutzerregistrierung nötig!
@@ -2183,7 +2408,7 @@
                     startDateArray = startDate.slice(0, 10).split("-");
                     let content = "<form enctype='text/plain' id='reservationCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newReservationSubmit'>";
                     content += "<div><label class='col-form-label' for='newReservationBuildingSelect'>Gebäude:</label>";
-                    content += "<select class='form-select' id='newReservationBuildingSelect' onchange='getRooms(this, &quot;#newReservationRoomSelect&quot;)' required='required'>";
+                    content += "<select class='form-select' id='newReservationBuildingSelect' onchange='loadRooms(this, &quot;#newReservationRoomSelect&quot;)' required='required'>";
                     for (building of buildings) {
                         content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
                     }
@@ -2210,6 +2435,7 @@
                         events: {
                             shown: {
                                 function: function() {
+                                    $("#newReservationBuildingSelect").change();
                                     $("#reservationCreationForm").submit(function() {
                                         saveNewReservation(startDate, endDate);
                                         return false;
@@ -2320,6 +2546,7 @@
                         console.log(selectionInfo);
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
+                        //calendar.select(selectionInfo["start"]);
                         if (buildings.length >= 1) {
                             if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
                                 $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]}).removeClass("disabled");
@@ -2331,12 +2558,12 @@
                     },
                     eventDisplay: "block",
                     eventClick: function(info) {
+                        let startDate = new Date(info["event"]["_def"]["extendedProps"]["start"]);
+                        let endDate = new Date(info["event"]["_def"]["extendedProps"]["end"]);
                         $("#selectedReservationDescription").html(info["event"]["_def"]["title"]);
-                        $("#selectedReservationBooker").html(info["event"]["_def"]["extendedProps"]["booker"]);
-                        $("#selectedReservationStart").html(info["event"]["_def"]["extendedProps"]["start"]);
-                        $("#selectedReservationEnd").html(info["event"]["_def"]["extendedProps"]["end"]);
-                        $("#selectedReservationFetchers").html(info["event"]["_def"]["extendedProps"]["passengers"]);
-                        //let dateArray = eventData["startStr"].slice(0, 10).split("-");
+                        $("#selectedReservationOrganiser").html(info["event"]["_def"]["extendedProps"]["booker"]);
+                        $("#selectedReservationStart").html(("00" + (startDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (startDate.getMonth() +1).toString()).substr(-2, 2) + "." + startDate.getFullYear() + ", " + ("00" + (startDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getSeconds().toString())).substr(-2, 2));
+                        $("#selectedReservationEnd").html(("00" + (endDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (endDate.getMonth() +1).toString()).substr(-2, 2) + "." + endDate.getFullYear() + ", " + ("00" + (endDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getSeconds().toString())).substr(-2, 2));
                     },
                     eventsSet: function(events) {
                         // wenn monat geändert wurde
@@ -2353,7 +2580,35 @@
                 calendar.render();
                 getBuildings();
                 let date = new Date();
-                $("footer").html("<a href='#'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
+                $("footer").html("<a href='#about'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
+                $("a[href='#about']").click(function() {
+                    let content = "<h2>Aba heidschi bumbeidschi</h2>";
+                    let data = {
+                        name: "about",
+                        /*events: {
+                            shown: {
+                                function: function() {
+                                    $("#roomCreationForm").submit(function() {
+                                        saveNewRoom();
+                                        return false;
+                                    });
+                                }
+                            },
+                            hidden: {
+                                function: function() {
+                                    $("#roomCreationForm").off("submit");
+                                }
+                            }
+                        },*/
+                        title: {
+                            text: "Über Terminator"
+                        },
+                        content: {
+                            text: content
+                        }
+                    }
+                    Modal.create(data);
+                });
                 $("#calendarLocationForm").submit(function() {
                     calendar.refetchEvents();
                     return false;
@@ -2397,6 +2652,45 @@
                         calendar.updateSize();
                     }
                 });
+                $("a[href='#myReservations']").on("shown.bs.tab", function() {
+                    if (!DataTable.isDataTable("#myReservationTable")) {
+                        $("#myReservationStatusSelect").val("0");
+                        let options = {};
+                        Object.assign(options, dataTablesOptions["myReservations"]);
+                        options["rowGroup"] = {
+                            dataSrc: "status",
+                            className: "bg-gray-200"
+                        };
+                        options["orderFixed"] = [5, "asc"];
+                        dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw", function(settings) {
+                            //
+                        });
+                    }
+                    else {
+                        //$("#moderatorReservationTable").DataTable().ajax.reload();
+                        readjustTables();
+                    }
+                });
+                $("a[href='#moderation']").on("shown.bs.tab", function() {
+                    if (!DataTable.isDataTable("#moderatorReservationTable")) {
+                        loadBuildings("#moderationBuildingSelect");
+                        $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
+                        let options = {};
+                        Object.assign(options, dataTablesModeratorOptions["reservations"]);
+                        options["rowGroup"] = {
+                            dataSrc: "building",
+                            className: "bg-gray-200"
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                        moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw", function(settings) {
+                            //
+                        });
+                    }
+                    else {
+                        //$("#moderatorReservationTable").DataTable().ajax.reload();
+                        readjustTables();
+                    }
+                });
                 $("a[href='#administration']").on("shown.bs.tab", function() {
                     readjustTables();
                 });
@@ -2414,21 +2708,19 @@
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
+                        loadBuildings("#roomsBuildingSelect");
+                        $("#roomsBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
                         let options = {};
-                        let value = Number.parseInt($("#roomsBuildingSelect").val());
                         Object.assign(options, dataTablesAdminOptions["rooms"]);
-                        if (value <= 0) {
-                            options["rowGroup"] = {
-                                dataSrc: "building",
-                                className: "bg-gray-200",
-                                endRender: null,
-                                startRender: function(rows, group) {
-                                    return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                                }
-                            };
-                            options["orderFixed"] = [0, "asc"];
-                            options["columns"][1]["visible"] = false;
-                        }
+                        options["rowGroup"] = {
+                            dataSrc: "building",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
                         adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
                                 if ($("#showRoomCreationModalButton").length === 0) {
@@ -2441,33 +2733,23 @@
                         });
                     }
                     else {
-                        $("#roomsAdminTable").DataTable().ajax.reload();
-                    }
-                    if (buildings.length === 0) {
-                        getBuildings();
-                    }
-                    $("#roomsBuildingSelect").empty().append("<option value='0'>Alle</option>");
-                    for (building of buildings) {
-                        $("#roomsBuildingSelect").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
+                        //$("#roomsAdminTable").DataTable().ajax.reload();
                     }
                 });
                 $("#roles-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#rolesAdminTable")) {
+                        $("#rolesRoleSelect").val("0");
                         let options = {};
-                        let value = Number.parseInt($("#rolesRoleSelect").val());
                         Object.assign(options, dataTablesAdminOptions["roles"]);
-                        if (value <= 0) {
-                            options["rowGroup"] = {
-                                dataSrc: "role",
-                                className: "bg-gray-200",
-                                endRender: null,
-                                startRender: function(rows, group) {
-                                    return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                                }
-                            };
-                            options["orderFixed"] = [2, "asc"];
-                            options["columns"][2]["visible"] = false;
-                        }
+                        options["rowGroup"] = {
+                            dataSrc: "role",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                            }
+                        };
+                        options["orderFixed"] = [2, "asc"];
                         adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["roles"].rowGroup().enabled()) {
                                 if ($("#showRoleCreationModalButton").length === 0) {
@@ -2485,6 +2767,7 @@
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
+                        $("#roomsBuildingSelect").val("0");
                         let options = {};
                         Object.assign(options, dataTablesAdminOptions["rooms"]);
                         options["rowGroup"] = {
@@ -2496,8 +2779,7 @@
                                 return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
-                        options["orderFixed"] = [0, "asc"];
-                        options["columns"][1]["visible"] = false;
+                        options["orderFixed"] = [1, "asc"];
                         adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
                                 if ($("#showRoomCreationModalButton").length === 0) {
@@ -2526,7 +2808,7 @@
                                 return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
-                        options["orderFixed"] = [0, "asc"];
+                        options["orderFixed"] = [2, "asc"];
                     }
                     options["destroy"] = true;
                     if (value >= 1) {
@@ -2609,6 +2891,50 @@
                     //adminDataTables["reservationsAdminTable"] = $("#reservationsAdminTable").DataTable(options).on("draw", function(settings) {
                     //});
                 });
+                $("#moderationBuildingSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesModeratorOptions["reservations"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "building",
+                            className: "bg-gray-200"
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
+                    $(this).attr("data-old", value);
+                    moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options);
+                });
+                $("#myReservationStatusSelect").change(function() {
+                    let options = {};
+                    let value = Number.parseInt($(this).val());
+                    Object.assign(options, dataTablesOptions["myReservations"]);
+                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
+                        options["rowGroup"] = {
+                            dataSrc: "status",
+                            className: "bg-gray-200",
+                        };
+                        options["orderFixed"] = [5, "asc"];
+                    }
+                    options["destroy"] = true;
+                    if (value >= 1) {
+                        options["ajax"]["data"]["category"] = value;
+                    }
+                    else {
+                        delete options["ajax"]["data"]["category"];
+                    }
+                    $(this).attr("data-old", value);
+                    dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw", function(settings) {
+                            //
+                    });
+                });
                 /*
                 const dateRangePicker = new Litepicker({
                     element: $("#currentReservationsTimeSelect")[0],
@@ -2675,33 +3001,33 @@
                         <div class="tab-content tab-content-simple">
                             <div class="tab-pane active pt-3" id="calendar">
                                 <div class="row">
-                                    <div class="col-md-9">
+                                    <div class="col-md-8">
                                         <form enctype="text/plain" id="calendarLocationForm" method="post" action="/" class="w-100 d-flex formContainer mb-4 justify-content-center">
                                             <label for="buildingSelection" class="col-form-label me-2">Gebäude:</label>
-                                            <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="getRooms(this, '#roomSelection')"></select>
+                                            <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="loadRooms(this, '#roomSelection')"></select>
                                             <label for="roomSelection" class="col-form-label me-2">Raum:</label>
                                             <select class="form-select w-auto d-inline-block" id="roomSelection" required="required"></select>
                                             <button type="submit" class="btn btn-primary align-baseline">Anzeigen</button>
                                         </form>
                                         <div id="reservationCalendar"></div>
                                     </div>
-                                    <div class="col-md-3 align-self-end">
-                                        <h2 class="col-md-12">Reservierungsdetails</h2>
+                                    <div class="col-md-4 align-self-end">
+                                        <h4 class="col-md-12">Reservierungsdetails</h4>
                                         <div class="row">
                                             <div class="col-md-4">Beschreibung:</div>
-                                            <div class="col-md-8" id="selectedReservationDescription">LOL</div>
+                                            <div class="col-md-8" id="selectedReservationDescription"></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">Start:</div>
-                                            <div class="col-md-8" id="selectedReservationStart">LOL</div>
+                                            <div class="col-md-8" id="selectedReservationStart"></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">Ende:</div>
-                                            <div class="col-md-8" id="selectedReservationEnd">LOL</div>
+                                            <div class="col-md-8" id="selectedReservationEnd"></div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4">Reservierer:</div>
-                                            <div class="col-md-8" id="selectedReservationBooker">LOL</div>
+                                            <div class="col-md-4">Organisator:</div>
+                                            <div class="col-md-8" id="selectedReservationOrganiser"></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">Optionen:</div>
@@ -2712,19 +3038,30 @@
                                 </div>
                             </div>
                             <div class="tab-pane pt-3" id="myReservations">
-                                <div class="alert-dismissible alert alert-primary messageboxContainer" role="alert">
-                                    <div class="messageboxIcon primary">
+                                <div class="alert-dismissible alert alert-primary alertBoxContainer" role="alert">
+                                    <div class="alertBoxIcon primary">
                                         <i class="fa-solid fa-info-circle"></i>
                                     </div>
-                                    <div class="messageboxText">In dieser Tabelle werden alle Reservierungen der letzten 90 Tage angezeigt. Ältere Reservierungen werden aus datenschutzrechtlichen Gründen automatisch gelöscht.</div>
+                                    <div class="alertBoxText">In dieser Tabelle werden alle Reservierungen der letzten 90 Tage angezeigt. Ältere Reservierungen werden aus datenschutzrechtlichen Gründen automatisch gelöscht.</div>
                                 </div>
-                                <table class="table table-sm mt-3 w-100" id="myReservationsTable">
+                                <div class="d-flex formContainer mb-3">
+                                    <label for="myReservationStatusSelect" class="col-form-label me-2">Status:</label>
+                                    <select class="form-select w-auto d-inline-block" id="myReservationStatusSelect" data-old="0">
+                                        <option value="0" selected="selected">Alle</option>
+                                        <option value="1">Beantragt</option>
+                                        <option value="2">Genehmigt</option>
+                                        <option value="3">Abgelehnt</option>
+                                    </select>
+                                </div>
+                                <table class="table table-sm mt-3 w-100" id="myReservationTable">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Raum</th>
-                                            <th>Zeitraum</th>
+                                            <th>Start</th>
+                                            <th>Ende</th>
                                             <th>Beschreibung</th>
+                                            <th>Status</th>
                                             <th>Optionen</th>
                                         </tr>
                                     </thead>
@@ -2734,24 +3071,26 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="moderation">
-                        <div class="alert-dismissible alert alert-primary messageboxContainer" role="alert">
-                            <div class="messageboxIcon primary">
+                        <div class="alert-dismissible alert alert-primary alertBoxContainer" role="alert">
+                            <div class="alertBoxIcon primary">
                                 <i class="fa-solid fa-info-circle"></i>
                             </div>
-                            <div class="messageboxText">In diesem Bereich werden eingehende Reservierungen genehmigt oder abgelehnt.</div>
+                            <div class="alertBoxText">In diesem Bereich werden eingehende Reservierungen genehmigt oder abgelehnt.</div>
                         </div>
                         <div class="d-flex formContainer mb-3">
-                            <label for="moderationRoomSelect" class="col-form-label me-2">Gebäude:</label>
-                            <select class="form-select w-auto d-inline-block" id="moderationRoomSelect" data-old="0">
+                            <label for="moderationBuildingSelect" class="col-form-label me-2">Gebäude:</label>
+                            <select class="form-select w-auto d-inline-block" id="moderationBuildingSelect" data-old="0">
                                 <option value="0">Alle</option>
                             </select>
                         </div>
-                        <table class="table table-sm mt-3 w-100" id="currentReservationsTable">
+                        <table class="table table-sm mt-3 w-100" id="moderatorReservationTable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Gebäude</th>
                                     <th>Raum</th>
-                                    <th>Zeitraum</th>
+                                    <th>Start</th>
+                                    <th>Ende</th>
                                     <th>Beschreibung</th>
                                     <th>Bucher</th>
                                     <th>Optionen</th>
@@ -2809,7 +3148,7 @@
                                                     <th>ID</th>
                                                     <th>Name</th>
                                                     <th>Beschreibung</th>
-                                                    <th>Statustext</th>
+                                                    <th>Nachricht</th>
                                                     <th>Status</th>
                                                     <th>Optionen</th>
                                                 </tr>
