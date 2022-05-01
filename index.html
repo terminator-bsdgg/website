@@ -281,7 +281,7 @@
                 border-color: #b1cbf5
             }
             .alert-warning.alertBoxContainer {
-                border-color: #f2e7c4
+                border-color: #ebde9f
             }
             .alert-danger.alertBoxContainer {
                 border-color: #e5babe
@@ -309,7 +309,7 @@
                 color: #508d50
             }
             .alertBoxIcon.warning {
-                background-color: #f2e7c4;
+                background-color: #ebde9f;
                 color: #918130
             }
             .alertBoxIcon > i {
@@ -1011,36 +1011,7 @@
                 close: "fas fa-times"
             };
             */
-            function login() {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "login") {
-                    disableMainModal("#loginButton");
-                    $.post({
-                        url: "http://127.0.0.1:3000/api/user/login",
-                        //url: "http://192.168.100.187:3000/api/user/login",
-                        data: JSON.stringify({
-                            email: $("#mail").val(),
-                            password: $("#password").val()
-                        }),
-                        processData: false,
-                        contentType: "application/json",
-                        crossDomain: true,
-                        timeout: 10000
-                    }).done(function(response) {
-                        let date = new Date();
-                        date.setHours(date.getHours() + 168); // = 1 Woche
-                        document.cookie = "authToken=" + encodeURIComponent(response["authentification"]) + "; expires=" + date.toUTCString() + "; path=/";
-                        document.cookie = "username=" + encodeURIComponent(response["username"]) + "; expires=" + date.toUTCString() + "; path=/";
-                        $("a[href='#login']").addClass("d-none");
-                        $("a[href='#logout']").removeClass("d-none");
-                        $("[data-current-user]").removeClass("d-none").html("<i class='fa-solid fa-user-injured'></i> " + response["username"]);
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", (Number.parseInt(response["status"]) === 401 ? "Ungültige Anmeldedaten" : response["status"] + ": " + response["statusText"])));
-                    }).always(function() {
-                        enableMainModal("#loginButton");
-                    });
-                }
-            }
+            // sollen eigene reservierungen bearbeitet, storniert werden könnne?
             function logout() {
                 //cookies löschen
                 //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
@@ -1058,6 +1029,7 @@
                         $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "noBuildingsFoundWarning", closeable: false}));
                     }
                     else {
+                        $("#noBuildingsFoundWarning").remove();
                         for (building of data) {
                             $("#buildingSelection").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
                         }
@@ -1706,7 +1678,7 @@
                                 });
                             }
                         },
-                        hidden: {
+                        hide: {
                             function: function() {
                                 $("#roomCreationForm").off("submit");
                             }
@@ -1784,7 +1756,7 @@
                                         });
                                     }
                                 },
-                                hidden: {
+                                hide: {
                                     function: function() {
                                         $("#roleEditingForm").off("submit");
                                     }
@@ -1849,7 +1821,7 @@
                                         });
                                     }
                                 },
-                                hidden: {
+                                hide: {
                                     function: function() {
                                         $("#roomEditingForm").off("submit");
                                     }
@@ -1908,7 +1880,7 @@
                                 });
                             }
                         },
-                        hidden: {
+                        hide: {
                             function: function() {
                                 $("#buildingCreationForm").off("submit");
                             }
@@ -1969,7 +1941,7 @@
                                         });
                                     }
                                 },
-                                hidden: {
+                                hide: {
                                     function: function() {
                                         $("#buildingCreationForm").off("submit");
                                     }
@@ -2039,7 +2011,7 @@
                 }
             }
             function toggleNewReservationTimes(element) {
-                if ($("#mainModal").attr("data-name") === "newReservation") {
+                if ($("#mainModal").attr("data-name") === "reservationCreation") {
                     if ($(element).prop("checked")) {
                         $("#newReservationTimeToHours").attr("disabled", "disabled");
                         $("#newReservationTimeToMinutes").attr("disabled", "disabled");
@@ -2105,12 +2077,12 @@
                                 shown: {
                                     function: function() {
                                         $("#buildingDeactivationForm").submit(function() {
-                                            disableBuilding();
+                                            disableBuilding(lol);
                                             return false;
                                         });
                                     }
                                 },
-                                hidden: {
+                                hide: {
                                     function: function() {
                                         $("#buildingDeactivationForm").off("submit");
                                     }
@@ -2151,7 +2123,7 @@
                     }
                 }
             }
-            function disableBuilding() {
+            function disableBuilding(building) {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingDeactivation") {
                     disableMainModal("#saveDisabledBuildingButton");
                     $.post({
@@ -2159,7 +2131,7 @@
                         //url: "http://192.168.100.187:3000/api/user/login",
                         data: JSON.stringify({
                             authentification: decodeURIComponent(getCookie("authToken")),
-                            id: id,
+                            building: building,
                             message: $("#disableBuildingMessage").val()
                         }),
                         processData: false,
@@ -2246,7 +2218,9 @@
                             end: endDate + "T" + $("#newReservationTimeToHours").val() + ":" + $("#newReservationTimeToMinutes").val() + ":00.000Z",
                             building: $("#newReservationBuildingSelect").val(),
                             room: $("#newReservationRoomSelect").val(),
-                            description: $("#newReservationDescriptionInput").val()
+                            description: $("#newReservationDescriptionInput").val(),
+                            allDay: $("#newReservationAllDayCheckbox").prop("checked"),
+                            hideDescription: $("#newReservationDescriptionHiddenCheckbox").prop("checked")
                         }),
                         processData: false,
                         contentType: "application/json",
@@ -2318,7 +2292,7 @@
                                 });
                             }
                         },
-                        hidden: {
+                        hide: {
                             function: function() {
                                 $("#roleCreationForm").off("submit");
                             }
@@ -2442,7 +2416,7 @@
                                     });
                                 }
                             },
-                            hidden: {
+                            hide: {
                                 function: function() {
                                     $("#reservationCreationForm").off("submit");
                                 }
@@ -2523,7 +2497,6 @@
                     initialView: "dayGridMonth",
                     locale: "de",
                     events: "calendar.php",
-                    //nowIndicator: true,
                     selectable: true,
                     selectAllow: function(selectInfo) {
                         let currentDate = new Date();
@@ -2546,7 +2519,6 @@
                         console.log(selectionInfo);
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
-                        //calendar.select(selectionInfo["start"]);
                         if (buildings.length >= 1) {
                             if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
                                 $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]}).removeClass("disabled");
@@ -2566,7 +2538,7 @@
                         $("#selectedReservationEnd").html(("00" + (endDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (endDate.getMonth() +1).toString()).substr(-2, 2) + "." + endDate.getFullYear() + ", " + ("00" + (endDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getSeconds().toString())).substr(-2, 2));
                     },
                     eventsSet: function(events) {
-                        // wenn monat geändert wurde
+                        $("#calendarLocationSubmit").removeAttr("disabled");
                     },
                     unselect: function(jsEvent, view) {
                         console.log(jsEvent, view);
@@ -2582,7 +2554,7 @@
                 let date = new Date();
                 $("footer").html("<a href='#about'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#about']").click(function() {
-                    let content = "<h2>Aba heidschi bumbeidschi</h2>";
+                    let content = "<p>&quot;Terminator&quot; ist eine dynamische Webseite zur einfachen Reservierung von Räumen und wurde von den Auszubildenden der Klasse IN20 im Bereich der Anwendungsentwicklung erstellt.</p><p>Bei Fragen oder Problemen kontaktieren Sie bitte wtf?</p>";
                     let data = {
                         name: "about",
                         /*events: {
@@ -2594,7 +2566,7 @@
                                     });
                                 }
                             },
-                            hidden: {
+                            hide: {
                                 function: function() {
                                     $("#roomCreationForm").off("submit");
                                 }
@@ -2610,6 +2582,7 @@
                     Modal.create(data);
                 });
                 $("#calendarLocationForm").submit(function() {
+                    $("#calendarLocationSubmit").attr("disabled", "disabled");
                     calendar.refetchEvents();
                     return false;
                 })
@@ -2672,23 +2645,36 @@
                     }
                 });
                 $("a[href='#moderation']").on("shown.bs.tab", function() {
-                    if (!DataTable.isDataTable("#moderatorReservationTable")) {
-                        loadBuildings("#moderationBuildingSelect");
-                        $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
-                        let options = {};
-                        Object.assign(options, dataTablesModeratorOptions["reservations"]);
-                        options["rowGroup"] = {
-                            dataSrc: "building",
-                            className: "bg-gray-200"
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                        moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw", function(settings) {
-                            //
-                        });
+                    if (buildings.length === 0) {
+                        if ($("#moderation #moderationNoBuildingsFoundWarning").length === 0) {
+                            $("#moderationBuildingSelect").parent().before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "moderationNoBuildingsFoundWarning", closeable: false}));
+                        }
                     }
                     else {
-                        //$("#moderatorReservationTable").DataTable().ajax.reload();
-                        readjustTables();
+                        $("#moderationNoBuildingsFoundWarning").remove()
+                        if (!DataTable.isDataTable("#moderatorReservationTable")) {
+                            loadBuildings("#moderationBuildingSelect");
+                            $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
+                            let options = {};
+                            Object.assign(options, dataTablesModeratorOptions["reservations"]);
+                            options["rowGroup"] = {
+                                dataSrc: "building",
+                                className: "bg-gray-200",
+                                endRender: null,
+                                startRender: function(rows, group) {
+                                    let index = buildings.findIndex(key => key["id"] === group);
+                                    return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                                }
+                            };
+                            options["orderFixed"] = [1, "asc"];
+                            moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw", function(settings) {
+                                //
+                            });
+                        }
+                        else {
+                            //$("#moderatorReservationTable").DataTable().ajax.reload();
+                            readjustTables();
+                        }
                     }
                 });
                 $("a[href='#administration']").on("shown.bs.tab", function() {
@@ -2898,7 +2884,12 @@
                     if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
                         options["rowGroup"] = {
                             dataSrc: "building",
-                            className: "bg-gray-200"
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                            }
                         };
                         options["orderFixed"] = [1, "asc"];
                     }
@@ -3007,7 +2998,7 @@
                                             <select class="form-select w-auto d-inline-block" id="buildingSelection" required="required" onchange="loadRooms(this, '#roomSelection')"></select>
                                             <label for="roomSelection" class="col-form-label me-2">Raum:</label>
                                             <select class="form-select w-auto d-inline-block" id="roomSelection" required="required"></select>
-                                            <button type="submit" class="btn btn-primary align-baseline">Anzeigen</button>
+                                            <button type="submit" class="btn btn-primary align-baseline" id="calendarLocationSubmit">Anzeigen</button>
                                         </form>
                                         <div id="reservationCalendar"></div>
                                     </div>

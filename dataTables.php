@@ -24,7 +24,7 @@
                     "timeEnd" => date_timestamp_get(date_modify($date, "+1 hour")) *1000,
                     "description" => "Beim Jupiter!",
                     "room" => 1337,
-                    "building" => "A",
+                    "building" => rand(1,10),
                     "organiser" => "Hellmut Dunkelangst"
                 ];
             }
@@ -49,7 +49,7 @@
                 $aso = [];
                 foreach (range(1, rand(2, 10)) as $lol_) {
                     $aso[] = [
-                        "id" => $lol_,
+                        "id" => $lol,
                         "name" => "LOL " . $lol_,
                         "description" => "Geisterzimmer " . $lol_,
                         "status" => rand(0, 2),
