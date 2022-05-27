@@ -2552,7 +2552,7 @@
                 calendar.render();
                 getBuildings();
                 let date = new Date();
-                $("footer").html("<a href='#about'>&copy; " + (date.getFullYear() >= 2022 ? "2021-" + date.getFullYear() : date.getFullYear()) + " BSDGG/IN20/FIAE</a>");
+                $("footer").html("<a href='#about'>&copy; 2021-" + date.getFullYear() + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#about']").click(function() {
                     let content = "<p>&quot;Terminator&quot; ist eine dynamische Webseite zur einfachen Reservierung von Räumen und wurde von den Auszubildenden der Klasse IN20 im Bereich der Anwendungsentwicklung erstellt.</p><p>Bei Fragen oder Problemen kontaktieren Sie bitte wtf?</p>";
                     let data = {
@@ -2751,6 +2751,7 @@
                         $("#rolesAdminTable").DataTable().ajax.reload();
                     }
                 });
+                /*
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
                         $("#roomsBuildingSelect").val("0");
@@ -2781,6 +2782,7 @@
                         $("#roomsAdminTable").DataTable().ajax.reload();
                     }
                 });
+                */
                 $("#rolesRoleSelect").change(function() {
                     let options = {};
                     let value = Number.parseInt($(this).val());
