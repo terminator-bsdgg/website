@@ -2613,15 +2613,16 @@
                     updateSystemInfos();
                 });
                 $("a[href='#logout']").click(function() {
+                    //wtf?
                 });
 
                 $("a[href='#reservationsOverview']").on("shown.bs.tab", function() {
-                    if (calendar !== null) {
+                    if ($("#calendar").hasClass("active") && calendar !== null) {
                         calendar.updateSize();
                     }
                 });
                 $("a[href='#calendar']").on("shown.bs.tab", function() {
-                    if ($("#calendar").hasClass("active") && calendar !== null) {
+                    if (calendar !== null) {
                         calendar.updateSize();
                     }
                 });
@@ -2651,7 +2652,7 @@
                         }
                     }
                     else {
-                        $("#moderationNoBuildingsFoundWarning").remove()
+                        $("#moderationNoBuildingsFoundWarning").remove();
                         if (!DataTable.isDataTable("#moderatorReservationTable")) {
                             loadBuildings("#moderationBuildingSelect");
                             $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
@@ -2672,6 +2673,7 @@
                             });
                         }
                         else {
+                            // wtf?
                             //$("#moderatorReservationTable").DataTable().ajax.reload();
                             readjustTables();
                         }
