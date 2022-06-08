@@ -114,6 +114,9 @@
                 box-shadow: 0 1px 1px 0px rgba(0, 0, 0, 0.5);
                 text-shadow: 0 1px 0 transparent;
             }
+            .nav-tabs > .nav-item > .nav-link:focus-visible, .nav-pills > .nav-item > .nav-link:focus-visible, .navbar-nav > .nav-item > .nav-link:focus-visible {
+                outline-style: none;
+            }
             .nav-tabs > .nav-item {
                 z-index: 2;
             }
@@ -637,19 +640,23 @@
                     columns: [
                         {
                             name: "id",
-                            data: "id"
+                            data: "id",
+                            width: "5%"
                         },
                         {
                             name: "room",
                             data: "room",
+                            width: "5%"
                         },
                         {
                             name: "start",
                             data: "timeStart",
+                            width: "5%",
                             render: function(data, type, row) {
                                 if (type === "display" || type === "filter") {
                                     let date = new Date(Number.parseInt(data));
-                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                    console.log(date.getDate(), date.getDay());
+                                    return ("00" + date.getDate().toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
                                 }
                                 return data;
                             }
@@ -657,10 +664,11 @@
                         {
                             name: "end",
                             data: "timeEnd",
+                            width: "5%",
                             render: function(data, type, row) {
                                 if (type === "display" || type === "filter") {
                                     let date = new Date(Number.parseInt(data));
-                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                    return ("00" + date.getDate().toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
                                 }
                                 return data;
                             }
@@ -673,7 +681,7 @@
                             name: "status",
                             data: "status",
                             visible: false
-                        },
+                        }/*,
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
@@ -681,7 +689,7 @@
                             },
                             sorting: false,
                             width: "15%"
-                        }
+                        }*/
                     ],
                     ajax: {
                         url: "dataTables.php",
@@ -3057,7 +3065,7 @@
                                             <th>Ende</th>
                                             <th>Beschreibung</th>
                                             <th>Status</th>
-                                            <th>Optionen</th>
+                                            <!--<th>Optionen</th>-->
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
