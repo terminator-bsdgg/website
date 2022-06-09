@@ -2244,7 +2244,7 @@
                 }
             }
             function getReservations(start, end, successCallback, failureCallback) {
-                $("#getReservationsButton").addClass("disabled").attr("disabled", "disabled");
+                $("#calendarLocationSubmit").addClass("disabled").attr("disabled", "disabled");
                 $.post({
                     url: "calendar.php",
                     data: JSON.stringify({
@@ -2264,7 +2264,7 @@
                     $("#calendarLocationForm").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
                     isGettingReservations = false;
-                    $("#getReservationsButton").removeClass("disabled").removeAttr("disabled");
+                    $("#calendarLocationSubmit").removeClass("disabled").removeAttr("disabled");
                 });
             }
             function loadRooms(source, target) {
