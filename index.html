@@ -587,7 +587,7 @@
                 /* eslint-enable consistent-return */
             };
             var systemInfosEventSource = null;
-            var viewportWidth = visualViewport["width"];
+            var viewportWidth;
             var buildings = [];
             var calendar = null;
             var isGettingReservations = false;
@@ -846,49 +846,6 @@
                         $("#reservationsAdminTable").parent().addClass("table-container");
                     }
                 },
-                roles: {
-                    order: [0, "asc"],
-                    language: dataTablesLocalisation,
-                    columns: [
-                        {
-                            name: "id",
-                            data: "id",
-                            width: "15%"
-                        },
-                        {
-                            name: "name",
-                            data: "name"
-                        },
-                        {
-                            name: "role",
-                            data: "role",
-                            visible: false
-                        },
-                        {
-                            name: "options",
-                            data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showRoleEditingModal(" + row["id"] + ")'><i class='fa-solid fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoleDeletion(" + row["id"] + ")'><i class='fa-solid fa-times'></i></button></div>";
-                            },
-                            sorting: false,
-                            width: "20%"
-                        }
-                    ],
-                    ajax: {
-                        url: "dataTables.php",
-                        type: "POST",
-                        contentType: "application/json",
-                        data: function(data, settings) {
-                            data["type"] = "roles";
-                            return JSON.stringify(data);
-                        },
-                        dataSrc: function(response) {
-                            return response;
-                        }
-                    },
-                    drawCallback: function(settings) {
-                        $("#rolesAdminTable").parent().addClass("table-container");
-                    }
-                },
                 buildings: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
@@ -907,24 +864,10 @@
                             data: "description",
                         },
                         {
-                            name: "status",
-                            data: "status"
-                        },
-                        {
-                            name: "statusMessage",
-                            data: "statusMessage"
-                        },
-                        {
                             name: "options",
                             data: function(row, type, set, meta) {
                                 let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showBuildingEditingModal(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fa-solid fa-pen'></i></button>";
                                 buttons += "<button type='button' class='btn btn-sm btn-danger' onclick='confirmBuildingDeletion(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fa-solid fa-times'></i></button>";
-                                if (row["status"] === 1) {
-                                    buttons += "<button type='button' class='btn btn-sm btn-warning' onclick='showBuildingDeactivationModal(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude deaktivieren'><i class='fa-solid fa-lock'></i></button>";
-                                }
-                                else {
-                                    buttons += "<button type='button' class='btn btn-sm btn-success' onclick='confirmBuildingActivation(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude aktivieren'><i class='fa-solid fa-lock-open'></i></button>";
-                                }
                                 return buttons;
                             },
                             sorting: false,
@@ -1213,7 +1156,7 @@
                 static alerts = [];
                 constructor(type, message, options = {}) {
                     // options = {class: "", id = "", closeable = true}
-                    type = (Alert.icons.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "info");
+                    type = (Alert.types.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "primary");
                     let text = "";
                     if (Array.isArray(message)) {
                         text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
@@ -1264,7 +1207,7 @@
                     $("#" + this.id).remove();
                 }
                 static create(type, message, options = {}) {
-                    type = (Alert.icons.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "info");
+                    type = (Alert.types.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "primary");
                     let text = "";
                     if (Array.isArray(message)) {
                         text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
@@ -1305,7 +1248,7 @@
                     return $(element).one("close.bs.alert", {id: id}, function(event) {
                         Alert.destroy(event["data"]["id"]);
                     });
-                } 
+                }
                 static destroy(id) {
                     Alert.alerts.splice(Alert.alerts.indexOf(id), 1);
                     $("#" + id).remove();
@@ -3151,8 +3094,6 @@
                                                     <th>ID</th>
                                                     <th>Name</th>
                                                     <th>Beschreibung</th>
-                                                    <th>Nachricht</th>
-                                                    <th>Status</th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
@@ -3185,39 +3126,6 @@
                                                     <th>Gebäude</th>
                                                     <th>Name</th>
                                                     <th>Beschreibung</th>
-                                                    <th>Optionen</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="roles-accordion" class="mb-3">
-                            <div class="card">
-                                <div class="card-header p-0">
-                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-roles">
-                                        <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fa-solid fa-scale-balanced"></i> Benutzerrollen</h4>
-                                        <i class="fa-solid fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
-                                    </a>
-                                </div>
-                                <div id="collapse-roles" class="collapse hide" data-bs-parent="#roles-accordion" data-admin-table="roles">
-                                    <div class="card-body">
-                                        <div class="d-flex formContainer mb-3">
-                                            <label for="rolesRoleSelect" class="col-form-label me-2">Rolle:</label>
-                                            <select class="form-select w-auto d-inline-block" id="rolesRoleSelect" data-old="0">
-                                                <option value="0" selected="selected">Alle</option>
-                                                <option value="1">Moderatoren</option>
-                                                <option value="2">Administratoren</option>
-                                            </select>
-                                        </div>
-                                        <table class="table table-sm w-100 mt-3" id="rolesAdminTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Benutzer</th>
-                                                    <th>Rolle</th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
