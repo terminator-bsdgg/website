@@ -30,9 +30,8 @@
                 grid-template-rows: auto 1fr 71px;
                 overflow-x: hidden;
                 min-height: 100vh; 
-                background-color: #fffefd;
+                background-color: #002e4d0d;
                 align-content: flex-start;
-                background-image: url("img/hmm.png");
             }
             #body-overlay {
                 position: absolute;
@@ -57,7 +56,7 @@
                 display: flex;
                 flex-direction: column;
                 align-self: flex-start;
-                background-color: #5858b5;
+                background-color: #024471;
                 height: 50px;
                 color: #fff;
                 justify-content: center;
@@ -68,7 +67,7 @@
                 grid-column: 1 / 3;
                 grid-row: 3 / 3;
                 align-self: flex-end;
-                background-color: #5858b5;
+                background-color: #024471;
                 text-shadow: 0 1px 0 black;
                 display: flex;
                 align-items: center;
@@ -93,7 +92,7 @@
                 box-shadow: 0 0 5px 1px #0000008a
             }
             .tab-content:not(.tab-content-simple) {
-                background-color: #fffefd;
+                background-color: #fcfbfa;
                 box-shadow: 0 2px 5px 0px #00000057;
                 border-left: 1px solid var(--bs-gray-300);
                 border-right: 1px solid var(--bs-gray-300);
@@ -138,7 +137,7 @@
                 left: -1px;
                 bottom: -10px;
                 z-index: 10;
-                background-color: #fffefd;
+                background-color: #fcfbfa;
                 border-left: 1px solid #e2e5e8;
             }
             /* kleine blöcke VOR erstem tab */
@@ -150,7 +149,7 @@
                 left: -5px;
                 bottom: -10px;
                 z-index: 11;
-                background-color: #fffefd;
+                background-color: #fcfbfa;
             }
             /* langer block unter nicht erstem tab */
             .nav-tabs > .nav-item:not(:first-of-type) > .nav-link.active::after {
@@ -161,7 +160,7 @@
                 left: -1px;
                 bottom: -10px;
                 z-index: 10;
-                background-color: #fffefd;
+                background-color: #fcfbfa;
             }
             /* kleiner block HINTER letztem tab */
             .nav-tabs > .nav-item:last-of-type::after {
@@ -172,12 +171,12 @@
                 right: -5px;
                 bottom: -10px;
                 z-index: 11;
-                background-color: #fffefd;
+                background-color: #fcfbfa;
             }
             .nav-tabs > .nav-item > .nav-link.active {
                 box-shadow: 0 2px 5px 0px #00000057;
-                background-color: white;
-                border-bottom-color: white;
+                background-color: #fcfbfa;
+                border-bottom-color: #fcfbfa;
                 position: relative;
             }
             .nav-tabs > .nav-item > .nav-link.disabled {
@@ -255,6 +254,9 @@
             }
             table.dataTable thead .sorting_asc::after {
                 background-image: url("img/iconmonstr-sort-4.svg") !important
+            }
+            table > tbody > tr {
+                vertical-align: middle;
             }
             div.dataTables_scrollHeadInner {
                 padding-right: 0 !important;
@@ -553,54 +555,22 @@
             // Ist eine Übersicht vergangener Termine nötig?
             // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
             // laufende Konferenz ausblendet, wenn sie vorbei ist!
-
-            // https://stackoverflow.com/a/49186677
-            const getScrollParent = (node) => {
-                const regex = /(auto|scroll)/;
-                const parents = (_node, ps) => {
-                if (_node.parentNode === null) { return ps; }
-                    return parents(_node.parentNode, ps.concat([_node]));
-                };
-
-                const style = (_node, prop) => getComputedStyle(_node, null).getPropertyValue(prop);
-                const overflow = _node => style(_node, 'overflow') + style(_node, 'overflow-y') + style(_node, 'overflow-x');
-                const scroll = _node => regex.test(overflow(_node));
-
-                /* eslint-disable consistent-return */
-                const scrollParent = (_node) => {
-                    if (!(_node instanceof HTMLElement || _node instanceof SVGElement)) {
-                        return;
-                    }
-
-                    const ps = parents(_node.parentNode, []);
-
-                    for (let i = 0; i < ps.length; i += 1) {
-                        if (scroll(ps[i])) {
-                            return ps[i];
-                        }
-                    }
-
-                    return document.scrollingElement || document.documentElement;
-                };
-
-                return scrollParent(node);
-                /* eslint-enable consistent-return */
-            };
-            var systemInfosEventSource = null;
+            var systemInfosTimer = null;
+            isLoadingSystemInfos = false;
             var viewportWidth;
             var buildings = [];
+            var rooms = [];
             var calendar = null;
             var isGettingReservations = false;
             var firstRun = true;
-            const rowGroupStrings = {
-                admin: {
-                    roles: {
-                        1: "Benutzer",
-                        2: "Moderator",
-                        3: "Administrator"
-                    }
+            const dataTableTranslationStrings = {
+                logs: {
+                    error: 'Fehler',
+                    success: 'Erfolg',
+                    info: 'Information',
                 }
-            }
+            };
+            const apiURL = "http://terminator.api.jongmans.net/api";
             const moderatorDataTables = {};
             const adminDataTables = {};
             const dataTables = {};
@@ -641,7 +611,7 @@
                         {
                             name: "id",
                             data: "id",
-                            width: "5%"
+                            width: "8%"
                         },
                         {
                             name: "room",
@@ -697,10 +667,23 @@
                         contentType: "application/json",
                         data: function(data, settings) {
                             data["type"] = "my_reservations";
+                            //token: getCookie("authToken");
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
                             return response;
+                        },
+                        error: function (response) {
+                            $("#myReservationsReloadButton").removeAttr("disabled");
+                            if (response["responseJSON"].hasOwnProperty("error")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("#myReservations").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#myReservations").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
                         }
                     },
                     drawCallback: function(settings) {
@@ -716,7 +699,7 @@
                         {
                             name: "id",
                             data: "id",
-                            width: "10%"
+                            width: "8%"
                         },
                         {
                             name: "building",
@@ -775,10 +758,23 @@
                         contentType: "application/json",
                         data: function(data, settings) {
                             data["type"] = "moderator_reservations";
+                            //token: getCookie("authToken");
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
                             return response;
+                        },
+                        error: function (response) {
+                            $("#reservationsModeratorReloadButton").removeAttr("disabled");
+                            if (response["responseJSON"].hasOwnProperty("error")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("#moderation").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#moderation").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
                         }
                     },
                     drawCallback: function(settings) {
@@ -794,7 +790,7 @@
                         {
                             name: "id",
                             data: "id",
-                            width: "15%"
+                            width: "8%"
                         },
                         {
                             name: "booker",
@@ -835,11 +831,23 @@
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
-                            data["type"] = "reservations";
+                            //data["token"] = getCookie("authToken");
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
                             return response;
+                        },
+                        error: function (response) {
+                            $("#reservationsAdminReloadButton").removeAttr("disabled");
+                            if (response.hasOwnProperty("responseJSON")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("#collapse-reservations > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#collapse-reservations > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
                         }
                     },
                     drawCallback: function(settings) {
@@ -853,7 +861,7 @@
                         {
                             name: "id",
                             data: "id",
-                            width: "15%"
+                            width: "8%"
                         },
                         {
                             name: "name",
@@ -866,8 +874,8 @@
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showBuildingEditingModal(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude bearbeiten'><i class='fa-solid fa-pen'></i></button>";
-                                buttons += "<button type='button' class='btn btn-sm btn-danger' onclick='confirmBuildingDeletion(" + row["id"] + ")' data-bs-toggle='tooltip' title='Gebäude entfernen'><i class='fa-solid fa-times'></i></button>";
+                                let buttons = "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showBuildingEditingModal(" + row["id"] + ")' title='Gebäude bearbeiten'><i class='fa-solid fa-pen'></i></button>";
+                                buttons += "<button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmBuildingDeletion(" + row["id"] + ")' title='Gebäude entfernen'><i class='fa-solid fa-times'></i></button>";
                                 return buttons;
                             },
                             sorting: false,
@@ -875,26 +883,36 @@
                         }
                     ],
                     ajax: {
-                        url: "dataTables.php",
-                        type: "POST",
+                        url: apiURL + "/building/list",
+                        type: "GET",
                         contentType: "application/json",
                         data: function(data, settings) {
-                            data["type"] = "buildings";
+                            //data["token"] = getCookie("authToken");
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
-                            for (building of response) {
-                                delete building["rooms"];
-                            }
+                            Object.assign(buildings, response);
                             return response;
+                        },
+                        error: function (response) {
+                            $("#buildingsAdminReloadButton").removeAttr("disabled");
+                            if (response["responseJSON"].hasOwnProperty("error")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("#collapse-buildings > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#collapse-buildings > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
                         }
                     },
                     drawCallback: function(settings) {
                         $("#buildingsAdminTable").parent().addClass("table-container");
-                        let tooltipTriggerList = [].slice.call($("#buildingsAdminTable [data-bs-toggle='tooltip']"));
+                        /*let tooltipTriggerList = [].slice.call($("#buildingsAdminTable [data-bs-toggle='tooltip']"));
                         tooltipTriggerList.map(function (tooltipTriggerEl) {
                             return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
+                        });*/
                     }
                 },
                 rooms: {
@@ -904,11 +922,11 @@
                         {
                             name: "id",
                             data: "id",
-                            width: "15%"
+                            width: "8%"
                         },
                         {
                             name: "building",
-                            data: "building",
+                            data: "buildingid",
                             visible: false
                         },
                         {
@@ -929,39 +947,99 @@
                         }
                     ],
                     ajax: {
-                        url: "dataTables.php",
+                        url: apiURL + "/room/list",
                         type: "POST",
                         data: function(data, settings) {
-                            data["type"] = "rooms";
+                            //data["token"] = getCookie("authToken");
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
                             Object.assign(rooms, response);
                             return response;
+                        },
+                        error: function (response) {
+                            $("#roomsAdminReloadButton").removeAttr("disabled");
+                            if (response["responseJSON"].hasOwnProperty("error")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("#collapse-rooms > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#collapse-rooms > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
                         }
                     },
                     drawCallback: function(settings) {
                         $("#roomsAdminTable").parent().addClass("table-container");
-                        let tooltipTriggerList = [].slice.call($("#roomsAdminTable [data-bs-toggle='tooltip']"));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
                     }
-                }
+                },
+                logs: {
+                    language: dataTablesLocalisation,
+                    serverSide: true,
+                    columns: [
+                        {
+                            name: 'id',
+                            data: 'id',
+                            visible: false,
+                        },
+                        {
+                            name: 'timestamp',
+                            data: 'timestamp',
+                            width: '15%',
+                            render: function (data, type, row) {
+                                if (type === 'display' || type === 'filter') {
+                                    let date = new Date(Number.parseInt(data));
+                                    return ('00' + date.getDate().toString()).substr(-2, 2) + '.' + ('00' + (date.getMonth() + 1).toString()).substr(-2, 2) + '.' + date.getFullYear() + ', ' + ('00' + date.getHours().toString()).substr(-2, 2) + ':' + ('00' + date.getMinutes().toString()).substr(-2, 2) + ':' + ('00' + date.getSeconds().toString()).substr(-2, 2);
+                                }
+                                return data;
+                            },
+                        },
+                        {
+                            name: 'type',
+                            data: function(row, type, set, meta) {
+                                return dataTableTranslationStrings['logs'][row['type']];
+                            },
+                            width: '8%',
+                        },
+                        {
+                            name: 'message',
+                            data: 'message',
+                            width: '50%',
+                            orderable: false,
+                        }
+                    ],
+                    order: [1, 'asc'],
+                    ajax: {
+                        url: apiURL + '/device/logs',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: function (data, settings) {
+                            data['token'] = getCookie('authToken');
+                            data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
+                            console.log(data.order);
+                            return JSON.stringify(data);
+                        },
+                        dataSrc: function (response) {
+                            return response['data'];
+                        },
+                        error: function (response) {
+                            $("#logsAdminReloadButton").removeAttr("disabled");
+                            if (response["responseJSON"].hasOwnProperty("error")) {
+                                if (response["responseJSON"]["error"] === "invalid_token") {
+                                    $("collapse-logs > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                }
+                            }
+                            else {
+                                $("#collapse-logs > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                            }
+                        }
+                    },
+                    drawCallback: function (settings) {
+                        $('#logsAdminTable').parent().addClass('table-container');
+                    },
+                },
             }
-            /*
-            const dateTimePickerIcons = {
-                time: "far fa-clock",
-                date: "fas fa-calendar",
-                up: "fas fa-chevron-up",
-                down: "fas fa-chevron-down",
-                previous: "fas fa-chevron-left",
-                next: "fas fa-chevron-right",
-                today: "fas fa-check",
-                clear: "fas fa-trash-alt",
-                close: "fas fa-times"
-            };
-            */
             // sollen eigene reservierungen bearbeitet, storniert werden könnne?
             function logout() {
                 //cookies löschen
@@ -969,19 +1047,17 @@
             }
             function getBuildings() {
                 $("#buildingSelection").empty();
-                $.post({
-                    url: "dataTables.php",
-                    contentType: "application/js",
-                    data: JSON.stringify({type: "buildings"})
-                }).done(function(response) {
-                    let data = JSON.parse(response);
-                    Object.assign(buildings, data);
-                    if (data.length === 0 && $("#calendar #noBuildingsFoundWarning").length === 0) {
+                $.get({
+                    url: apiURL + "/building/list",
+                    contentType: "application/json",
+                }).done(function(response) {;
+                    Object.assign(buildings, response);
+                    if (response.length === 0 && $("#calendar #noBuildingsFoundWarning").length === 0) {
                         $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "noBuildingsFoundWarning", closeable: false}));
                     }
                     else {
                         $("#noBuildingsFoundWarning").remove();
-                        for (building of data) {
+                        for (building of response) {
                             $("#buildingSelection").append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
                         }
                         $("#buildingSelection").change();
@@ -991,42 +1067,72 @@
                 }).always(function() {
                 });
             }
+            function getRooms() {
+                $("#roomSelection").empty();
+                $.post({
+                    url: apiURL + "/room/list",
+                    contentType: "application/json",
+                }).done(function(response) {;
+                    Object.assign(rooms, response);
+                    for (room of response) {
+                        $("#roomSelection").append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
+                    }
+                }).fail(function(response) {
+                    $("#calendar").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                }).always(function() {
+                });
+            }
+            function reloadDataTableData(element, type, table) {
+                if (DataTable.isDataTable(table)) {
+                    $(element).attr("disabled", "disabled");
+                    if (type === "admin") {
+                        adminDataTables[table].ajax.reload();
+                    }
+                    else if (type === "moderator") {
+                        moderatorDataTables[table].ajax.reload();
+                    }
+                    else {
+                        dataTables[table].ajax.reload();
+                    }
+                }
+            }
             function updateSystemInfos() {
-                if (systemInfosEventSource === null || systemInfosEventSource["readyState"] === 2) {
-                    systemInfosEventSource = new EventSource("sse_test.php");
-                    systemInfosEventSource.onmessage = function(event) {
-                        if ($("#mainModal").attr("data-name") === "systemInfos") {
-                            let data = JSON.parse(event["data"]);
-                            let statsText = "";
-                            if (data.hasOwnProperty("osname")) {
-                                statsText += "<tr><td class='align-top'>Kernelversion</td><td>" + data["osname"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("arch")) {
-                                statsText += "<tr><td class='align-top'>Architektur</td><td>" + data["arch"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("cpus")) {
-                                statsText += "<tr><td class='align-top'>CPU</td><td>" + data["cpus"][0]["model"];
-                                for (let [index, cpu] of data["cpus"].entries()) {
-                                    statsText += "<div>CPU #" + index + ":<div class='ps-3'>Takt: " + cpu["speed"] + "MHz</div></div>";
-                                }
-                                statsText += "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("freememory") && data.hasOwnProperty("totalmemory")) {
-                                statsText += "<tr><td class='align-top'>Speicher</td><td>" + data["freememory"] + " MB/" + data["totalmemory"] + " MB (" + Math.floor(((data["freememory"] / data["totalmemory"]) *100)) + " %)</td></tr>";
-                            }
-                            if (data.hasOwnProperty("hostname")) {
-                                statsText += "<tr><td class='align-top'>Host</td><td>" + data["hostname"] + "</td></tr>";
-                            }
-                            if (data.hasOwnProperty("uptime")) {
-                                statsText += "<tr><td class='align-top'>Laufzeit</td><td>" + data["uptime"].duration() + "</td></tr>";
-                            }
-                            $("#systemInfosTable").html(statsText);
+                if ($('#mainModal').hasClass('show') && $('#mainModal').attr('data-name') === 'systemInfos' && !isLoadingSystemInfos) {
+                    isLoadingSystemInfos = true;
+                    $.get({
+                        url: apiURL + '/device/informations',
+                        crossDomain: true,
+                        timeout: 10000,
+                    })
+                    .done(function (response) {
+                        let statsText = '';
+                        statsText += "<tr><td class='align-top'>Betriebssystem</td><td>" + response['type'] + ' ' + response['release'] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Architektur</td><td>" + response['arch'] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Hostname</td><td>" + response['hostname'] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>CPU</td><td>" + response['cpus'][0]['model'];
+
+                        for (let [index, cpu] of response['cpus'].entries()) {
+                            statsText += '<div>CPU #' + index + ":<div class='ps-3'>Takt: " + cpu['speed'] + 'MHz</div></div>';
                         }
-                        else {
-                            systemInfosEventSource.close();
-                            systemInfosEventSource = null;
-                        }
-                    };
+
+                        let totalMemory = (response['totalmem'] / 1024 / 1024 / 1024).toFixed(2);
+                        let totalMemoryFree = (response['freememory'] / 1024 / 1024 / 1024).toFixed(2);
+
+                        statsText += "<tr><td class='align-top'>RAM (Insgesamt)</td><td>" + totalMemory + ' GB</td></tr>';
+                        statsText += "<tr><td class='align-top'>RAM (Verwendet)</td><td>" + (totalMemory - totalMemoryFree).toFixed(2) + ' GB (~' + (((totalMemory - totalMemoryFree) / totalMemory) * 100).toFixed(2) + ' %) </td></tr>';
+                        statsText += "<tr><td class='align-top'>Durchschnittslast (1 Minute)</td><td>" + response['loadavg'][0] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Durchschnittslast (5 Minuten)</td><td>" + response['loadavg'][1] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Durchschnittslast (15 Minuten)</td><td>" + response['loadavg'][2] + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Laufzeit</td><td>" + response['uptime'].duration() + '</td></tr>';
+                        statsText += "<tr><td class='align-top'>Backend Version</td><td>" + response['version'] + '</td></tr>';
+                        $('#systemInfosTable').html(statsText);
+                    })
+                    .fail(function (response) {
+                        console.log(response);
+                    })
+                    .always(function () {
+                        isLoadingSystemInfos = false;
+                    });
                 }
             }
             function getCookie(cname) {
@@ -1038,13 +1144,13 @@
                         c = c.substring(1);
                     }
                     if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
+                        return decodeURIComponent(c.substring(name.length, c.length));
                     }
                 }
                 return "";
             }
             function readjustTables() {
-                let collapses = ["#collapse-rooms", "#collapse-roles", "#collapse-reservations", "#collapse-buildings"];
+                let collapses = ["#collapse-rooms", "#collapse-roles", "#collapse-reservations", "#collapse-buildings", "#collapse-logs"];
                 let element = null;
                 let tableName = null;
                 for (collapse of collapses) {
@@ -1065,28 +1171,34 @@
                     let rooms = adminDataTables["rooms"].data().toArray();
                     let index = rooms.findIndex(key => key["id"] === Number.parseInt(lol));
                     if (index >= 0) {
+                        let indexBuilding = buildings.findIndex(key => key["id"] === rooms[index]["buildingid"]);
                         let prompt = new Promise(function(resolve) {
                             confirmation({
-                                title: "Raum entfernen bestätigen",
-                                content: "Soll der Raum &quot;"  + room + "&quot; (Gebäude &quot;" + building + "&quot;) wirklich entfernt werden?"
+                                title: "Raum löschen bestätigen",
+                                content: "Soll der Raum &quot;" + rooms[index]["name"] + "&quot; (Gebäude &quot;" + buildings[indexBuilding]["name"] + "&quot;) wirklich gelöscht werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
                             disableMainModal("#confirmationButton");
-                            let data = {
-                                room: room,
-                                building: building
-                            }
-                            $.post("lol", {
-                                _token: authToken,
-                                data: JSON.stringify(data)
+                            $.post({
+                                url: apiURL + "/building/delete",
+                                data: JSON.stringify({
+                                    //token: getCookie("authToken"),
+                                    token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                                    id: lol,
+                                }),
+                                processData: false,
+                                contentType: "application/json",
+                                crossDomain: true,
+                                timeout: 10000
                             }).done(function(response) {
                                 bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                                $("#roomsAdminTable_wrapper").before(Alert.create("success", "Der Raum &quot;" + rooms[index]["name"] + "&quot; (ID: " + lol + ") wurde gelöscht."));
+                                $("#roomsAdminTable").DataTable().ajax.reload();
                             }).fail(function(response) {
                                 $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                             }).always(function() {
                                 enableMainModal("#confirmationButton");
-                                bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
                             });
                         });
                     }
@@ -1156,7 +1268,7 @@
                 static alerts = [];
                 constructor(type, message, options = {}) {
                     // options = {class: "", id = "", closeable = true}
-                    type = (Alert.types.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "primary");
+                    type = (Alert.types.includes(type.toLowerCase()) ? type.toLowerCase() : "primary");
                     let text = "";
                     if (Array.isArray(message)) {
                         text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
@@ -1207,7 +1319,7 @@
                     $("#" + this.id).remove();
                 }
                 static create(type, message, options = {}) {
-                    type = (Alert.types.hasOwnProperty(type.toLowerCase()) ? type.toLowerCase() : "primary");
+                    type = (Alert.types.includes(type.toLowerCase()) ? type.toLowerCase() : "primary");
                     let text = "";
                     if (Array.isArray(message)) {
                         text = "<ul class='m-0 p-0' style='list-style-position: inside'>";
@@ -1328,7 +1440,6 @@
                             $("#mainModal").attr({"data-bs-backdrop":"static", "data-bs-keyboard":"false"});
                         }
                         if (data.hasOwnProperty("title")) {
-                            console.log(data.title);
                             if (data["title"].hasOwnProperty("text") && !["undefined", "", undefined, null].includes(data["title"]["text"])) {
                                 $("#mainModal .modal-header > h4").html(data["title"]["text"]);
                             }
@@ -1606,13 +1717,7 @@
             function showRoomCreationModal(lol = null) {
                 let content = "<form enctype='text/plain' id='roomCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newRoomSubmit'>";
                 content += "<div><label class='col-form-label me-2' for='newRoomBuildingSelect'>Gebäude:</label>";
-                content += "<select class='form-select' id='newRoomBuildingSelect' required='required'>";
-                if (buildings.length >= 1) {
-                    for (building of buildings) {
-                        content += "<option value='" + building["id"] + "'" + (lol !== null && Number.parseInt(lol) === building["id"] ? "selected=selected" : "") + ">" + building["name"] + "</option>";
-                    }
-                }
-                content += "</select></div>";
+                content += "<select class='form-select' id='newRoomBuildingSelect' required='required'></select></div>";
                 content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomRoomNameInput'>Name:</label>";
                 content += "<input type='text' class='form-control' id='newRoomNameInput' required='required'></div>";
                 content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoomDescriptionInput'>Beschreibung (optional):</label>";
@@ -1621,8 +1726,12 @@
                     name: "roomCreation",
                     static: true,
                     events: {
-                        shown: {
+                        show: {
                             function: function() {
+                                loadBuildings("#newRoomBuildingSelect");
+                                if (lol !== null) {
+                                    $("#newRoomBuildingSelect").val(lol);
+                                }
                                 $("#roomCreationForm").submit(function() {
                                     saveNewRoom();
                                     return false;
@@ -1686,71 +1795,6 @@
                 $("#mainModal .modal-footer > [data-bs-dismiss='modal']").removeAttr("disabled");
                 $("#mainModal .modal-header > [data-bs-dismiss='modal']").removeAttr("disabled");
             }
-            function showRoleEditingModal(lol) {
-                if (DataTable.isDataTable("#rolesAdminTable")) {
-                    let roles = adminDataTables["roles"].data().toArray();
-                    let index = roles.findIndex(key => key["id"] === lol);
-                    if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='roleEditingForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='editRoleSubmit'>";
-                        content += "<div><label class='col-md-3 col-form-label me-2' for='editRoleSelect'>Rolle:</label>";
-                        content += "<select class='col-md-9 form-select' id='editRoleSelect'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
-                        content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div></form>";
-                        let data = {
-                            name: "roleEditing",
-                            static: true,
-                            events: {
-                                shown: {
-                                    function: function() {
-                                        $("#roleEditingForm").submit(function() {
-                                            saveEditedRole();
-                                            return false;
-                                        });
-                                    }
-                                },
-                                hide: {
-                                    function: function() {
-                                        $("#roleEditingForm").off("submit");
-                                    }
-                                }
-                            },
-                            title: {
-                                text: "Rolle des Benutzers &quot;" + roles[index]["name"] + "&quot; bearbeiten"
-                            },
-                            content: {
-                                text: content
-                            },
-                            footer: {
-                                buttons: {
-                                    default: {
-                                        text: "Abbrechen",
-                                        class: "btn-danger"
-                                    },
-                                    custom: [
-                                        {
-                                            text: "Speichern",
-                                            class: "btn-primary",
-                                            attributes: {
-                                                id: "saveEditedRoleButton"
-                                            },
-                                            actions: {
-                                                click: {
-                                                    function: function() {
-                                                        $("#editedRoleSubmit").click();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        };
-                        Modal.create(data);
-                    }
-                }
-                else {
-                    alert("Fehler: Es sind keine Daten vorhanden.")
-                }
-            }
             function showRoomEditingModal(lol) {
                 if (DataTable.isDataTable("#roomsAdminTable")) {
                     let rooms = adminDataTables["rooms"].data().toArray();
@@ -1761,13 +1805,13 @@
                         content += "<div class='mt-3'><label for='editRoomDescriptionInput' class='form-label'>Beschreibung:</label>";
                         content += "<input type='text' class='form-control' id='editRoomDescriptionInput' placeholder='Beschreibung eingeben' required='required' value='" + rooms[index]["description"] + "'></div></form>";
                         let data = {
-                            name: "buildingEditing",
+                            name: "roomEditing",
                             static: true,
                             events: {
                                 shown: {
                                     function: function() {
                                         $("#roomEditingForm").submit(function() {
-                                            saveEditiedRoom();
+                                            saveEditedRoom(lol);
                                             return false;
                                         });
                                     }
@@ -1779,7 +1823,7 @@
                                 }
                             },
                             title: {
-                                text: "Raum " + rooms[index]["name"] + " bearbeiten"
+                                text: "Raum &quot;" + rooms[index]["name"] + "&quot; bearbeiten"
                             },
                             content: {
                                 text: content
@@ -1940,10 +1984,10 @@
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingEditing") {
                     disableMainModal("#saveEditedBuildingButton");
                     $.post({
-                        url: "http://127.0.0.1:3000/api/",
-                        //url: "http://192.168.100.187:3000/api/user/login",
+                        url: apiURL + "/building/edit",
                         data: JSON.stringify({
-                            authentification: decodeURIComponent(getCookie("authToken")),
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
                             id: id,
                             name: $("#editBuildingNameInput").val(),
                             description: $("#editBuildingDescriptionInput").val()
@@ -1954,10 +1998,41 @@
                         timeout: 10000
                     }).done(function(response) {
                         bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#buildingsAdminTable_wrapper").before(Alert.create("success", "Die Informationen für das Gebäude mit der ID &quot;" + id + "&quot; wurden aktualisiert."));
+                        $("#buildingsAdminTable").DataTable().ajax.reload();
+
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
                         enableMainModal("#saveEditedBuildingButton");
+                    });
+                }
+            }
+            function saveEditedRoom(id) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "roomEditing") {
+                    disableMainModal("#saveEditedRoomButton");
+                    $.post({
+                        url: apiURL + "/room/edit",
+                        data: JSON.stringify({
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                            id: id,
+                            name: $("#editRoomNameInput").val(),
+                            description: $("#editRoomDescriptionInput").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#roomsAdminTable_wrapper").before(Alert.create("success", "Die Informationen für den Raum mit der ID &quot;" + id + "&quot; wurden aktualisiert."));
+                        $("#roomsAdminTable").DataTable().ajax.reload();
+
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveEditedRoomButton");
                     });
                 }
             }
@@ -1980,12 +2055,32 @@
                     if (index >= 0) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
-                                title: "Gebäude entfernen",
+                                title: "Gebäude entfernen bestätigen",
                                 content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich gelöscht werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
-                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                            disableMainModal("#confirmationButton");
+                            $.post({
+                                url: apiURL + "/building/delete",
+                                data: JSON.stringify({
+                                    //token: getCookie("authToken"),
+                                    token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                                    id: lol,
+                                }),
+                                processData: false,
+                                contentType: "application/json",
+                                crossDomain: true,
+                                timeout: 10000
+                            }).done(function(response) {
+                                bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                                $("#buildingsAdminTable_wrapper").before(Alert.create("success", "Das Gebäude mit der ID &quot;" + lol + "&quot; wurde gelöscht."));
+                                $("#buildingsAdminTable").DataTable().ajax.reload();
+                            }).fail(function(response) {
+                                $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                            }).always(function() {
+                                enableMainModal("#confirmationButton");
+                            });
                         });
                     }
                 }
@@ -2079,9 +2174,8 @@
                     disableMainModal("#saveDisabledBuildingButton");
                     $.post({
                         url: "http://127.0.0.1:3000/api/",
-                        //url: "http://192.168.100.187:3000/api/user/login",
                         data: JSON.stringify({
-                            authentification: decodeURIComponent(getCookie("authToken")),
+                            token: getCookie("authToken"),
                             building: building,
                             message: $("#disableBuildingMessage").val()
                         }),
@@ -2136,10 +2230,10 @@
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingCreation") {
                     disableMainModal("#saveNewBuildingButton");
                     $.post({
-                        url: "http://127.0.0.1:3000/api/",
-                        //url: "http://192.168.100.187:3000/api/user/login",
+                        url: apiURL + "/building/add",
                         data: JSON.stringify({
-                            authentification: decodeURIComponent(getCookie("authToken")),
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
                             name: $("#newBuildingNameInput").val(),
                             description: $("#newBuildingDescriptionInput").val()
                         }),
@@ -2149,10 +2243,40 @@
                         timeout: 10000
                     }).done(function(response) {
                         bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#buildingsAdminTable_wrapper").before(Alert.create("success", "Das neue Gebäude namens &quot;" + $("#newBuildingDescriptionInput").val() + "&quot; wurde hinzugefügt."));
+                        $("#buildingsAdminTable").DataTable().ajax.reload();
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
                         enableMainModal("#saveNewBuildingButton");
+                    });
+                }
+            }
+            function saveNewRoom() {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "roomCreation") {
+                    disableMainModal("#saveNewRoomButton");
+                    $.post({
+                        url: apiURL + "/room/add",
+                        data: JSON.stringify({
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                            building_id: $("#newRoomBuildingSelect").val(),
+                            name: $("#newRoomNameInput").val(),
+                            description: $("#newRoomDescriptionInput").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        let indexBuilding = buildings.findIndex(key => key["id"] === Number.parseInt($("#newRoomBuildingSelect").val()));
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#roomsAdminTable_wrapper").before(Alert.create("success", "Der neue Raum namens &quot;" + $("#newRoomNameInput").val() + "&quot; wurde zu Gebäude &quot;" + buildings[indexBuilding]["name"] + "&quot; (ID: " + buildings[indexBuilding]["id"] + ") hinzugefügt."));
+                        $("#roomsAdminTable").DataTable().ajax.reload();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveNewRoomButton");
                     });
                 }
             }
@@ -2164,7 +2288,7 @@
                         url: "http://127.0.0.1:3000/api/",
                         //url: "http://192.168.100.187:3000/api/user/login",
                         data: JSON.stringify({
-                            authentification: decodeURIComponent(getCookie("authToken")),
+                            authentification: getCookie("authToken"),
                             start: startDate + "T" + $("#newReservationTimeFromHours").val() + ":" + $("#newReservationTimeFromMinutes").val() + ":00.000Z",
                             end: endDate + "T" + $("#newReservationTimeToHours").val() + ":" + $("#newReservationTimeToMinutes").val() + ":00.000Z",
                             building: $("#newReservationBuildingSelect").val(),
@@ -2187,11 +2311,14 @@
                 }
             }
             function getReservations(start, end, successCallback, failureCallback) {
+                if ($("#calendarLocationSubmit").find("[data-processing='true']").length === 0) {
+                        $("#calendarLocationSubmit").prepend("<span data-processing='true' class='spinner-border me-1 text-white kreiselchen align-text-bottom'></span>");
+                }
                 $("#calendarLocationSubmit").addClass("disabled").attr("disabled", "disabled");
                 $.post({
-                    url: "calendar.php",
+                    url: apiURL + "/calendar/list",
                     data: JSON.stringify({
-                        building: $("#buildingSelection").val(),
+                        //building: $("#buildingSelection").val(),
                         room: $("#roomSelection").val(),
                         start: start,
                         end: end
@@ -2201,129 +2328,30 @@
                     crossDomain: true,
                     timeout: 10000
                 }).done(function(response) {
-                    successCallback(JSON.parse(response));
+                    successCallback(response);
                 }).fail(function(response) {
                     failureCallback(response["status"] + ": " + response["statusText"]);
                     $("#calendarLocationForm").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
                     isGettingReservations = false;
-                    $("#calendarLocationSubmit").removeClass("disabled").removeAttr("disabled");
+                    $("#calendarLocationSubmit").parent().find("[data-processing='true']").remove();
+                    $("#calendarLocationSubmit").removeAttr("disabled");
                 });
             }
             function loadRooms(source, target) {
                 $(target).empty();
-                let index = buildings.findIndex(key => key["id"] === Number.parseInt($(source).val()));
-                if (index >= 0) {
-                    for (room of buildings[index]["rooms"]) {
+                let roomId = Number.parseInt($(source).val());
+                for (room of rooms) {
+                    if (room["buildingid"] === roomId) {
                         $(target).append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
                     }
                 }
+                $(target).prop("selectedIndex", 0);
             }
             function loadBuildings(target) {
                 $(target).empty();
                 for (building of buildings) {
                     $(target).append("<option value='" + building["id"] + "'>" + building["name"] + "</option>");
-                }
-            }
-            // Benutzer werden aus AD geladen, daher ist keine Benutzerregistrierung nötig!
-            function showRoleCreationModal() {
-                let content = "<form enctype='text/plain' id='roleCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newRoleSubmit'>";
-                content += "<div><label class='col-form-label me-2' for='newRoleName'>Benutzername:</label><input type='text' id='newRoleNameInput' class='form-control' required='required' value='' aria-label='Benutzername' aria-describedby='newRoleNameInput'></div>";
-                content += "<div class='mt-3'><label class='col-form-label me-2' for='newRoleSelect'>Rolle:</label><select class='form-select' id='newRoleSelect' required='required'><option value='1'>Moderator</option><option value='2'>Administrator</option></select></div>";
-                content += "<div class='mt-3'><article class='ps-0 text-break' style='font-size: smaller !important; color: var(--bs-gray-700, #495057)' id='editRoleDescription'>Moderatoren bearbeiten eingehende Reservierungen, indem sie diese entweder genehmigen oder ablehnen.</article></div></form>";
-                let data = {
-                    name: "roleCreation",
-                    static: true,
-                    events: {
-                        shown: {
-                            function: function() {
-                                $("#roleCreationForm").submit(function() {
-                                    saveNewRole();
-                                    return false;
-                                });
-                            }
-                        },
-                        hide: {
-                            function: function() {
-                                $("#roleCreationForm").off("submit");
-                            }
-                        }
-                    },
-                    title: {
-                        text: "Neue Benutzerrolle erstellen"
-                    },
-                    content: {
-                        text: content
-                    },
-                    footer: {
-                        buttons: {
-                            default: {
-                                text: "Abbrechen",
-                                class: "btn-danger"
-                            },
-                            custom: [
-                                {
-                                    text: "Speichern",
-                                    class: "btn-primary",
-                                    attributes: {
-                                        id: "saveNewRoleButton"
-                                    },
-                                    actions: {
-                                        click: {
-                                            function: function() {
-                                                $("#newRoleSubmit").click();
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                };
-                Modal.create(data);
-            }
-            function saveNewRole() {
-                disableMainModal("#saveNewRoleButton");
-                let data = {
-                    user: $("#newUserRoleName").val(),
-                    role: $("#newUserRoleSelect").val()
-                };
-                $.post({
-                    url: "4",
-                    data: JSON.stringify(data),
-                    processData: false,
-                    contentType: "application/json",
-                    crossDomain: true,
-                    timeout: 10000
-                }).done(function(response) {
-                }).fail(function(response) {
-                    $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                }).always(function() {
-                    enableMainModal("#saveNewRoleButton");
-                });
-            }
-            function saveEditedRole(lol) {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "roleEditing") {
-                    disableMainModal("#saveEditedRoleButton");
-                    $.post({
-                        url: "http://127.0.0.1:3000/api/",
-                        //url: "http://192.168.100.187:3000/api/user/login",
-                        data: JSON.stringify({
-                            authentification: decodeURIComponent(getCookie("authToken")),
-                            user: lol,
-                            role: $("").val()
-                        }),
-                        processData: false,
-                        contentType: "application/json",
-                        crossDomain: true,
-                        timeout: 10000
-                    }).done(function(response) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        enableMainModal("#saveEditedRoleButton");
-                    });
                 }
             }
             function showReservationCreationModal() {
@@ -2438,6 +2466,7 @@
                     $(this).remove();
                     $("body").removeClass("overflow-hidden");
                 });
+                viewportWidth = visualViewport["width"];
             }).on("resize", function() {
                 if (visualViewport["width"] !== viewportWidth) {
                     viewportWidth = visualViewport["width"];
@@ -2467,11 +2496,10 @@
                         }
                     },
                     select: function(selectionInfo) {
-                        console.log(selectionInfo);
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
                         if (buildings.length >= 1) {
-                            if (Math.trunc(selectionInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000)) {
+                            if (selectionInfo["start"].getTime() >= currentDate.getTime()) {
                                 $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]}).removeClass("disabled");
                             }
                             else {
@@ -2481,48 +2509,27 @@
                     },
                     eventDisplay: "block",
                     eventClick: function(info) {
-                        let startDate = new Date(info["event"]["_def"]["extendedProps"]["start"]);
-                        let endDate = new Date(info["event"]["_def"]["extendedProps"]["end"]);
+                        let startDate = new Date(Number.parseInt(info["event"]["_def"]["extendedProps"]["start"]));
+                        let endDate = new Date(Number.parseInt(info["event"]["_def"]["extendedProps"]["end"]));
                         $("#selectedReservationDescription").html(info["event"]["_def"]["title"]);
-                        $("#selectedReservationOrganiser").html(info["event"]["_def"]["extendedProps"]["booker"]);
+                        $("#selectedReservationOrganiser").html(info["event"]["_def"]["extendedProps"]["organiser"]);
                         $("#selectedReservationStart").html(("00" + (startDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (startDate.getMonth() +1).toString()).substr(-2, 2) + "." + startDate.getFullYear() + ", " + ("00" + (startDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getSeconds().toString())).substr(-2, 2));
                         $("#selectedReservationEnd").html(("00" + (endDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (endDate.getMonth() +1).toString()).substr(-2, 2) + "." + endDate.getFullYear() + ", " + ("00" + (endDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getSeconds().toString())).substr(-2, 2));
                     },
                     eventsSet: function(events) {
                         $("#calendarLocationSubmit").removeAttr("disabled");
                     },
-                    unselect: function(jsEvent, view) {
-                        console.log(jsEvent, view);
-                    },
-                    unselectAuto: false,
-                    viewDidMount: function(args) {
-                        //$("#reservation-details").css("margin-top", $(args["el"]).parent().offset()["top"] + "px");
-                        //$(args["el"]).addClass("row").find("table:first-of-type").addClass("col-md-9").after("<div class='col-md-3'>lol</div>");
-                    }
+                    unselectAuto: false
                 });
                 calendar.render();
                 getBuildings();
+                getRooms();
                 let date = new Date();
                 $("footer").html("<a href='#about'>&copy; 2021-" + date.getFullYear() + " BSDGG/IN20/FIAE</a>");
                 $("a[href='#about']").click(function() {
-                    let content = "<p>&quot;Terminator&quot; ist eine dynamische Webseite zur einfachen Reservierung von Räumen und wurde von den Auszubildenden der Klasse IN20 im Bereich der Anwendungsentwicklung erstellt.</p><p>Bei Fragen oder Problemen kontaktieren Sie bitte wtf?</p>";
+                    let content = "<p>&quot;Terminator&quot; ist eine dynamische Webseite zur einfachen Reservierung von Räumen und wurde von den Profis der Klasse IN20 im Bereich der Anwendungsentwicklung erstellt.</p><p>Bei Fragen oder Problemen kontaktieren Sie bitte wtf?</p>";
                     let data = {
                         name: "about",
-                        /*events: {
-                            shown: {
-                                function: function() {
-                                    $("#roomCreationForm").submit(function() {
-                                        saveNewRoom();
-                                        return false;
-                                    });
-                                }
-                            },
-                            hide: {
-                                function: function() {
-                                    $("#roomCreationForm").off("submit");
-                                }
-                            }
-                        },*/
                         title: {
                             text: "Über Terminator"
                         },
@@ -2533,35 +2540,43 @@
                     Modal.create(data);
                 });
                 $("#calendarLocationForm").submit(function() {
-                    $("#calendarLocationSubmit").attr("disabled", "disabled");
                     calendar.refetchEvents();
                     return false;
-                })
-                $("a[href='#systemInfos']").click(function() {
-                    let content = "<table class='table-sm w-100'>";
-                    content += "<thead>";
-                    content += "<tr>";
-                    content += "<th class='w-25'>Eigenschaft</th>";
-                    content +=" <th>Wert</th>";
-                    content += "</tr>";
-                    content += "</thead>";
-                    content += "<tbody id='systemInfosTable'>";
-                    content += "</tbody>";
-                    content += "</table>";
+                });
+                $("a[href='#systemInfos']").click(function () {
+                    let content = "<table class='table-sm w-100'><thead>";
+                    content += "<tr><th class='w-40'>Eigenschaft</th><th>Wert</th></tr>";
+                    content += "</thead><tbody id='systemInfosTable'></tbody></table>";
                     let data = {
-                        name: "systemInfos",
+                        name: 'systemInfos',
+                        size: 'lg',
+                        events: {
+                            hide: {
+                                function: function (a) {
+                                    if (systemInfosTimer !== null) {
+                                        clearInterval(systemInfosTimer);
+                                        systemInfosTimer = null;
+                                    }
+                                },
+                            },
+                            shown: {
+                                function: function (o) {
+                                    updateSystemInfos();
+                                    systemInfosTimer = setInterval(updateSystemInfos, 5000);
+                                },
+                            },
+                        },
                         title: {
-                            text: "Systeminformationen"
+                            text: 'Systeminformationen',
                         },
                         content: {
                             text: content,
                             options: {
-                                scroll: true
-                            }
-                        }
+                                scroll: true,
+                            },
+                        },
                     };
                     Modal.create(data);
-                    updateSystemInfos();
                 });
                 $("a[href='#logout']").click(function() {
                     //wtf?
@@ -2579,6 +2594,7 @@
                 });
                 $("a[href='#myReservations']").on("shown.bs.tab", function() {
                     if (!DataTable.isDataTable("#myReservationTable")) {
+                        $("#myReservationsReloadButton").attr("disabled", "disabled");
                         $("#myReservationStatusSelect").val("0");
                         let options = {};
                         Object.assign(options, dataTablesOptions["myReservations"]);
@@ -2587,8 +2603,8 @@
                             className: "bg-gray-200"
                         };
                         options["orderFixed"] = [5, "asc"];
-                        dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw", function(settings) {
-                            //
+                        dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw.dt", function(settings) {
+                            $("#myReservationsReloadButton").removeAttr("disabled");
                         });
                     }
                     else {
@@ -2605,12 +2621,13 @@
                     else {
                         $("#moderationNoBuildingsFoundWarning").remove();
                         if (!DataTable.isDataTable("#moderatorReservationTable")) {
+                            $("#reservationsModeratorReloadButton").attr("disabled", "disabled");
                             loadBuildings("#moderationBuildingSelect");
                             $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
                             let options = {};
                             Object.assign(options, dataTablesModeratorOptions["reservations"]);
                             options["rowGroup"] = {
-                                dataSrc: "building",
+                                dataSrc: "buildingid",
                                 className: "bg-gray-200",
                                 endRender: null,
                                 startRender: function(rows, group) {
@@ -2619,26 +2636,55 @@
                                 }
                             };
                             options["orderFixed"] = [1, "asc"];
-                            moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw", function(settings) {
-                                //
+                            moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw.dt", function(settings) {
+                                $("#reservationsModeratorReloadButton").removeAttr("disabled");
                             });
                         }
                         else {
-                            // wtf?
-                            //$("#moderatorReservationTable").DataTable().ajax.reload();
-                            readjustTables();
+                            $("#moderatorReservationTable").DataTable().ajax.reload();
                         }
                     }
                 });
                 $("a[href='#administration']").on("shown.bs.tab", function() {
-                    readjustTables();
+                    if (visualViewport["width"] != viewportWidth) {
+                        readjustTables();
+                    }
+                });
+                $("#reservation-accordion").on("shown.bs.collapse", function() {
+                    if (buildings.length === 0) {
+                        if ($("#collapse-reservations > .card-body > #administrationNoBuildingsFoundWarning").length === 0) {
+                            $("#collapse-reservations > .card-body").prepend(Alert.create("warning", "Es wurden keine Gebäude gefunden, für die Reservierungen angezeigt werden können.", {id: "administrationNoBuildingsFoundWarning", closeable: false}));
+                        }
+                    }
+                    else {
+                        $("#collapse-reservations > .card-body > #administrationNoBuildingsFoundWarning").remove();
+                        if (!DataTable.isDataTable("#administratorReservationTable")) {
+                            loadBuildings("#reservationBuildingSelect");
+                            $("#reservationsAdminReloadButton").attr("disabled", "disabled");
+                            $("#reservationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
+                            let options = {};
+                            Object.assign(options, dataTablesAdminOptions["reservations"]);
+                            options["rowGroup"] = {
+                                dataSrc: "buildingid",
+                                className: "bg-gray-200",
+                                endRender: null,
+                                startRender: function(rows, group) {
+                                    let index = buildings.findIndex(key => key["id"] === group);
+                                    return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                                }
+                            };
+                            options["orderFixed"] = [1, "asc"];
+                            adminDataTables["reservations"] = $("#reservationAdminTable").DataTable(options).on("draw.dt", function(settings) {
+                                $("#reservationsAdminReloadButton").removeAttr("disabled");
+                            });
+                        }
+                    }
                 });
                 $("#buildings-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#buildingsAdminTable")) {
-                        adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]).on("draw", function(settings) {
-                            if ($("#showBuildingCreationModalButton").length === 0) {
-                                $("#buildingsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showBuildingCreationModal()' id='showBuildingCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
-                            }
+                        $("#buildingsAdminReloadButton").attr("disabled", "disabled");
+                            adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]).on("draw.dt", function(settings) {
+                                $("#buildingsAdminReloadButton").removeAttr("disabled");
                         });
                     }
                     else {
@@ -2648,19 +2694,21 @@
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#roomsAdminTable")) {
                         loadBuildings("#roomsBuildingSelect");
+                        $("#roomsAdminReloadButton").attr("disabled", "disabled");
                         $("#roomsBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
                         let options = {};
                         Object.assign(options, dataTablesAdminOptions["rooms"]);
                         options["rowGroup"] = {
-                            dataSrc: "building",
+                            dataSrc: "buildingid",
                             className: "bg-gray-200",
                             endRender: null,
                             startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
+                                let index = buildings.findIndex(key => key["id"] === Number.parseInt(group));
+                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
-                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
+                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw.dt", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
                                 if ($("#showRoomCreationModalButton").length === 0) {
                                     $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
@@ -2669,12 +2717,22 @@
                             else {
                                 $("#showRoomCreationModalButton").remove();
                             }
+                            $("#roomsAdminReloadButton").removeAttr("disabled");
                         });
                     }
                     else {
                         //$("#roomsAdminTable").DataTable().ajax.reload();
                     }
                 });
+                $('#collapse-logs').on('shown.bs.collapse', function () {
+                    if (!DataTable.isDataTable('#logsAdminTable')) {
+                        $("#logsAdminReloadButton").attr("disabled", "disabled");
+                        adminDataTables["logs"] = $("#logsAdminTable").DataTable(dataTablesAdminOptions["logs"]).on("draw", function(settings) {
+                            $("#logsAdminReloadButton").removeAttr("disabled");
+                        });
+                    }
+                });
+                /*
                 $("#roles-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#rolesAdminTable")) {
                         $("#rolesRoleSelect").val("0");
@@ -2704,38 +2762,6 @@
                         $("#rolesAdminTable").DataTable().ajax.reload();
                     }
                 });
-                /*
-                $("#rooms-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#roomsAdminTable")) {
-                        $("#roomsBuildingSelect").val("0");
-                        let options = {};
-                        Object.assign(options, dataTablesAdminOptions["rooms"]);
-                        options["rowGroup"] = {
-                            dataSrc: "building",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            startRender: function(rows, group) {
-                                let index = buildings.findIndex(key => key["id"] === group);
-                                return $("<tr>").append("<td colspan='3' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "(Unbekannte Gebäude-ID: " + group + ")") + "</td><td><button class='btn btn-sm btn-success' onclick='showRoomCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [1, "asc"];
-                        adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
-                            if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                                if ($("#showRoomCreationModalButton").length === 0) {
-                                    $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
-                                }
-                            }
-                            else {
-                                $("#createRoomButton").remove();
-                            }
-                        });
-                    }
-                    else {
-                        $("#roomsAdminTable").DataTable().ajax.reload();
-                    }
-                });
-                */
                 $("#rolesRoleSelect").change(function() {
                     let options = {};
                     let value = Number.parseInt($(this).val());
@@ -2769,14 +2795,14 @@
                             $("#createUserButton").remove();
                         }
                     });
-                });
+                });*/
                 $("#roomsBuildingSelect").change(function() {
                     let options = {};
                     let value = Number.parseInt($(this).val());
                     Object.assign(options, dataTablesAdminOptions["rooms"]);
                     if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
                         options["rowGroup"] = {
-                            dataSrc: "building",
+                            dataSrc: "buildingid",
                             className: "bg-gray-200",
                             endRender: null,
                             startRender: function(rows, group) {
@@ -2788,16 +2814,16 @@
                     }
                     options["destroy"] = true;
                     if (value >= 1) {
-                        options["ajax"]["data"]["category"] = value;
+                        options["ajax"]["data"]["building_id"] = value;
                     }
                     else {
-                        delete options["ajax"]["data"]["category"];
+                        delete options["ajax"]["data"]["building_id"];
                     }
                     $(this).attr("data-old", value);
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
                         if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                            if ($("#showRoomCreationModalButton").length === 0) {
-                                $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                            if ($("#roomsAdminActions > #showRoomCreationModalButton").length === 0) {
+                                $("#roomsAdminActions").append("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
                             }
                         }
                         else {
@@ -2838,7 +2864,7 @@
                     Object.assign(options, dataTablesModeratorOptions["reservations"]);
                     if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
                         options["rowGroup"] = {
-                            dataSrc: "building",
+                            dataSrc: "buildingid",
                             className: "bg-gray-200",
                             endRender: null,
                             startRender: function(rows, group) {
@@ -2901,7 +2927,7 @@
                 </a>
                 <ul class="navbar-nav" id="first-navbar">
                     <li class="nav-item">
-                        <a class="nav-link rounded-3" href="#"><i class="fa-solid fa-hdd"></i> Systeminformationen</a>
+                        <a class="nav-link rounded-3" href="#systemInfos"><i class="fa-solid fa-hdd"></i> Systeminformationen</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav mt-auto mb-auto ms-auto" id="second-navbar">
@@ -2914,7 +2940,7 @@
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-hdd"></i> Systeminformationen</a></li>
+                        <li><a class="dropdown-item" href="#systemInfos"><i class="fa-solid fa-hdd"></i> Systeminformationen</a></li>
                         <li><div class="dropdown-divider"></div></li> 
                         <li><a class="dropdown-item" href="#login"><i class="fa-solid fa-sign-in-alt"></i> Anmelden</a></li>
                     </ul>
@@ -3013,6 +3039,9 @@
                                     </thead>
                                     <tbody></tbody>
                                 </table>
+                                <div class="d-flex formContainer justify-content-end mt-3" id="myReservationsActions" style="gap: 5px">
+                                    <button class="btn btn-primary" id="myReservationsReloadButton" onclick="reloadDataTableData(this, null, '#myReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3044,6 +3073,9 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsModeratorActions" style="gap: 5px">
+                            <button class="btn btn-primary" id="reservationsModeratorReloadButton" onclick="reloadDataTableData(this, 'moderator', '#moderatorReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="administration">
                         <div id="reservation-accordion" class="mb-3">
@@ -3074,6 +3106,9 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsActions" style="gap: 5px">
+                                            <button class="btn btn-primary" id="reservationsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#reservationAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -3099,6 +3134,10 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="buildingsAdminActions" style="gap: 5px">
+                                            <button class="btn btn-primary" id="buildingsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#buildingsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                            <button class='btn btn-success' onclick='showBuildingCreationModal()'><i class='fa-solid fa-asterisk'></i> Neu...</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -3131,6 +3170,37 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="roomsAdminActions" style="gap: 5px">
+                                            <button class="btn btn-primary" id="roomsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#roomsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="logs-accordion">
+                            <div class="card">
+                                <div class="card-header p-0">
+                                    <a class="btn d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-logs" data-table="logs">
+                                        <h4 class="ms-0 mt-auto me-auto mb-auto"><i class="fas fa-scroll"></i> Logs</h4>
+                                        <i class="fas fa-chevron-down ms-auto mt-auto me-2 mb-auto"></i>
+                                    </a>
+                                </div>
+                                <div id="collapse-logs" class="collapse hide" data-bs-parent="#logs-accordion">
+                                    <div class="card-body">
+                                        <table class="table table-sm w-100 mt-3" id="logsAdminTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Zeitpunkt</th>
+                                                    <th>Typ</th>
+                                                    <th>Nachricht</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="logsAdminActions" style="gap: 5px">
+                                            <button class="btn btn-primary" id="logsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#logsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
