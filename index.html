@@ -666,7 +666,6 @@
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
-                            data["type"] = "my_reservations";
                             //token: getCookie("authToken");
                             data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
@@ -676,13 +675,13 @@
                         },
                         error: function (response) {
                             $("#myReservationsReloadButton").removeAttr("disabled");
-                            if (response["responseJSON"].hasOwnProperty("error")) {
+                            if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#myReservations").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#myReservations").append(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#myReservations").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#myReservations").append(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -753,11 +752,10 @@
                         }
                     ],
                     ajax: {
-                        url: "dataTables.php",
+                        url: "/list_pending",
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
-                            data["type"] = "moderator_reservations";
                             //token: getCookie("authToken");
                             data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
                             return JSON.stringify(data);
@@ -767,7 +765,7 @@
                         },
                         error: function (response) {
                             $("#reservationsModeratorReloadButton").removeAttr("disabled");
-                            if (response["responseJSON"].hasOwnProperty("error")) {
+                            if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
                                     $("#moderation").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
@@ -840,7 +838,7 @@
                         },
                         error: function (response) {
                             $("#reservationsAdminReloadButton").removeAttr("disabled");
-                            if (response.hasOwnProperty("responseJSON")) {
+                            if (response.hasOwnProperty("responseJSON") && response.hasOwnProperty("responseJSON")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
                                     $("#collapse-reservations > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
@@ -897,7 +895,7 @@
                         },
                         error: function (response) {
                             $("#buildingsAdminReloadButton").removeAttr("disabled");
-                            if (response["responseJSON"].hasOwnProperty("error")) {
+                            if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
                                     $("#collapse-buildings > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
@@ -960,7 +958,7 @@
                         },
                         error: function (response) {
                             $("#roomsAdminReloadButton").removeAttr("disabled");
-                            if (response["responseJSON"].hasOwnProperty("error")) {
+                            if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
                                     $("#collapse-rooms > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
@@ -1025,7 +1023,7 @@
                         },
                         error: function (response) {
                             $("#logsAdminReloadButton").removeAttr("disabled");
-                            if (response["responseJSON"].hasOwnProperty("error")) {
+                            if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
                                     $("collapse-logs > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
@@ -1074,6 +1072,12 @@
                     contentType: "application/json",
                 }).done(function(response) {;
                     Object.assign(rooms, response);
+                    if (response.length === 0 && $("#calendar #noRoomsFoundWarning").length === 0) {
+                        $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Räume in der Datenbank gefunden, für die Reservierungen angezeigt oder angelegt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "noRoomsFoundWarning", closeable: false}));
+                    }
+                    else {
+                        $("#noRoomsFoundWarning").remove();
+                    }
                     for (room of response) {
                         $("#roomSelection").append("<option value='" + room["id"] + "'>" + room["name"] + "</option>");
                     }
@@ -2285,16 +2289,15 @@
                     disableMainModal("#saveNewReservationButton");
                     // datumsprüfung ist sache des servers
                     $.post({
-                        url: "http://127.0.0.1:3000/api/",
-                        //url: "http://192.168.100.187:3000/api/user/login",
+                        url: apiURL + "/calendar/add",
                         data: JSON.stringify({
-                            authentification: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt", // getCookie("authToken")
                             start: startDate + "T" + $("#newReservationTimeFromHours").val() + ":" + $("#newReservationTimeFromMinutes").val() + ":00.000Z",
                             end: endDate + "T" + $("#newReservationTimeToHours").val() + ":" + $("#newReservationTimeToMinutes").val() + ":00.000Z",
-                            building: $("#newReservationBuildingSelect").val(),
+                            //building: $("#newReservationBuildingSelect").val(),
                             room: $("#newReservationRoomSelect").val(),
-                            description: $("#newReservationDescriptionInput").val(),
-                            allDay: $("#newReservationAllDayCheckbox").prop("checked"),
+                            title: $("#newReservationDescriptionInput").val(),
+                            //allDay: $("#newReservationAllDayCheckbox").prop("checked"),
                             hideDescription: $("#newReservationDescriptionHiddenCheckbox").prop("checked")
                         }),
                         processData: false,
@@ -2303,6 +2306,8 @@
                         timeout: 10000
                     }).done(function(response) {
                         bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#calendarLocationForm").before("success", "Die Reservierung wurde eingereicht. Ein Moderator wird sie zur gegebenen Zeit prüfen.");
+                        calendar.refetchEvents();
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                     }).always(function() {
@@ -2583,6 +2588,12 @@
                 });
 
                 $("a[href='#reservationsOverview']").on("shown.bs.tab", function() {
+                    if (buildings.length === 0 && $("#calendar #noBuildingsFoundWarning").length === 0) {
+                        $("#calendarLocationForm").before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "moderationNoBuildingsFoundWarning", closeable: false}));
+                    }
+                    else {
+                        $("#noBuildingsFoundWarning").remove();
+                    }
                     if ($("#calendar").hasClass("active") && calendar !== null) {
                         calendar.updateSize();
                     }
@@ -2727,7 +2738,7 @@
                 $('#collapse-logs').on('shown.bs.collapse', function () {
                     if (!DataTable.isDataTable('#logsAdminTable')) {
                         $("#logsAdminReloadButton").attr("disabled", "disabled");
-                        adminDataTables["logs"] = $("#logsAdminTable").DataTable(dataTablesAdminOptions["logs"]).on("draw", function(settings) {
+                        adminDataTables["logs"] = $("#logsAdminTable").DataTable(dataTablesAdminOptions["logs"]).on("draw.dt", function(settings) {
                             $("#logsAdminReloadButton").removeAttr("disabled");
                         });
                     }
@@ -2747,7 +2758,7 @@
                             }
                         };
                         options["orderFixed"] = [2, "asc"];
-                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
+                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw.dt", function(settings) {
                             if (!adminDataTables["roles"].rowGroup().enabled()) {
                                 if ($("#showRoleCreationModalButton").length === 0) {
                                     $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
@@ -2785,7 +2796,7 @@
                         delete options["ajax"]["data"]["category"];
                     }
                     $(this).attr("data-old", value);
-                    adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw", function(settings) {
+                    adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw.dt", function(settings) {
                         if (!adminDataTables["roles"].rowGroup().enabled()) {
                             if ($("#showRoleCreationModalButton").length === 0) {
                                 $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
@@ -2820,10 +2831,10 @@
                         delete options["ajax"]["data"]["building_id"];
                     }
                     $(this).attr("data-old", value);
-                    adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw", function(settings) {
-                        if (!adminDataTables["rooms"].rowGroup().enabled()) {
+                    adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw.dt", function(settings) {
+                        if (!adminDataTables["rooms"].rowGroup().enabled() && rooms.length === 0) {
                             if ($("#roomsAdminActions > #showRoomCreationModalButton").length === 0) {
-                                $("#roomsAdminActions").append("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                $("#roomsAdminActions").append("<button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button>");
                             }
                         }
                         else {
@@ -2855,7 +2866,7 @@
                         delete options["ajax"]["data"]["category"];
                     }
                     $(this).attr("data-old", value);
-                    //adminDataTables["reservationsAdminTable"] = $("#reservationsAdminTable").DataTable(options).on("draw", function(settings) {
+                    //adminDataTables["reservationsAdminTable"] = $("#reservationsAdminTable").DataTable(options).on("draw.dt", function(settings) {
                     //});
                 });
                 $("#moderationBuildingSelect").change(function() {
@@ -2903,7 +2914,7 @@
                         delete options["ajax"]["data"]["category"];
                     }
                     $(this).attr("data-old", value);
-                    dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw", function(settings) {
+                    dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw.dt", function(settings) {
                             //
                     });
                 });
@@ -3039,7 +3050,7 @@
                                     </thead>
                                     <tbody></tbody>
                                 </table>
-                                <div class="d-flex formContainer justify-content-end mt-3" id="myReservationsActions" style="gap: 5px">
+                                <div class="d-flex formContainer justify-content-end mt-3" id="myReservationsActions">
                                     <button class="btn btn-primary" id="myReservationsReloadButton" onclick="reloadDataTableData(this, null, '#myReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                 </div>
                             </div>
@@ -3073,7 +3084,7 @@
                             </thead>
                             <tbody></tbody>
                         </table>
-                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsModeratorActions" style="gap: 5px">
+                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsModeratorActions">
                             <button class="btn btn-primary" id="reservationsModeratorReloadButton" onclick="reloadDataTableData(this, 'moderator', '#moderatorReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                         </div>
                     </div>
@@ -3106,7 +3117,7 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsActions" style="gap: 5px">
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="reservationsActions">
                                             <button class="btn btn-primary" id="reservationsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#reservationAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
@@ -3134,7 +3145,7 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        <div class="d-flex formContainer justify-content-end mt-3" id="buildingsAdminActions" style="gap: 5px">
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="buildingsAdminActions">
                                             <button class="btn btn-primary" id="buildingsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#buildingsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                             <button class='btn btn-success' onclick='showBuildingCreationModal()'><i class='fa-solid fa-asterisk'></i> Neu...</button>
                                         </div>
@@ -3170,7 +3181,7 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        <div class="d-flex formContainer justify-content-end mt-3" id="roomsAdminActions" style="gap: 5px">
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="roomsAdminActions">
                                             <button class="btn btn-primary" id="roomsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#roomsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
@@ -3198,7 +3209,7 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        <div class="d-flex formContainer justify-content-end mt-3" id="logsAdminActions" style="gap: 5px">
+                                        <div class="d-flex formContainer justify-content-end mt-3" id="logsAdminActions">
                                             <button class="btn btn-primary" id="logsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#logsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
