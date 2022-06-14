@@ -752,7 +752,7 @@
                         }
                     ],
                     ajax: {
-                        url: "/list_pending",
+                        url: apiURL + "/calendar/list/pending",
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
@@ -2287,13 +2287,17 @@
             function saveNewReservation(startDate, endDate) {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "reservationCreation") {
                     disableMainModal("#saveNewReservationButton");
+                    let start = new Date(startDate);
+                    let end = new Date(endDate);
+                    start.setHours(Number.parseInt($("#newReservationTimeFromHours").val()), Number.parseInt($("#newReservationTimeFromMinutes").val()));
+                    end.setHours(Number.parseInt($("#newReservationTimeToHours").val()), Number.parseInt($("#newReservationTimeToMinutes").val()));
                     // datumsprüfung ist sache des servers
                     $.post({
                         url: apiURL + "/calendar/add",
                         data: JSON.stringify({
                             token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt", // getCookie("authToken")
-                            start: startDate + "T" + $("#newReservationTimeFromHours").val() + ":" + $("#newReservationTimeFromMinutes").val() + ":00.000Z",
-                            end: endDate + "T" + $("#newReservationTimeToHours").val() + ":" + $("#newReservationTimeToMinutes").val() + ":00.000Z",
+                            start: start.toISOString(),
+                            end: end.toISOString(),
                             //building: $("#newReservationBuildingSelect").val(),
                             room: $("#newReservationRoomSelect").val(),
                             title: $("#newReservationDescriptionInput").val(),
@@ -2353,6 +2357,22 @@
                 }
                 $(target).prop("selectedIndex", 0);
             }
+            function formatDate(time, options) {
+                if (Number.isSafeInteger(time)) {
+                    let dateString = "";
+                    let date = new Date(time);
+                    if (options.includes("date") && !options.includes("time")) {
+                        dateString = ("00" + (date.getDate()).toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear();
+                    }
+                    else if (!options.includes("date") && options.includes("time")) {
+                        dateString = ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                    }
+                    else if (options.includes("date") && options.includes("time")) {
+                        dateString = ("00" + (date.getDate()).toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                    }
+                    return dateString;
+                }
+            }
             function loadBuildings(target) {
                 $(target).empty();
                 for (building of buildings) {
@@ -2360,17 +2380,12 @@
                 }
             }
             function showReservationCreationModal() {
-                let startDate = $("#showReservationCreationModalButton").attr("data-start");
-                let endDate = $("#showReservationCreationModalButton").attr("data-end");
-                if (![null, undefined, "undefined"].includes(startDate) && ![null, undefined, "undefined"].includes(endDate)) {
-                    startDateArray = startDate.slice(0, 10).split("-");
+                let startDate = Number.parseInt($("#showReservationCreationModalButton").attr("data-start"));
+                let endDate = Number.parseInt($("#showReservationCreationModalButton").attr("data-end"));
+                if (Number.isSafeInteger(startDate) && Number.isSafeInteger(endDate)) {
                     let content = "<form enctype='text/plain' id='reservationCreationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='newReservationSubmit'>";
                     content += "<div><label class='col-form-label' for='newReservationBuildingSelect'>Gebäude:</label>";
-                    content += "<select class='form-select' id='newReservationBuildingSelect' onchange='loadRooms(this, &quot;#newReservationRoomSelect&quot;)' required='required'>";
-                    for (building of buildings) {
-                        content += "<option value='" + building["id"] + "'>" + building["name"] + "</option>";
-                    }
-                    content += "</select></div>";
+                    content += "<select class='form-select' id='newReservationBuildingSelect' onchange='loadRooms(this, &quot;#newReservationRoomSelect&quot;)' required='required'></select></div>";
                     content += "<div class='mt-3'><label class='col-form-label' for='newReservationRoomSelect'>Raum:</label>";
                     content += "<select class='form-select' id='newReservationRoomSelect' required='required'></select></div>";
                     content += "<div class='mt-3'><label class='col-form-label' for='newReservationDescriptionInput'>Beschreibung:</label>";
@@ -2378,8 +2393,8 @@
                     content += "<div class='d-flex align-items-center align-content-center input-group-text'><input class='form-check-input mt-0' type='checkbox' id='newReservationDescriptionHiddenCheckbox' value='1'>";
                     content += "<label class='form-check-label ps-1' for='newReservationDescriptionHiddenCheckbox'>Ausblenden</label></div></div></div>";
                     content += "<div class='mt-3'><label class='col-form-label' for='newReservationTimeFromHours'>Start:</label>";
-                    content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='" + startDate.slice(11, 13) + "' required='required'>";
-                    content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='" + startDate.slice(14, 16) + "' required='required'></div>";
+                    content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeFromHours' value='0' required='required'>";
+                    content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeFromMinutes' value='0' required='required'></div>";
                     content += "<label class='ms-2' for='newReservationTimeFromMinutes'>Uhr</label></div></div>";
                     content += "<div class='mt-3'><label class='col-form-label' for='newReservationTimeToHours'>Ende:</label>";
                     content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours' required='required'>";
@@ -2393,7 +2408,8 @@
                         events: {
                             shown: {
                                 function: function() {
-                                    $("#newReservationBuildingSelect").change();
+                                    loadBuildings("#newReservationBuildingSelect");
+                                    $("#newReservationBuildingSelect").prop("selectedIndex", 0).change();
                                     $("#reservationCreationForm").submit(function() {
                                         saveNewReservation(startDate, endDate);
                                         return false;
@@ -2407,7 +2423,7 @@
                             }
                         },
                         title: {
-                            text: "Neuen Termin erstellen am " + startDateArray[2] + "." + startDateArray[1] + "." + startDateArray[0]
+                            text: "Neuen Termin erstellen am " + formatDate(startDate, ["date"])
                         },
                         content: {
                             text: content
@@ -2505,7 +2521,7 @@
                         currentDate.setHours(0, 0, 0);
                         if (buildings.length >= 1) {
                             if (selectionInfo["start"].getTime() >= currentDate.getTime()) {
-                                $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["startStr"], "data-end": selectionInfo["endStr"]}).removeClass("disabled");
+                                $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["start"].getTime(), "data-end": selectionInfo["end"].getTime()}).removeClass("disabled");
                             }
                             else {
                                 $("#showReservationCreationModalButton").attr("disabled", "disabled").addClass("disabled");
