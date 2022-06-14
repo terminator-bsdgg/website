@@ -382,19 +382,6 @@
             .cursor-pointer:hover {
                 cursor: pointer
             }
-            /*
-            .time-picker::after {
-                content: "";
-                position: absolute;
-                left: 5px;
-                bottom: -5px;
-                width: 0;
-	            height: 0;
-	            border-left: 6px solid transparent;
-	            border-right: 6px solid transparent;
-	            border-top: 6px solid #0000006e;
-                z-index: 9;
-            }*/
             @media only screen and (max-width: 600px) {
                 .alert > i {
                     vertical-align: baseline !important;
@@ -550,13 +537,16 @@
             }
         </style>
         <script>
-            // Dürfen Terminersteller ihre eigenen Termine löschen?
-            // Wie kurzfristig können Termine geändert werden?
-            // Ist eine Übersicht vergangener Termine nötig?
-            // TODO: Wenn gerade eine Konferenz stattfindet, muss ein Timer laufen, der die Meldung über eine
-            // laufende Konferenz ausblendet, wenn sie vorbei ist!
+            /*
+            TODO:
+            -rowGroup mit richtigen Namen versehen
+            -Datumsauswahl im Kalender so anpassen, dass auch der aktuelle Tag ausgewählt werden kann
+            -Spaltensortierung in Logs (data.order!)
+            -Enddatum neuer Reservierungen muss bei Auswahl eines einzigen Tages gleich des Startdatums sein
+            -Eigene Reservierungen!
+            */
             var systemInfosTimer = null;
-            isLoadingSystemInfos = false;
+            var isLoadingSystemInfos = false;
             var viewportWidth;
             var buildings = [];
             var rooms = [];
@@ -568,6 +558,10 @@
                     error: 'Fehler',
                     success: 'Erfolg',
                     info: 'Information',
+                },
+                adminReservationStatus: {
+                    0: "Abgelehnt",
+                    1: "Angenommen"
                 }
             };
             const apiURL = "http://terminator.api.jongmans.net/api";
@@ -597,16 +591,13 @@
                     sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
                 }
             }
-            // Bescheuerte Filterung von bestimmten HTML-Elementen in Bootstraps "Popover" deaktivieren
-            /*bootstrap["Popover"]["Default"]["allowList"]["button"] = ["onclick"];
-            bootstrap["Popover"]["Default"]["allowList"]["table"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["tbody"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["tr"] = [];
-            bootstrap["Popover"]["Default"]["allowList"]["td"] = [];*/
             const dataTablesOptions = {
                 myReservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
+                    rowId: function(row) {
+                        return "my-table-reservation-id-" + row["id"];
+                    },
                     columns: [
                         {
                             name: "id",
@@ -616,17 +607,16 @@
                         {
                             name: "room",
                             data: "room",
-                            width: "5%"
+                            width: "8%"
                         },
                         {
                             name: "start",
                             data: "timeStart",
-                            width: "5%",
+                            width: "8%",
                             render: function(data, type, row) {
                                 if (type === "display" || type === "filter") {
                                     let date = new Date(Number.parseInt(data));
-                                    console.log(date.getDate(), date.getDay());
-                                    return ("00" + date.getDate().toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                    return formatDate(date.getTime(), ["date", "time"]) + " Uhr";
                                 }
                                 return data;
                             }
@@ -634,11 +624,11 @@
                         {
                             name: "end",
                             data: "timeEnd",
-                            width: "5%",
+                            width: "8%",
                             render: function(data, type, row) {
                                 if (type === "display" || type === "filter") {
                                     let date = new Date(Number.parseInt(data));
-                                    return ("00" + date.getDate().toString()).substr(-2, 2) + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
+                                    return formatDate(date.getTime(), ["date", "time"]) + " Uhr";
                                 }
                                 return data;
                             }
@@ -662,26 +652,27 @@
                         }*/
                     ],
                     ajax: {
-                        url: "dataTables.php",
+                        url: "/calendar/list",
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
                             //token: getCookie("authToken");
                             data["token"] = "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt";
+                            data["userid"] = getCookie("username");
                             return JSON.stringify(data);
                         },
                         dataSrc: function(response) {
                             return response;
                         },
                         error: function (response) {
-                            $("#myReservationsReloadButton").removeAttr("disabled");
+                            $("#myReservationsReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#myReservations").append(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#myReservations > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#myReservations").append(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#myReservations > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -694,6 +685,9 @@
                 reservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
+                    rowId: function(row) {
+                        return "moderation-table-reservation-id-" + row["id"];
+                    },
                     columns: [
                         {
                             name: "id",
@@ -701,46 +695,66 @@
                             width: "8%"
                         },
                         {
-                            name: "building",
-                            data: "building",
+                            name: "organisator",
+                            data: "organisator",
                             visible: false,
-                            width: "10%"
+                            width: "8%"
                         },
                         {
-                            name: "room",
-                            data: "room",
-                        },
-                        {
-                            name: "start",
-                            data: "timeStart",
-                            render: function(data, type, row) {
-                                if (type === "display" || type === "filter") {
-                                    let date = new Date(Number.parseInt(data));
-                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
-                                }
-                                return data;
-                            }
-                        },
-                        {
-                            name: "end",
-                            data: "timeEnd",
-                            render: function(data, type, row) {
-                                if (type === "display" || type === "filter") {
-                                    let date = new Date(Number.parseInt(data));
-                                    return date.getDate() + "." + ("00" + (date.getMonth() +1).toString()).substr(-2, 2) + "." + date.getFullYear() + ", " + ("00" + (date.getHours().toString())).substr(-2, 2) + ":" + ("00" + (date.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (date.getSeconds().toString())).substr(-2, 2);
-                                }
-                                return data;
-                            }
-                        },
-                        {
-                            name: "description",
-                            data: "description",
-                        },
-                        {
-                            name: "booker",
+                            name: "roomid",
+                            width: "8%",
                             data: function(row, type, set, meta) {
-                                return "LOLlll";
+                                let index = rooms.findIndex(key => key["id"] === row["id"]);
+                                return (index >= 0 ? rooms[index]["name"] : row["roomid"]);
                             }
+                        },
+                        {
+                            name: "buildingid",
+                            data: "buildingid",
+                            width: "8%"
+                        },
+                        {
+                            name: "startTime",
+                            data: "startTime",
+                            width: "8%",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return formatDate(date.getTime(), ["date", "time"]) + " Uhr";
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            name: "endTiime",
+                            data: "endTime",
+                            width: "8%",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return formatDate(date.getTime(), ["date", "time"]) + " Uhr";
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            name: "title",
+                            data: "title",
+                        },
+                        {
+                            name: "organisatorId",
+                            data: "organisatorId",
+                            visible: false
+                        },
+                        {
+                            name: "declinedReason",
+                            data: "declinedReason",
+                            visible: false
+                        },
+                        {
+                            name: "editorId",
+                            data: "editorId",
+                            visible: false
                         },
                         {
                             name: "options",
@@ -748,7 +762,7 @@
                                 return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-success' style='width: 32px' onclick='confirmReservationApproval(" + row["id"] + ")'><i class='fa-solid fa-check'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmReservationRejection(" + row["id"] + ")'><i class='fa-solid fa-xmark'></i></button></div>";
                             },
                             sorting: false,
-                            width: "15%"
+                            width: "8%"
                         }
                     ],
                     ajax: {
@@ -764,14 +778,14 @@
                             return response;
                         },
                         error: function (response) {
-                            $("#reservationsModeratorReloadButton").removeAttr("disabled");
+                            $("#reservationsModeratorReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#moderation").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#moderation > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#moderation").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#moderation > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -784,6 +798,9 @@
                 reservations: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
+                    rowId: function(row) {
+                        return "administration-table-reservation-id-" + row["id"];
+                    },
                     columns: [
                         {
                             name: "id",
@@ -791,41 +808,84 @@
                             width: "8%"
                         },
                         {
-                            name: "booker",
+                            name: "organisator",
+                            data: "organisator",
+                            width: "8%",
+                        },
+                        {
+                            name: "roomid",
+                            width: "8%",
                             data: function(row, type, set, meta) {
-                                return;
+                                let index = rooms.findIndex(key => key["id"] === row["id"]);
+                                return (index >= 0 ? rooms[index]["name"] : row["roomid"]);
                             }
                         },
                         {
-                            name: "room",
-                            data: "room",
+                            name: "buildingid",
+                            data: "buildingid",
+                            width: "8%",
                         },
                         {
-                            name: "building",
-                            data: "building"
-                        },
-                        {
-                            name: "timespan",
-                            // TimeStart und TimeEnd kombinieren 
-                            data: function(row, type, set, meta) {
-                                return;
+                            name: "startTime",
+                            data: "startTime",
+                            width: "8%",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return formatDate(date.getTime(), ["date", "time"]);
+                                }
+                                return data;
                             }
                         },
                         {
-                            name: "description",
-                            data: "description",
+                            name: "endTime",
+                            data: "endTime",
+                            width: "8%",
+                            render: function(data, type, row) {
+                                if (type === "display" || type === "filter") {
+                                    let date = new Date(Number.parseInt(data));
+                                    return formatDate(date.getTime(), ["date", "time"]);
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            name: "title",
+                            data: "title"
+                        },
+                        {
+                            name: "accepted",
+                            width: "8%",
+                            data: function(row, type, set, meta) {
+                                return (dataTableTranslationStrings["adminReservationStatus"].hasOwnProperty(row["accepted"]) ? dataTableTranslationStrings["adminReservationStatus"][row["accepted"]] : row["accepted"]);
+                            }
+                        },
+                        {
+                            name: "organisatorId",
+                            data: "organisatorId",
+                            visible: false
+                        },
+                        {
+                            name: "declinedReason",
+                            data: "declinedReason",
+                            visible: false
+                        },
+                        {
+                            name: "editorId",
+                            data: "editorId",
+                            visible: false
                         },
                         {
                             name: "options",
                             data: function(row, type, set, meta) {
-                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showRoleEditingModal(" + row["id"] + ")'><i class='fa-solid fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoleDeletion(" + row["id"] + ")'><i class='fa-solid fa-times'></i></button></div>";
+                                return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showAdminReservationEditingModal(" + row["id"] + ")'><i class='fa-solid fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmAdminReservationDeletion(" + row["id"] + ")'><i class='fa-solid fa-times'></i></button></div>";
                             },
                             sorting: false,
-                            width: "20%"
+                            width: "8%"
                         }
                     ],
                     ajax: {
-                        url: "dataTables.php",
+                        url: apiURL + "/calendar/list/all",
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
@@ -837,14 +897,14 @@
                             return response;
                         },
                         error: function (response) {
-                            $("#reservationsAdminReloadButton").removeAttr("disabled");
+                            $("#reservationsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response.hasOwnProperty("responseJSON")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#collapse-reservations > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#collapse-reservations > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#collapse-reservations > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#collapse-reservations > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -855,6 +915,9 @@
                 buildings: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
+                    rowId: function(row) {
+                        return "administration-table-building-id-" + row["id"];
+                    },
                     columns: [
                         {
                             name: "id",
@@ -864,6 +927,7 @@
                         {
                             name: "name",
                             data: "name",
+                            width: "8%",
                         },
                         {
                             name: "description",
@@ -877,7 +941,7 @@
                                 return buttons;
                             },
                             sorting: false,
-                            width: "20%"
+                            width: "8%"
                         }
                     ],
                     ajax: {
@@ -894,28 +958,27 @@
                             return response;
                         },
                         error: function (response) {
-                            $("#buildingsAdminReloadButton").removeAttr("disabled");
+                            $("#buildingsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#collapse-buildings > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#collapse-buildings > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#collapse-buildings > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#collapse-buildings > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
                     drawCallback: function(settings) {
                         $("#buildingsAdminTable").parent().addClass("table-container");
-                        /*let tooltipTriggerList = [].slice.call($("#buildingsAdminTable [data-bs-toggle='tooltip']"));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });*/
                     }
                 },
                 rooms: {
                     order: [0, "asc"],
                     language: dataTablesLocalisation,
+                    rowId: function(row) {
+                        return "administration-table-reservation-id-" + row["id"];
+                    },
                     columns: [
                         {
                             name: "id",
@@ -930,6 +993,7 @@
                         {
                             name: "name",
                             data: "name",
+                            width: "8%"
                         },
                         {
                             name: "description",
@@ -941,7 +1005,7 @@
                                 return "<div class='d-flex flex-wrap' style='gap: 5px'><button type='button' class='btn btn-sm btn-primary' style='width: 32px' onclick='showRoomEditingModal(" + row["id"] + ")'><i class='fa-solid fa-pen'></i></button><button type='button' class='btn btn-sm btn-danger' style='width: 32px' onclick='confirmRoomDeletion(" + row["id"] + ")'><i class='fa-solid fa-times'></i></button></div>";
                             },
                             sorting: false,
-                            width: "20%"
+                            width: "8%"
                         }
                     ],
                     ajax: {
@@ -957,14 +1021,14 @@
                             return response;
                         },
                         error: function (response) {
-                            $("#roomsAdminReloadButton").removeAttr("disabled");
+                            $("#roomsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("#collapse-rooms > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("#collapse-rooms > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#collapse-rooms > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#collapse-rooms > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -1022,14 +1086,14 @@
                             return response['data'];
                         },
                         error: function (response) {
-                            $("#logsAdminReloadButton").removeAttr("disabled");
+                            $("#logsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                             if (response.hasOwnProperty("responseJSON") && response["responseJSON"].hasOwnProperty("error")) {
                                 if (response["responseJSON"]["error"] === "invalid_token") {
-                                    $("collapse-logs > .card-body").prepend(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
+                                    $("collapse-logs > .formContainer").first().before(Alert.create("danger", "Der Authentifizierungstoken ist ungültig. Bitte erneut anmelden."));
                                 }
                             }
                             else {
-                                $("#collapse-logs > .card-body").prepend(Alert.create("danger", "Es konnten keine Daten geladen werden."));
+                                $("#collapse-logs > .formContainer").first().before(Alert.create("danger", "Es konnten keine Daten geladen werden."));
                             }
                         }
                     },
@@ -1038,10 +1102,8 @@
                     },
                 },
             }
-            // sollen eigene reservierungen bearbeitet, storniert werden könnne?
             function logout() {
                 //cookies löschen
-                //abmeldeknopf durch anmeldeknopf ersetzen (auch in mobiler ansicht)
             }
             function getBuildings() {
                 $("#buildingSelection").empty();
@@ -1086,18 +1148,12 @@
                 }).always(function() {
                 });
             }
-            function reloadDataTableData(element, type, table) {
+            function reloadDataTableData(element, table) {
                 if (DataTable.isDataTable(table)) {
-                    $(element).attr("disabled", "disabled");
-                    if (type === "admin") {
-                        adminDataTables[table].ajax.reload();
+                    if ($(element).find("[data-processing='true']").length === 0) {
+                        $(element).attr("disabled", "disabled").prepend("<span class='spinner-border me-1 text-white kreiselchen align-text-bottom' data-processing='true'></span>");
                     }
-                    else if (type === "moderator") {
-                        moderatorDataTables[table].ajax.reload();
-                    }
-                    else {
-                        dataTables[table].ajax.reload();
-                    }
+                    $(table).DataTable().ajax.reload();
                 }
             }
             function updateSystemInfos() {
@@ -1173,13 +1229,14 @@
             function confirmRoomDeletion(lol) {
                 if (DataTable.isDataTable("#roomsAdminTable")) {
                     let rooms = adminDataTables["rooms"].data().toArray();
-                    let index = rooms.findIndex(key => key["id"] === Number.parseInt(lol));
+                    let roomId = Number.parseInt(lol);
+                    let index = rooms.findIndex(key => key["id"] === roomId);
                     if (index >= 0) {
                         let indexBuilding = buildings.findIndex(key => key["id"] === rooms[index]["buildingid"]);
                         let prompt = new Promise(function(resolve) {
                             confirmation({
                                 title: "Raum löschen bestätigen",
-                                content: "Soll der Raum &quot;" + rooms[index]["name"] + "&quot; (Gebäude &quot;" + buildings[indexBuilding]["name"] + "&quot;) wirklich gelöscht werden?"
+                                content: "Soll der Raum &quot;" + rooms[index]["name"] + "&quot; (Gebäude: &quot;" + buildings[indexBuilding]["name"] + "&quot;) wirklich gelöscht werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
@@ -1189,7 +1246,7 @@
                                 data: JSON.stringify({
                                     //token: getCookie("authToken"),
                                     token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
-                                    id: lol,
+                                    id: roomId,
                                 }),
                                 processData: false,
                                 contentType: "application/json",
@@ -1557,144 +1614,6 @@
                     }
                 }
             }
-            /*
-            class TimePicker {
-                constructor(element) {
-                    if ($(element).prop("tagName") === "INPUT" && (typeof($(element).attr("data-time-picker-id")) !== "undefined" && timePickers.findIndex(key => key["id"] === Number.parseInt($(element).attr("data-time-picker-id"))) <= 0) || (typeof($(element).attr("data-time-picker-id")) === "undefined")) {
-                        this.id = new Date().getMilliseconds() + Math.floor(Math.random(0, viewportWidth));
-                        this.element = element;
-                        this.hours = 0;
-                        this.minutes = 0;
-                        $(element).attr("data-time-picker-id", this.id);
-                        let picker = "<div class='d-flex rounded-2 p-1 time-picker' data-time-picker-id='" + this.id +  "'>";
-                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='hours'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseHour' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div>";
-                        picker += "<div class='d-flex align-items-center align-content-center'><div style='height: 2rem; visibility: hidden'></div><h3 class='m-0 text-center'>:</h3><div style='height: 2rem; visibility: hidden'></div></div>";
-                        picker += "<div class='d-flex flex-column'><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='increaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-up'></i></button><h3 class='m-0 text-center' data-unit='minutes'>00</h3><button class='btn btn-secondary p-0' style='height: 2rem; width: 2rem' data-action='decreaseMinute' data-time-picker-parent='" + this.id + "'><i class='fas fa-chevron-down'></i></button></div></div>";
-                        this.picker = $(picker);
-                        this.picker.find("[data-action='increaseHour']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].increaseHour());
-                            }
-                        });
-                        this.picker.find("[data-action='decreaseHour']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].decreaseHour());
-                            }
-                        });
-                        this.picker.find("[data-action='increaseMinute']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].increaseMinute());
-                            }
-                        });
-                        this.picker.find("[data-action='decreaseMinute']").click(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-parent")));
-                            if (index >= 0) {
-                                $(timePickers[index].decreaseMinute());
-                            }
-                        });
-                        timePickers.push(this);
-                        $("body").append($(this.picker).on("mousedown", false));
-                        // Referenz auf this, da sich this immer auf die aktuelle Funktion bezieht
-                        let that = this;
-                        $(element).focus(function() {
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
-                            if (index >= 0) {
-                                console.log(getScrollParent(element));
-                                $(getScrollParent(element)).scroll({index: index}, that.scroll);
-                                let position = $(this).offset();
-                                $(timePickers[index]["picker"]).removeClass("d-none").addClass("d-flex").css({"top": position["top"] - $(timePickers[index]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
-                                if (timePickers[index].hasOwnProperty("hours") && Number.isSafeInteger(timePickers[index]["hours"]) && timePickers[index].hasOwnProperty("minutes") && Number.isSafeInteger(timePickers[index]["minutes"])) {
-                                    $(timePickers[index]["picker"]).find("h3[data-unit='hours']").html((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString());
-                                    $(timePickers[index]["picker"]).find("h3[data-unit='minutes']").html((timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
-                                    $(timePickers[index]["element"]).val((timePickers[index]["hours"] <= 9 ? "0" : "") + timePickers[index]["hours"].toString() + ":" + (timePickers[index]["minutes"] <= 9 ? "0" : "") + timePickers[index]["minutes"].toString());
-                                }
-                                else {
-                                    $(timePickers[index]["element"]).val("00:00");
-                                }
-                            }
-                        }).blur(function() {
-                            $("#mainModal").off("scroll", that.scroll);
-                            let index = timePickers.findIndex(key => key["id"] === Number.parseInt($(this).attr("data-time-picker-id")));
-                            if (index >= 0) {
-                                //$(timePickers[index]["picker"]).removeClass("d-flex").addClass("d-none");
-                            }
-                        });
-                    }
-                }
-                show() {
-                }
-                hide() {
-                }
-                scroll(event) {
-                    let position = $(timePickers[event["data"]["index"]]["element"]).offset();
-                    console.log(position);
-                    $(timePickers[event["data"]["index"]]["picker"]).css({"top": position["top"] - $(timePickers[event["data"]["index"]]["picker"]).outerHeight() + "px", left: position["left"] + "px"});
-                }
-                increaseHour() {
-                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
-                        if (this.hours >= 0 && this.hours <= 22) {
-                            this.hours++;
-                        }
-                        else {
-                            this.hours = 0;
-                        }
-                    }
-                    else {
-                        this.hours = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                decreaseHour() {
-                    if (this.hasOwnProperty("hours") && Number.isInteger(this.hours)) {
-                        if (this.hours >= 1 && this.hours <= 23) {
-                            this.hours--;
-                        }
-                        else {
-                            this.hours = 23;
-                        }
-                    }
-                    else {
-                        this.hours = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='hours']").html((this.hours <= 9 ? "0" : "") + this.hours.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                increaseMinute() {
-                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
-                        if (this.minutes >= 0 && this.minutes <= 58) {
-                            this.minutes++;
-                        }
-                        else {
-                            this.minutes = 0;
-                        }
-                    }
-                    else {
-                        this.minutes = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-                decreaseMinute() {
-                    if (this.hasOwnProperty("minutes") && Number.isInteger(this.minutes)) {
-                        if (this.minutes >= 1 && this.minutes <= 59) {
-                            this.minutes--;
-                        }
-                        else {
-                            this.minutes = 59;
-                        }
-                    }
-                    else {
-                        this.minutes = 0;
-                    }
-                    $(this.picker).find("h3[data-unit='minutes']").html((this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                    $(this.element).val((this.hours <= 9 ? "0" : "") + this.hours.toString() + ":" + (this.minutes <= 9 ? "0" : "") + this.minutes.toString());
-                }
-            }
-            */
             function checkHours(element) {
                 let value = Number.parseInt($(element).val());
                 if (Number.isSafeInteger(value)) {
@@ -2054,8 +1973,9 @@
             }
             function confirmBuildingDeletion(lol) {
                 if (DataTable.isDataTable("#buildingsAdminTable")) {
+                    let buildingId = Number.parseInt(lol);
                     let buildings = adminDataTables["buildings"].data().toArray();
-                    let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
+                    let index = buildings.findIndex(key => key["id"] === buildingId);
                     if (index >= 0) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
@@ -2070,7 +1990,7 @@
                                 data: JSON.stringify({
                                     //token: getCookie("authToken"),
                                     token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
-                                    id: lol,
+                                    id: buildingId,
                                 }),
                                 processData: false,
                                 contentType: "application/json",
@@ -2198,37 +2118,133 @@
             }
             function confirmReservationApproval(lol) {
                 if (DataTable.isDataTable("#moderatorReservationTable")) {
-                    let reservations = moderatorDataTables["reservations"].data().toArray();
-                    let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
-                    if (index >= 0) {
+                    let data = moderatorDataTables["reservations"].row("[id='moderation-table-reservation-id-" + lol + "']").data();
+                    let keys = Object.getOwnPropertyNames(data);
+                    let reservationId = Number.parseInt(lol);
+                    if (keys.length >= 1) {
                         let prompt = new Promise(function(resolve) {
                             confirmation({
                                 title: "Reservierung genehmigen",
-                                content: "Soll die Reservierung &quot;" + reservations[index]["description"] + "&quot; wirklich genehmigt werden?"
+                                content: "Soll die Reservierung &quot;" + data["title"] + "&quot; wirklich genehmigt werden?"
                             }, resolve);
                         });
                         prompt.then(function(value) {
-                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                            disableMainModal("#confirmationButton");
+                            $.post({
+                                url: apiURL + "/calendar/edit",
+                                data: JSON.stringify({
+                                    //token: getCookie("authToken"),
+                                    token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                                    id: lol,
+                                    accepted: true,
+                                    editor: getCookie("username"),
+                                    declinedReason: ""
+                                }),
+                                processData: false,
+                                contentType: "application/json",
+                                crossDomain: true,
+                                timeout: 10000
+                            }).done(function(response) {
+                                bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                                $("#moderatorReservationTable_wrapper").before(Alert.create("success", "Die Reservierung &quot;" + data["title"] + "&quot; (ID: " + lol + ") wurde genehmigt."));
+                                $("#moderatorReservationTable").DataTable().ajax.reload();
+                            }).fail(function(response) {
+                                $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                            }).always(function() {
+                                enableMainModal("#confirmationButton");
+                            });
                         });
                     }
                 }
             }
             function confirmReservationRejection(lol) {
                 if (DataTable.isDataTable("#moderatorReservationTable")) {
-                    let reservations = moderatorDataTables["reservations"].data().toArray();
-                    let index = reservations.findIndex(key => key["id"] === Number.parseInt(lol));
-                    if (index >= 0) {
-                        let prompt = new Promise(function(resolve) {
-                            confirmation({
-                                title: "Reservierung ablehnen",
-                                content: "Soll die Reservierung &quot;" + reservations[index]["description"] + "&quot; wirklich abgelehnt werden?"
-                            }, resolve);
-                        });
-                        prompt.then(function(value) {
-                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                        });
+                    let reservationData = moderatorDataTables["reservations"].row("[id='moderation-table-reservation-id-" + lol + "']").data();
+                    let keys = Object.getOwnPropertyNames(reservationData);
+                    if (keys.length >= 1) {
+                        let content = "<form enctype='text/plain' id='rejectReservationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='rejectReservationSubmit'>";
+                        content += "Soll die Reservierung &quot;" + reservationData["title"] + "&quot; wirklich abgelehnt werden?";
+                        content += "<div><label class='col-form-label me-2' for='rejectReservationReasonInput'>Grund (optional):</label>";
+                        content += "<input type='text' class='form-control' id='rejectReservationReasonInput'></div></form>";
+                        let data = {
+                            name: "reservationRejection",
+                            static: true,
+                            events: {
+                                show: {
+                                    function: function() {
+                                        $("#rejectReservationForm").submit(function() {
+                                            rejectReservation(reservationData["id"]);
+                                            return false;
+                                        });
+                                    }
+                                },
+                                hide: {
+                                    function: function() {
+                                        $("#rejectReservationForm").off("submit");
+                                    }
+                                }
+                            },
+                            title: {
+                                text: "Reservierung ablehnen"
+                            },
+                            content: {
+                                text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Bestätitgen",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "confirmReservationRejectionButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#rejectReservationSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        };
+                        Modal.create(data);
                     }
                 }
+            }
+            function rejectReservation(id) {
+                disableMainModal("#confirmReservationRejectionButton");
+                    $.post({
+                        url: apiURL + "/building/edit",
+                        data: JSON.stringify({
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                            id: id,
+                            declinedReason: $("#rejectReservationReasonInput0").val(),
+                            accepted: false,
+                            editor: getCookie("username")
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#moderatorReservationTable_wrapper").before(Alert.create("success", "Die Informationen für das Gebäude mit der ID &quot;" + id + "&quot; wurden aktualisiert."));
+                        $("#moderatorReservationTable").DataTable().ajax.reload();
+
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#confirmReservationRejectionButton");
+                    });
             }
             function saveNewBuilding() {
                 if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingCreation") {
@@ -2289,6 +2305,7 @@
                     disableMainModal("#saveNewReservationButton");
                     let start = new Date(startDate);
                     let end = new Date(endDate);
+                    console.log(start, end);
                     start.setHours(Number.parseInt($("#newReservationTimeFromHours").val()), Number.parseInt($("#newReservationTimeFromMinutes").val()));
                     end.setHours(Number.parseInt($("#newReservationTimeToHours").val()), Number.parseInt($("#newReservationTimeToMinutes").val()));
                     // datumsprüfung ist sache des servers
@@ -2296,13 +2313,11 @@
                         url: apiURL + "/calendar/add",
                         data: JSON.stringify({
                             token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt", // getCookie("authToken")
-                            start: start.toISOString(),
-                            end: end.toISOString(),
-                            //building: $("#newReservationBuildingSelect").val(),
-                            room: $("#newReservationRoomSelect").val(),
+                            start: start.getTime(),
+                            end: end.getTime(),
+                            room_id: Number.parseInt($("#newReservationRoomSelect").val()),
                             title: $("#newReservationDescriptionInput").val(),
-                            //allDay: $("#newReservationAllDayCheckbox").prop("checked"),
-                            hideDescription: $("#newReservationDescriptionHiddenCheckbox").prop("checked")
+                            showName: $("#newReservationDescriptionHiddenCheckbox").prop("checked")
                         }),
                         processData: false,
                         contentType: "application/json",
@@ -2310,7 +2325,7 @@
                         timeout: 10000
                     }).done(function(response) {
                         bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                        $("#calendarLocationForm").before("success", "Die Reservierung wurde eingereicht. Ein Moderator wird sie zur gegebenen Zeit prüfen.");
+                        $("#calendarLocationForm").before(Alert.create("success", "Die Reservierung wurde eingereicht. Ein Moderator wird sie zur gegebenen Zeit prüfen."));
                         calendar.refetchEvents();
                     }).fail(function(response) {
                         $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
@@ -2323,7 +2338,7 @@
                 if ($("#calendarLocationSubmit").find("[data-processing='true']").length === 0) {
                         $("#calendarLocationSubmit").prepend("<span data-processing='true' class='spinner-border me-1 text-white kreiselchen align-text-bottom'></span>");
                 }
-                $("#calendarLocationSubmit").addClass("disabled").attr("disabled", "disabled");
+                $("#calendarLocationSubmit").attr("disabled", "disabled");
                 $.post({
                     url: apiURL + "/calendar/list",
                     data: JSON.stringify({
@@ -2343,7 +2358,7 @@
                     $("#calendarLocationForm").before(Alert.create("danger", response["status"] + ": " + response["statusText"]));
                 }).always(function() {
                     isGettingReservations = false;
-                    $("#calendarLocationSubmit").parent().find("[data-processing='true']").remove();
+                    $("#calendarLocationSubmit").find("[data-processing='true']").remove();
                     $("#calendarLocationSubmit").removeAttr("disabled");
                 });
             }
@@ -2399,8 +2414,7 @@
                     content += "<div class='mt-3'><label class='col-form-label' for='newReservationTimeToHours'>Ende:</label>";
                     content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='newReservationTimeToHours' required='required'>";
                     content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='newReservationTimeToMinutes' required='required'></div>";
-                    content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div><div class='d-flex align-items-center align-content-center ps-0'><input class='form-check-input mt-0' type='checkbox' id='newReservationAllDayCheckbox' name='newReservationAllDayCheckbox' value='1' onchange='toggleNewReservationTimes(this)'>";
-                    content += "<label class='form-check-label ps-1' for='newReservationAllDayCheckbox'>Ganztätig</label></div>";
+                    content += "<label class='ms-2' for='newReservationTimeToMinutes'>Uhr</label></div>";
                     content += "</div></div></form>";
                     let data = {
                         name: "reservationCreation",
@@ -2456,6 +2470,117 @@
                     Modal.create(data);
                 }
             }
+            function showAdminReservationEditingModal(id) {
+                if (DataTable.isDataTable("#reservationAdminTable")) {
+                    let reservationData = adminDataTables["reservations"].row("[id='administration-table-reservation-id-" + id + "']").data();
+                    console.log(reservationData);
+                    let keys = Object.getOwnPropertyNames(reservationData);
+                    if (keys.length >= 1) {
+                        let content = "<form enctype='text/plain' id='reservationAdminEditingForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='editAdminReservationSubmit'>";
+                        content += "<div><label class='col-form-label' for='editAdminReservationBuildingSelect'>Gebäude:</label>";
+                        content += "<select class='form-select' id='editAdminReservationBuildingSelect' onchange='loadRooms(this, &quot;#editAdminReservationRoomSelect&quot;)' required='required'></select></div>";
+                        content += "<div class='mt-3'><label class='col-form-label' for='editAdminReservationRoomSelect'>Raum:</label>";
+                        content += "<select class='form-select' id='editAdminReservationRoomSelect' required='required'></select></div>";
+                        content += "<div class='mt-3'><label class='col-form-label' for='editAdminReservationDescriptionInput'>Beschreibung:</label>";
+                        content += "<div class='input-group'><input type='text' class='form-control' id='editAdminReservationDescriptionInput' required='required' value='" + reservationData["title"] + "'>";
+                        content += "<div class='d-flex align-items-center align-content-center input-group-text'><input class='form-check-input mt-0' type='checkbox' id='editAdminReservationDescriptionHiddenCheckbox' value='1'>";
+                        content += "<label class='form-check-label ps-1' for='editAdminReservationDescriptionHiddenCheckbox'>Ausblenden</label></div></div></div>";
+                        content += "<div class='mt-3'><label class='col-form-label' for='editAdminReservationStatusSelect'>Status:</label>";
+                        content += "<select class='form-select' id='editAdminReservationStatusSelect' required='required' value='" + reservationData["accepted"] + "'>";
+                        content += "<option value='0'>Abgelehnt</option><option value='1'>Angenommen</option></select></div>";
+                        content += "<div class='mt-3'><label class='col-form-label' for='editAdminReservationTimeFromHours'>Start:</label>";
+                        content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='editAdminReservationTimeFromHours' value='0' required='required'>";
+                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='editAdminReservationTimeFromMinutes' value='0' required='required'></div>";
+                        content += "<label class='ms-2' for='editAdminReservationTimeFromMinutes'>Uhr</label></div></div>";
+                        content += "<div class='mt-3'><label class='col-form-label' for='editAdminReservationTimeToHours'>Ende:</label>";
+                        content += "<div class='d-flex align-items-center align-content-center'><div class='input-group' style='flex: 0 0 33%'><input type='text' class='form-control' onblur='checkHours(this)' maxlength='2' id='editAdminReservationTimeToHours' required='required'>";
+                        content += "<span class='input-group-text'>:</span><input type='text' class='form-control' onblur='checkMinutes(this)' maxlength='2' id='editAdminReservationTimeToMinutes' required='required'></div>";
+                        content += "<label class='ms-2' for='editAdminReservationTimeToMinutes'>Uhr</label></div>";
+                        content += "</div></div></form>";
+                        let data = {
+                            name: "reservationAdminEditing",
+                            static: true,
+                            events: {
+                                shown: {
+                                    function: function() {
+                                        loadBuildings("#editAdminReservationBuildingSelect");
+                                        let index = rooms.findIndex(key => key["id"] === reservationData["roomid"]);
+                                        if (index >= 0) {
+                                            $("#editAdminReservationBuildingSelect").val(rooms[index]["buildingid"]).change();
+                                            $("#editAdminReservationRoomSelect").val(reservationData["roomid"]);
+                                        }
+                                        $("#reservationAdminEditingForm").submit(function() {
+                                            saveAdminEditedReservation(reservationData["id"]);
+                                            return false;
+                                        });
+                                    }
+                                },
+                                hide: {
+                                    function: function() {
+                                        $("#reservationAdminEditingForm").off("submit");
+                                    }
+                                }
+                            },
+                            title: {
+                                text: "Reservierung bearbeiten"
+                            },
+                            content: {
+                                text: content
+                            },
+                            footer: {
+                                buttons: {
+                                    default: {
+                                        text: "Abbrechen",
+                                        class: "btn-danger"
+                                    },
+                                    custom: [
+                                        {
+                                            text: "Speichern",
+                                            class: "btn-primary",
+                                            attributes: {
+                                                id: "saveAdminEditedReservationButton"
+                                            },
+                                            actions: {
+                                                click: {
+                                                    function: function() {
+                                                        $("#editAdminReservationSubmit").click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        };
+                        Modal.create(data);
+                    }
+                }
+            }
+            function saveAdminEditedReservation(id) {
+                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "reservationAdminEditing") {
+                    $.post({
+                        url: apiURL + "/calendar/edit",
+                        data: JSON.stringify({
+                            //token: getCookie("authToken"),
+                            token: "C4NQDvFIk8L#^@z!UKUnxXFcCZ5qlt",
+                            id: $("#newBuildingNameInput").val(),
+                            title: $("#editAdminReservationDescriptionInput").val()
+                        }),
+                        processData: false,
+                        contentType: "application/json",
+                        crossDomain: true,
+                        timeout: 10000
+                    }).done(function(response) {
+                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
+                        $("#buildingsAdminTable_wrapper").before(Alert.create("success", "Das neue Gebäude namens &quot;" + $("#newBuildingDescriptionInput").val() + "&quot; wurde hinzugefügt."));
+                        $("#buildingsAdminTable").DataTable().ajax.reload();
+                    }).fail(function(response) {
+                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
+                    }).always(function() {
+                        enableMainModal("#saveNewBuildingButton");
+                    });
+                }
+            }
             Number.prototype.duration = function() {
                 let sec_num = parseInt(this, 10);
                 let weeks = Math.floor((sec_num / 3600 / 24) / 7);
@@ -2502,7 +2627,7 @@
                     selectAllow: function(selectInfo) {
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
-                        return Math.trunc(selectInfo["start"].getTime() /1000) >= Math.trunc(currentDate.getTime() /1000);
+                        return selectInfo["start"].getTime() >= currentDate.getTime();
                     },
                     events: function(info, successCallback, failureCallback) {
                         if (firstRun) {
@@ -2534,8 +2659,8 @@
                         let endDate = new Date(Number.parseInt(info["event"]["_def"]["extendedProps"]["end"]));
                         $("#selectedReservationDescription").html(info["event"]["_def"]["title"]);
                         $("#selectedReservationOrganiser").html(info["event"]["_def"]["extendedProps"]["organiser"]);
-                        $("#selectedReservationStart").html(("00" + (startDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (startDate.getMonth() +1).toString()).substr(-2, 2) + "." + startDate.getFullYear() + ", " + ("00" + (startDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (startDate.getSeconds().toString())).substr(-2, 2));
-                        $("#selectedReservationEnd").html(("00" + (endDate.getDate()).toString()).substr(-2, 2) + "." + ("00" + (endDate.getMonth() +1).toString()).substr(-2, 2) + "." + endDate.getFullYear() + ", " + ("00" + (endDate.getHours().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getMinutes().toString())).substr(-2, 2) + ":" + ("00" + (endDate.getSeconds().toString())).substr(-2, 2));
+                        $("#selectedReservationStart").html(formatDate(startDate.getTime(), ["date", "time"]) + " Uhr");
+                        $("#selectedReservationEnd").html(formatDate(endDate.getTime(), ["date", "time"]) + " Uhr");
                     },
                     eventsSet: function(events) {
                         $("#calendarLocationSubmit").removeAttr("disabled");
@@ -2631,45 +2756,30 @@
                         };
                         options["orderFixed"] = [5, "asc"];
                         dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw.dt", function(settings) {
-                            $("#myReservationsReloadButton").removeAttr("disabled");
+                            $("#myReservationsReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                         });
-                    }
-                    else {
-                        //$("#moderatorReservationTable").DataTable().ajax.reload();
-                        readjustTables();
                     }
                 });
                 $("a[href='#moderation']").on("shown.bs.tab", function() {
-                    if (buildings.length === 0) {
-                        if ($("#moderation #moderationNoBuildingsFoundWarning").length === 0) {
-                            $("#moderationBuildingSelect").parent().before(Alert.create("warning", "Es wurden keine Gebäude in der Datenbank gefunden, für die Reservierungen angezeigt werden können. Wenden Sie sich an einen für diese Seite zuständigen Administrator, damit dieses Problem behoben werden kann.", {id: "moderationNoBuildingsFoundWarning", closeable: false}));
-                        }
-                    }
-                    else {
-                        $("#moderationNoBuildingsFoundWarning").remove();
-                        if (!DataTable.isDataTable("#moderatorReservationTable")) {
-                            $("#reservationsModeratorReloadButton").attr("disabled", "disabled");
-                            loadBuildings("#moderationBuildingSelect");
-                            $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
-                            let options = {};
-                            Object.assign(options, dataTablesModeratorOptions["reservations"]);
-                            options["rowGroup"] = {
-                                dataSrc: "buildingid",
-                                className: "bg-gray-200",
-                                endRender: null,
-                                startRender: function(rows, group) {
-                                    let index = buildings.findIndex(key => key["id"] === group);
-                                    return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
-                                }
-                            };
-                            options["orderFixed"] = [1, "asc"];
-                            moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw.dt", function(settings) {
-                                $("#reservationsModeratorReloadButton").removeAttr("disabled");
-                            });
-                        }
-                        else {
-                            $("#moderatorReservationTable").DataTable().ajax.reload();
-                        }
+                    if (!DataTable.isDataTable("#moderatorReservationTable")) {
+                        $("#reservationsModeratorReloadButton").attr("disabled", "disabled");
+                        loadBuildings("#moderationBuildingSelect");
+                        $("#moderationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
+                        let options = {};
+                        Object.assign(options, dataTablesModeratorOptions["reservations"]);
+                        options["rowGroup"] = {
+                            dataSrc: "buildingid",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                        moderatorDataTables["reservations"] = $("#moderatorReservationTable").DataTable(options).on("draw.dt", function(settings) {
+                            $("#reservationsModeratorReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
+                        });
                     }
                 });
                 $("a[href='#administration']").on("shown.bs.tab", function() {
@@ -2678,44 +2788,33 @@
                     }
                 });
                 $("#reservation-accordion").on("shown.bs.collapse", function() {
-                    if (buildings.length === 0) {
-                        if ($("#collapse-reservations > .card-body > #administrationNoBuildingsFoundWarning").length === 0) {
-                            $("#collapse-reservations > .card-body").prepend(Alert.create("warning", "Es wurden keine Gebäude gefunden, für die Reservierungen angezeigt werden können.", {id: "administrationNoBuildingsFoundWarning", closeable: false}));
-                        }
-                    }
-                    else {
-                        $("#collapse-reservations > .card-body > #administrationNoBuildingsFoundWarning").remove();
-                        if (!DataTable.isDataTable("#administratorReservationTable")) {
-                            loadBuildings("#reservationBuildingSelect");
-                            $("#reservationsAdminReloadButton").attr("disabled", "disabled");
-                            $("#reservationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
-                            let options = {};
-                            Object.assign(options, dataTablesAdminOptions["reservations"]);
-                            options["rowGroup"] = {
-                                dataSrc: "buildingid",
-                                className: "bg-gray-200",
-                                endRender: null,
-                                startRender: function(rows, group) {
-                                    let index = buildings.findIndex(key => key["id"] === group);
-                                    return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
-                                }
-                            };
-                            options["orderFixed"] = [1, "asc"];
-                            adminDataTables["reservations"] = $("#reservationAdminTable").DataTable(options).on("draw.dt", function(settings) {
-                                $("#reservationsAdminReloadButton").removeAttr("disabled");
-                            });
-                        }
+                    if (!DataTable.isDataTable("#administratorReservationTable")) {
+                        loadBuildings("#reservationBuildingSelect");
+                        $("#reservationsAdminReloadButton").attr("disabled", "disabled");
+                        $("#reservationBuildingSelect").prepend("<option value='0'>Alle</option>").val("0");
+                        let options = {};
+                        Object.assign(options, dataTablesAdminOptions["reservations"]);
+                        options["rowGroup"] = {
+                            dataSrc: "buildingid",
+                            className: "bg-gray-200",
+                            endRender: null,
+                            startRender: function(rows, group) {
+                                let index = buildings.findIndex(key => key["id"] === group);
+                                return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                            }
+                        };
+                        options["orderFixed"] = [1, "asc"];
+                        adminDataTables["reservations"] = $("#reservationAdminTable").DataTable(options).on("draw.dt", function(settings) {
+                            $("#reservationsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
+                        });
                     }
                 });
                 $("#buildings-accordion").on("shown.bs.collapse", function() {
                     if (!DataTable.isDataTable("#buildingsAdminTable")) {
                         $("#buildingsAdminReloadButton").attr("disabled", "disabled");
                             adminDataTables["buildings"] = $("#buildingsAdminTable").DataTable(dataTablesAdminOptions["buildings"]).on("draw.dt", function(settings) {
-                                $("#buildingsAdminReloadButton").removeAttr("disabled");
+                                $("#buildingsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                         });
-                    }
-                    else {
-                        $("#buildingsAdminTable").DataTable().ajax.reload();
                     }
                 });
                 $("#rooms-accordion").on("shown.bs.collapse", function() {
@@ -2737,25 +2836,24 @@
                         options["orderFixed"] = [1, "asc"];
                         adminDataTables["rooms"] = $("#roomsAdminTable").DataTable(options).on("draw.dt", function(settings) {
                             if (!adminDataTables["rooms"].rowGroup().enabled()) {
-                                if ($("#showRoomCreationModalButton").length === 0) {
-                                    $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                if (!adminDataTables["rooms"].rowGroup().enabled()) {
+                                    if ($("#showRoomCreationModalButton").length === 0) {
+                                        $("#roomsAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
+                                    }
+                                }
+                                else {
+                                    $("#showRoomCreationModalButton").remove();
                                 }
                             }
-                            else {
-                                $("#showRoomCreationModalButton").remove();
-                            }
-                            $("#roomsAdminReloadButton").removeAttr("disabled");
+                            $("#roomsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                         });
-                    }
-                    else {
-                        //$("#roomsAdminTable").DataTable().ajax.reload();
                     }
                 });
                 $('#collapse-logs').on('shown.bs.collapse', function () {
                     if (!DataTable.isDataTable('#logsAdminTable')) {
                         $("#logsAdminReloadButton").attr("disabled", "disabled");
                         adminDataTables["logs"] = $("#logsAdminTable").DataTable(dataTablesAdminOptions["logs"]).on("draw.dt", function(settings) {
-                            $("#logsAdminReloadButton").removeAttr("disabled");
+                            $("#logsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                         });
                     }
                 });
@@ -2847,8 +2945,9 @@
                         delete options["ajax"]["data"]["building_id"];
                     }
                     $(this).attr("data-old", value);
+                    $("#roomsAdminTable").off("draw.dt");
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw.dt", function(settings) {
-                        if (!adminDataTables["rooms"].rowGroup().enabled() && rooms.length === 0) {
+                        if (!adminDataTables["rooms"].rowGroup().enabled() || rooms.length === 0) {
                             if ($("#roomsAdminActions > #showRoomCreationModalButton").length === 0) {
                                 $("#roomsAdminActions").append("<button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button>");
                             }
@@ -2856,6 +2955,7 @@
                         else {
                             $("#showRoomCreationModalButton").remove();
                         }
+                        $("#roomsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                     });
                 });
                 $("#reservationBuildingSelect").change(function() {
@@ -2882,7 +2982,9 @@
                         delete options["ajax"]["data"]["category"];
                     }
                     $(this).attr("data-old", value);
+                    //$("#reservationsAdminTable").off("draw.dt");
                     //adminDataTables["reservationsAdminTable"] = $("#reservationsAdminTable").DataTable(options).on("draw.dt", function(settings) {
+                        //$("#reservationsAdminReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                     //});
                 });
                 $("#moderationBuildingSelect").change(function() {
@@ -2930,16 +3032,11 @@
                         delete options["ajax"]["data"]["category"];
                     }
                     $(this).attr("data-old", value);
+                    $("#myReservationTable").off("draw.dt");
                     dataTables["myReservations"] = $("#myReservationTable").DataTable(options).on("draw.dt", function(settings) {
-                            //
+                        $("#myReservationsReloadButton").removeAttr("disabled").find("[data-processing='true']").remove();
                     });
                 });
-                /*
-                const dateRangePicker = new Litepicker({
-                    element: $("#currentReservationsTimeSelect")[0],
-                    lang: "de-DE",
-                    singleMode: false
-                });*/
             });
         </script>
     </head>
@@ -3067,7 +3164,7 @@
                                     <tbody></tbody>
                                 </table>
                                 <div class="d-flex formContainer justify-content-end mt-3" id="myReservationsActions">
-                                    <button class="btn btn-primary" id="myReservationsReloadButton" onclick="reloadDataTableData(this, null, '#myReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                    <button class="btn btn-primary" id="myReservationsReloadButton" onclick="reloadDataTableData(this, '#myReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                 </div>
                             </div>
                         </div>
@@ -3089,19 +3186,22 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Gebäude</th>
+                                    <th>Bucher</th>
                                     <th>Raum</th>
+                                    <th>Gebäude</th>
                                     <th>Start</th>
                                     <th>Ende</th>
                                     <th>Beschreibung</th>
-                                    <th>Bucher</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                     <th>Optionen</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                         <div class="d-flex formContainer justify-content-end mt-3" id="reservationsModeratorActions">
-                            <button class="btn btn-primary" id="reservationsModeratorReloadButton" onclick="reloadDataTableData(this, 'moderator', '#moderatorReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                            <button class="btn btn-primary" id="reservationsModeratorReloadButton" onclick="reloadDataTableData(this, '#moderatorReservationTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="administration">
@@ -3126,15 +3226,20 @@
                                                     <th>Bucher</th>
                                                     <th>Raum</th>
                                                     <th>Gebäude</th>
-                                                    <th>Zeitraum</th>
+                                                    <th>Start</th>
+                                                    <th>Ende</th>
                                                     <th>Beschreibung</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
                                                     <th>Optionen</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
                                         </table>
                                         <div class="d-flex formContainer justify-content-end mt-3" id="reservationsActions">
-                                            <button class="btn btn-primary" id="reservationsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#reservationAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                            <button class="btn btn-primary" id="reservationsAdminReloadButton" onclick="reloadDataTableData(this, '#reservationAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
                                 </div>
@@ -3162,7 +3267,7 @@
                                             <tbody></tbody>
                                         </table>
                                         <div class="d-flex formContainer justify-content-end mt-3" id="buildingsAdminActions">
-                                            <button class="btn btn-primary" id="buildingsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#buildingsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                            <button class="btn btn-primary" id="buildingsAdminReloadButton" onclick="reloadDataTableData(this, '#buildingsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                             <button class='btn btn-success' onclick='showBuildingCreationModal()'><i class='fa-solid fa-asterisk'></i> Neu...</button>
                                         </div>
                                     </div>
@@ -3198,7 +3303,7 @@
                                             <tbody></tbody>
                                         </table>
                                         <div class="d-flex formContainer justify-content-end mt-3" id="roomsAdminActions">
-                                            <button class="btn btn-primary" id="roomsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#roomsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                            <button class="btn btn-primary" id="roomsAdminReloadButton" onclick="reloadDataTableData(this, '#roomsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
                                 </div>
@@ -3226,7 +3331,7 @@
                                             <tbody></tbody>
                                         </table>
                                         <div class="d-flex formContainer justify-content-end mt-3" id="logsAdminActions">
-                                            <button class="btn btn-primary" id="logsAdminReloadButton" onclick="reloadDataTableData(this, 'admin', '#logsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
+                                            <button class="btn btn-primary" id="logsAdminReloadButton" onclick="reloadDataTableData(this, '#logsAdminTable')"><i class="fa-solid fa-arrows-rotate"></i> Aktualisieren</button>
                                         </div>
                                     </div>
                                 </div>
