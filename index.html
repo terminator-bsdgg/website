@@ -652,7 +652,7 @@
                         }*/
                     ],
                     ajax: {
-                        url: "/calendar/list",
+                        url: apiURL + "/calendar/list",
                         type: "POST",
                         contentType: "application/json",
                         data: function(data, settings) {
@@ -2642,11 +2642,12 @@
                         }
                     },
                     select: function(selectionInfo) {
+                        console.log(selectionInfo["end"].setHours(selectionInfo["end"].getHours() -24));
                         let currentDate = new Date();
                         currentDate.setHours(0, 0, 0);
                         if (buildings.length >= 1) {
                             if (selectionInfo["start"].getTime() >= currentDate.getTime()) {
-                                $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["start"].getTime(), "data-end": selectionInfo["end"].getTime()}).removeClass("disabled");
+                                $("#showReservationCreationModalButton").removeAttr("disabled").attr({"data-start": selectionInfo["start"].getTime(), "data-end": (selectionInfo["end"].setHours(selectionInfo["end"].getHours() -0))}).removeClass("disabled");
                             }
                             else {
                                 $("#showReservationCreationModalButton").attr("disabled", "disabled").addClass("disabled");
@@ -2800,7 +2801,7 @@
                             endRender: null,
                             startRender: function(rows, group) {
                                 let index = buildings.findIndex(key => key["id"] === group);
-                                return $("<tr>").append("<td colspan='7' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
+                                return $("<tr>").append("<td colspan='9' class='align-middle' style='color: #282828'>" + (index >= 0 ? buildings[index]["name"] : "Unbekannte Gebäude-ID: " + group) + "</td>");
                             }
                         };
                         options["orderFixed"] = [1, "asc"];
@@ -2947,7 +2948,7 @@
                     $(this).attr("data-old", value);
                     $("#roomsAdminTable").off("draw.dt");
                     adminDataTables["roomsAdminTable"] = $("#roomsAdminTable").DataTable(options).on("draw.dt", function(settings) {
-                        if (!adminDataTables["rooms"].rowGroup().enabled() || rooms.length === 0) {
+                        if (!adminDataTables["rooms"].rowGroup().enabled()) {
                             if ($("#roomsAdminActions > #showRoomCreationModalButton").length === 0) {
                                 $("#roomsAdminActions").append("<button type='button' class='btn btn-success' onclick='showRoomCreationModal()' id='showRoomCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button>");
                             }
@@ -3125,10 +3126,12 @@
                                             <div class="col-md-4">Organisator:</div>
                                             <div class="col-md-8" id="selectedReservationOrganiser"></div>
                                         </div>
+                                        <!--
                                         <div class="row">
                                             <div class="col-md-4">Optionen:</div>
-                                            <div class="col-md-8" id="selectedReservationOptions">LOL</div>
+                                            <div class="col-md-8" id="selectedReservationOptions"></div>
                                         </div>
+                                    -->
                                         <button type="button" class="btn btn-success mt-3 disabled" id="showReservationCreationModalButton" disabled="disabled" onclick="showReservationCreationModal()"><i class="fa-solid fa-plus"></i> Neue Reservierung</button>
                                     </div>
                                 </div>
