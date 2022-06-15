@@ -1265,23 +1265,6 @@
                     }
                 }
             }
-            function confirmRoleDeletion(lol) {
-                if (DataTable.isDataTable("#rolesAdminTable")) {
-                    let roles = adminDataTables["roles"].data().toArray();
-                    let index = roles.findIndex(key => key["id"] === Number.parseInt(lol));
-                    if (index >= 0) {
-                        let prompt = new Promise(function(resolve) {
-                            confirmation({
-                                title: "Benutzerrolle &quot;" + roles["name"] + "&quot; entfernen",
-                                content: "Soll die Benutzerrolle &quot;"  + roles["name"] + "&quot; wirklich entfernt werden?"
-                            }, resolve);
-                        });
-                        prompt.then(function(value) {
-                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                        });
-                    }
-                }
-            }
             function confirmation(options = {}, resolve) {
                 let data = {
                     name: "confirmation",
@@ -1959,18 +1942,6 @@
                     });
                 }
             }
-            function toggleNewReservationTimes(element) {
-                if ($("#mainModal").attr("data-name") === "reservationCreation") {
-                    if ($(element).prop("checked")) {
-                        $("#newReservationTimeToHours").attr("disabled", "disabled");
-                        $("#newReservationTimeToMinutes").attr("disabled", "disabled");
-                    }
-                    else {
-                        $("#newReservationTimeToHours").removeAttr("disabled");
-                        $("#newReservationTimeToMinutes").removeAttr("disabled");
-                    }
-                }
-            }
             function confirmBuildingDeletion(lol) {
                 if (DataTable.isDataTable("#buildingsAdminTable")) {
                     let buildingId = Number.parseInt(lol);
@@ -2007,113 +1978,6 @@
                             });
                         });
                     }
-                }
-            }
-            function confirmBuildingActivation(lol) {
-                if (DataTable.isDataTable("#buildingsAdminTable")) {
-                    let buildings = adminDataTables["buildings"].data().toArray();
-                    let index = buildings.findIndex(key => key["id"] === Number.parseInt(lol));
-                    if (index >= 0) {
-                        let prompt = new Promise(function(resolve) {
-                            confirmation({
-                                title: "Gebäude &quot;" + buildings[index]["name"] + "&quot; aktivieren",
-                                content: "Soll das Gebäude &quot;" + buildings[index]["name"] + "&quot; wirklich aktiviert werden?"
-                            }, resolve);
-                        });
-                        prompt.then(function(value) {
-                            bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                        });
-                    }
-                }
-            }
-            function showBuildingDeactivationModal(lol) {
-                if (DataTable.isDataTable("#buildingsAdminTable")) {
-                    let buildings = adminDataTables["buildings"].data().toArray();
-                    let index = buildings.findIndex(key => key["id"] === lol);
-                    if (index >= 0) {
-                        let content = "<form enctype='text/plain' id='buildingDeactivationForm' method='post' action='/' class='w-100'><input type='submit' class='d-none' id='disableBuildingSubmit'>";
-                        content += "<label for='disableBuildingMessage' class='form-label'>Grund (optional):</label>";
-                        content += "<input type='text' class='form-control' id='disableBuildingMessage' placeholder='Grund eingeben'></div></form>";
-                        let data = {
-                            name: "buildingDeactivation",
-                            static: true,
-                            size: "lg",
-                            events: {
-                                show: {
-                                    function: function() {
-                                        $("#buildingDeactivationForm").prepend(Alert.create("primary", "Sollte ein Gebäude aus gewissen Gründen vorrübergehend nicht genutzt werden können, kann es hier deaktiviert werden. Alle gespeicherten Räume (sowie deren momentanen Reservierungen) des Gebäudes bleiben dabei erhalten.", {closeable: false}));
-                                    }
-                                },
-                                shown: {
-                                    function: function() {
-                                        $("#buildingDeactivationForm").submit(function() {
-                                            disableBuilding(lol);
-                                            return false;
-                                        });
-                                    }
-                                },
-                                hide: {
-                                    function: function() {
-                                        $("#buildingDeactivationForm").off("submit");
-                                    }
-                                }
-                            },
-                            title: {
-                                text: "Gebäude &quot;" + buildings[index]["name"] + "&quot; deaktivieren"
-                            },
-                            content: {
-                                text: content
-                            },
-                            footer: {
-                                buttons: {
-                                    default: {
-                                        text: "Abbrechen",
-                                        class: "btn-danger"
-                                    },
-                                    custom: [
-                                        {
-                                            text: "Speichern",
-                                            class: "btn-primary",
-                                            attributes: {
-                                                id: "saveDisabledBuildingButton"
-                                            },
-                                            actions: {
-                                                click: {
-                                                    function: function() {
-                                                        $("#disableBuildingSubmit").click();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        };
-                        Modal.create(data);
-                    }
-                }
-            }
-            function disableBuilding(building) {
-                if ($("#mainModal").hasClass("show") && $("#mainModal").attr("data-name") === "buildingDeactivation") {
-                    disableMainModal("#saveDisabledBuildingButton");
-                    $.post({
-                        url: "http://127.0.0.1:3000/api/",
-                        data: JSON.stringify({
-                            token: getCookie("authToken"),
-                            building: building,
-                            message: $("#disableBuildingMessage").val()
-                        }),
-                        processData: false,
-                        contentType: "application/json",
-                        crossDomain: true,
-                        timeout: 10000
-                    }).done(function(response) {
-                        bootstrap.Modal.getInstance($("#mainModal")[0]).hide();
-                    }).fail(function(response) {
-                        $("#mainModal .modal-body").prepend(Alert.create("danger", response["status"] + ": " + response["statusText"]));
-                    }).always(function() {
-                        enableMainModal("#saveDisabledBuildingButton");
-                    });
                 }
             }
             function confirmReservationApproval(lol) {
@@ -2858,70 +2722,6 @@
                         });
                     }
                 });
-                /*
-                $("#roles-accordion").on("shown.bs.collapse", function() {
-                    if (!DataTable.isDataTable("#rolesAdminTable")) {
-                        $("#rolesRoleSelect").val("0");
-                        let options = {};
-                        Object.assign(options, dataTablesAdminOptions["roles"]);
-                        options["rowGroup"] = {
-                            dataSrc: "role",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [2, "asc"];
-                        adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw.dt", function(settings) {
-                            if (!adminDataTables["roles"].rowGroup().enabled()) {
-                                if ($("#showRoleCreationModalButton").length === 0) {
-                                    $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
-                                }
-                            }
-                            else {
-                                $("#showRoleCreationModalButton").remove();
-                            }
-                        });
-                    }
-                    else {
-                        $("#rolesAdminTable").DataTable().ajax.reload();
-                    }
-                });
-                $("#rolesRoleSelect").change(function() {
-                    let options = {};
-                    let value = Number.parseInt($(this).val());
-                    Object.assign(options, dataTablesAdminOptions["roles"]);
-                    if (Number.parseInt($(this).attr("data-old")) >= 1 && value <= 0) {
-                        options["rowGroup"] = {
-                            dataSrc: "role",
-                            className: "bg-gray-200",
-                            endRender: null,
-                            startRender: function(rows, group) {
-                                return $("<tr>").append("<td colspan='2' class='align-middle' style='color: #282828'>" + group + "</td><td><button class='btn btn-sm btn-success' onclick='showRoleCreationModal(" + group + ")'><i class='fa-solid fa-asterisk'></i> Neu...</button></td>");
-                            }
-                        };
-                        options["orderFixed"] = [2, "asc"];
-                    }
-                    options["destroy"] = true;
-                    if (value >= 1) {
-                        options["ajax"]["data"]["category"] = value;
-                    }
-                    else {
-                        delete options["ajax"]["data"]["category"];
-                    }
-                    $(this).attr("data-old", value);
-                    adminDataTables["roles"] = $("#rolesAdminTable").DataTable(options).on("draw.dt", function(settings) {
-                        if (!adminDataTables["roles"].rowGroup().enabled()) {
-                            if ($("#showRoleCreationModalButton").length === 0) {
-                                $("#rolesAdminTable_wrapper > .row:last-of-type").before("<div class='d-flex justify-content-end mt-3 mb-3'><button type='button' class='btn btn-success' onclick='showRoleCreationModal()' id='showRoleCreationModalButton'><i class='fa-solid fa-asterisk'></i> Neu...</button></div>");
-                            }
-                        }
-                        else {
-                            $("#createUserButton").remove();
-                        }
-                    });
-                });*/
                 $("#roomsBuildingSelect").change(function() {
                     let options = {};
                     let value = Number.parseInt($(this).val());
